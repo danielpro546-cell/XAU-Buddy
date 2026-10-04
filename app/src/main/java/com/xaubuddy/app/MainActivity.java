@@ -2,32 +2,37 @@ package com.xaubuddy.app;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.graphics.Color;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.*;
 
 public class MainActivity extends Activity {
 
     TextView dashboard;
     EditText riskInput;
+
     double balance = 10;
+
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
+
     Button calculateButton;
-    
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(30,40,30,30);
 
+
         TextView title = new TextView(this);
         title.setText("XAU Buddy V2");
         title.setTextSize(30);
         title.setGravity(Gravity.CENTER);
+
 
         TextView mode = new TextView(this);
         mode.setText("MODE: DEMO\nLIVE: LOCKED");
@@ -37,6 +42,7 @@ public class MainActivity extends Activity {
         TextView balanceText = new TextView(this);
         balanceText.setText("Balance: $10");
         balanceText.setTextSize(20);
+
 
 
         Button b10 = new Button(this);
@@ -49,123 +55,169 @@ public class MainActivity extends Activity {
         b100.setText("$100");
 
 
+
         LinearLayout balanceButtons = new LinearLayout(this);
         balanceButtons.addView(b10);
         balanceButtons.addView(b50);
         balanceButtons.addView(b100);
 
 
+
         riskInput = new EditText(this);
-        riskInput.setHint("Risk % (Default 0.5)");
+        riskInput.setHint("Risk %");
         riskInput.setText("0.5");
         riskInput.setInputType(2);
 
 
+
         dashboard = new TextView(this);
-        dashboard.setText(
-                "Lot Size: 0.01\n" +
-                "Risk Amount: $0.05\n" +
-                "SL: Waiting...\n" +
-                "TP: Waiting..."
-        );
         dashboard.setTextSize(18);
+
+
+
         calculateButton = new Button(this);
-calculateButton.setText("CALCULATE RISK");
+        calculateButton.setText("CALCULATE");
 
-calculateButton.setOnClickListener(v -> {
 
-    marketData.updateDemoData();
-    strategy.analyze(marketData);
 
-    double risk = 0.5;
+        calculateButton.setOnClickListener(v -> {
 
-    try {
-        risk = Double.parseDouble(
+
+            marketData.updateDemoData();
+
+            strategy.analyze(marketData);
+
+
+
+            double risk = 0.5;
+
+
+            try{
+
+                risk = Double.parseDouble(
                 riskInput.getText().toString()
-        );
-    } catch(Exception e){
+                );
 
-    }
+            }catch(Exception e){}
 
-    double riskAmount = balance * risk / 100;
 
-    double lot = riskAmount / 5;
 
-    String warning = "";
+            double riskAmount =
+                    balance * risk / 100;
 
-    if(lot < 0.01){
-        lot = 0.01;
-        warning =
-        "\n⚠ Minimum lot 0.01 used\n" +
-        "Actual risk may be higher";
-    }
 
-    dashboard.setText(
-    "XAUUSD PRICE: " + marketData.price +
-    "\nEMA20: " + marketData.ema20 +
-    "\nEMA50: " + marketData.ema50 +
-    "\nRSI14: " + marketData.rsi14 +
-    "\nH1 Bias: " + marketData.h1Bias +
-    "\nM5 Signal: " + marketData.m5Signal +
-    "\nBOS: " + strategy.bos +
-    "\nCHoCH: " + strategy.choch +
-    "\nFVG: " + strategy.fvg +
-    "\nLiquidity: " + strategy.liquidity +
-    "\nSIGNAL: " + strategy.signal +
-    "\nCONFIDENCE: " + strategy.confidence + "%" 
-    "\n\nBalance: $" + balance +
-    "\nRisk: " + risk + "%" +
-    "\nRisk Amount: $" + String.format("%.2f", riskAmount) +
-    "\nLot Size: " + String.format("%.2f", lot) +
-    warning +
-    "\nSL: Waiting..." +
-    "\nTP: Waiting..."
-);
 
-});
+            double lot =
+                    riskAmount / 5;
+
+
+
+            if(lot < 0.01){
+
+                lot = 0.01;
+
+            }
+
+
+
+            dashboard.setText(
+
+            "===== XAU BUDDY V2 =====\n\n" +
+
+            "PRICE: " + marketData.price +
+
+            "\nEMA20: " + marketData.ema20 +
+
+            "\nEMA50: " + marketData.ema50 +
+
+            "\nRSI14: " + marketData.rsi14 +
+
+            "\n\nH1: " + marketData.h1Bias +
+
+            "\nM5: " + marketData.m5Signal +
+
+            "\n\nBOS: " + strategy.bos +
+
+            "\nCHoCH: " + strategy.choch +
+
+            "\nFVG: " + strategy.fvg +
+
+            "\nLiquidity: " + strategy.liquidity +
+
+            "\n\nSIGNAL: " + strategy.signal +
+
+            "\nCONFIDENCE: " + strategy.confidence + "%" +
+
+            "\n\nBalance: $" + balance +
+
+            "\nRisk: " + risk + "%" +
+
+            "\nRisk Amount: $" +
+            String.format("%.2f",riskAmount) +
+
+            "\nLot Size: " +
+            String.format("%.2f",lot) +
+
+            "\n\nENTRY: " + marketData.price +
+
+            "\nSL: Waiting..." +
+
+            "\nTP: Waiting..."
+
+            );
+
+
+        });
+
 
 
         b10.setOnClickListener(v -> {
+
             balance = 10;
             balanceText.setText("Balance: $10");
+
         });
+
+
 
         b50.setOnClickListener(v -> {
+
             balance = 50;
             balanceText.setText("Balance: $50");
+
         });
 
+
+
         b100.setOnClickListener(v -> {
+
             balance = 100;
             balanceText.setText("Balance: $100");
+
         });
+
 
 
         layout.addView(title);
+
         layout.addView(mode);
+
         layout.addView(balanceText);
+
         layout.addView(balanceButtons);
+
         layout.addView(riskInput);
-        marketData.updateDemoData();
-strategy.analyze(marketData);
-        
-        dashboard.setText(
-        "XAUUSD PRICE: " + marketData.price +
-        "\nEMA20: " + marketData.ema20 +
-        "\nEMA50: " + marketData.ema50 +
-        "\nRSI14: " + marketData.rsi14 +
-        "\nH1 Bias: " + marketData.h1Bias +
-        "\nM5 Signal: " + marketData.m5Signal +
-        "\nBOS: " + strategy.bos +
-        "\nCHoCH: " + strategy.choch +
-        "\nFVG: " + strategy.fvg +
-        "\nLiquidity: " + strategy.liquidity +
-        "\nSIGNAL: " + strategy.signal
-);
+
         layout.addView(dashboard);
+
         layout.addView(calculateButton);
 
 
+
         setContentView(layout);
+
+
+
     }
+
 }
