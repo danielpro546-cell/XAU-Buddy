@@ -15,6 +15,7 @@ public class MainActivity extends Activity {
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
 RiskManager riskManager = new RiskManager();
+    MT5Connector mt5 = new MT5Connector();
     Button calculateButton;
 
 
@@ -178,7 +179,7 @@ riskManager.calculate(
 "\nTP2: " + riskManager.tp2 +
 
 "\nRR: " + riskManager.rr
-
+"\n\nMT5: " + mt5.getStatus()
             );
 
         });
