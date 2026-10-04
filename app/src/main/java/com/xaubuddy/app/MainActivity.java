@@ -178,7 +178,7 @@ riskManager.calculate(
 
 "\nTP2: " + riskManager.tp2 +
 
-"\nRR: " + riskManager.rr
+"\nRR: " + riskManager.rr +
 "\n\nMT5: " + mt5.getStatus()
             );
 
