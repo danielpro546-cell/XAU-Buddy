@@ -23,9 +23,10 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
 
 
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(30,40,30,30);
+        LinearLayout mainLayout = new LinearLayout(this);
+        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setPadding(30,40,30,30);
+
 
 
         TextView title = new TextView(this);
@@ -34,9 +35,11 @@ public class MainActivity extends Activity {
         title.setGravity(Gravity.CENTER);
 
 
+
         TextView mode = new TextView(this);
         mode.setText("MODE: DEMO\nLIVE: LOCKED");
         mode.setTextSize(20);
+
 
 
         TextView balanceText = new TextView(this);
@@ -56,10 +59,10 @@ public class MainActivity extends Activity {
 
 
 
-        LinearLayout balanceButtons = new LinearLayout(this);
-        balanceButtons.addView(b10);
-        balanceButtons.addView(b50);
-        balanceButtons.addView(b100);
+        LinearLayout balanceLayout = new LinearLayout(this);
+        balanceLayout.addView(b10);
+        balanceLayout.addView(b50);
+        balanceLayout.addView(b100);
 
 
 
@@ -70,13 +73,18 @@ public class MainActivity extends Activity {
 
 
 
+        calculateButton = new Button(this);
+        calculateButton.setText("CALCULATE");
+
+
+
         dashboard = new TextView(this);
         dashboard.setTextSize(18);
 
 
 
-        calculateButton = new Button(this);
-        calculateButton.setText("CALCULATE");
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(dashboard);
 
 
 
@@ -92,7 +100,7 @@ public class MainActivity extends Activity {
             double risk = 0.5;
 
 
-            try{
+            try {
 
                 risk = Double.parseDouble(
                 riskInput.getText().toString()
@@ -122,50 +130,49 @@ public class MainActivity extends Activity {
 
             dashboard.setText(
 
-            "===== XAU BUDDY V2 =====\n\n" +
+            "===== XAU BUDDY V2 =====\n\n"+
 
-            "PRICE: " + marketData.price +
+            "PRICE: "+marketData.price+
 
-            "\nEMA20: " + marketData.ema20 +
+            "\nEMA20: "+marketData.ema20+
 
-            "\nEMA50: " + marketData.ema50 +
+            "\nEMA50: "+marketData.ema50+
 
-            "\nRSI14: " + marketData.rsi14 +
+            "\nRSI14: "+marketData.rsi14+
 
-            "\n\nH1: " + marketData.h1Bias +
+            "\n\nH1: "+marketData.h1Bias+
 
-            "\nM5: " + marketData.m5Signal +
+            "\nM5: "+marketData.m5Signal+
 
-            "\n\nBOS: " + strategy.bos +
+            "\n\nBOS: "+strategy.bos+
 
-            "\nCHoCH: " + strategy.choch +
+            "\nCHoCH: "+strategy.choch+
 
-            "\nFVG: " + strategy.fvg +
+            "\nFVG: "+strategy.fvg+
 
-            "\nLiquidity: " + strategy.liquidity +
+            "\nLiquidity: "+strategy.liquidity+
 
-            "\n\nSIGNAL: " + strategy.signal +
+            "\n\nSIGNAL: "+strategy.signal+
 
-            "\nCONFIDENCE: " + strategy.confidence + "%" +
+            "\nCONFIDENCE: "+strategy.confidence+"%"+
 
-            "\n\nBalance: $" + balance +
+            "\n\nBalance: $"+balance+
 
-            "\nRisk: " + risk + "%" +
+            "\nRisk: "+risk+"%"+
 
-            "\nRisk Amount: $" +
-            String.format("%.2f",riskAmount) +
+            "\nRisk Amount: $"+
+            String.format("%.2f",riskAmount)+
 
-            "\nLot Size: " +
-            String.format("%.2f",lot) +
+            "\nLot Size: "+
+            String.format("%.2f",lot)+
 
-            "\n\nENTRY: " + marketData.price +
+            "\n\nENTRY: "+marketData.price+
 
-            "\nSL: Waiting..." +
+            "\nSL: Waiting..."+
 
             "\nTP: Waiting..."
 
             );
-
 
         });
 
@@ -173,50 +180,44 @@ public class MainActivity extends Activity {
 
         b10.setOnClickListener(v -> {
 
-            balance = 10;
+            balance=10;
             balanceText.setText("Balance: $10");
 
         });
 
 
-
         b50.setOnClickListener(v -> {
 
-            balance = 50;
+            balance=50;
             balanceText.setText("Balance: $50");
 
         });
 
 
-
         b100.setOnClickListener(v -> {
 
-            balance = 100;
+            balance=100;
             balanceText.setText("Balance: $100");
 
         });
 
 
 
-        layout.addView(title);
+        mainLayout.addView(title);
+        mainLayout.addView(mode);
+        mainLayout.addView(balanceText);
+        mainLayout.addView(balanceLayout);
+        mainLayout.addView(riskInput);
 
-        layout.addView(mode);
+        // Button အပေါ်မှာ အမြဲမြင်ရမယ်
+        mainLayout.addView(calculateButton);
 
-        layout.addView(balanceText);
-
-        layout.addView(balanceButtons);
-
-        layout.addView(riskInput);
-
-        layout.addView(dashboard);
-
-        layout.addView(calculateButton);
+        // Data အောက်မှာ scroll
+        mainLayout.addView(scroll);
 
 
 
-        setContentView(layout);
-
-
+        setContentView(mainLayout);
 
     }
 
