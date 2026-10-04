@@ -84,7 +84,7 @@ calculateButton.setOnClickListener(v -> {
 
     double riskAmount = balance * risk / 100;
 
-    double lot = riskAmount / 100;
+    double lot = riskAmount / (50 * 100);
 
     String warning = "";
 
