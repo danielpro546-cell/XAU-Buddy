@@ -51,25 +51,10 @@ public class StrategyEngine {
         }
 
 
-        // Confluence
-        if(
-            data.h1Bias.equals("BULLISH") &&
-            bos.equals("YES") &&
-            fvg.equals("FOUND")
-        ){
-            signal = "BUY";
-        }
-
-        else if(
-            data.h1Bias.equals("BEARISH") &&
-            bos.equals("YES")
-        ){
-            signal = "SELL";
-        }
-
-        else{
-            signal = "WAITING";
-        }
-
-    }
+        // Signal Test
+if(data.rsi14 > 50){
+    signal = "BUY";
+}
+else{
+    signal = "SELL";
 }
