@@ -12,7 +12,6 @@ public class StrategyEngine {
 
     public void analyze(MarketData data){
 
-        // BOS detection
         if(data.ema20 > data.ema50){
             bos = "YES";
         }
@@ -21,7 +20,6 @@ public class StrategyEngine {
         }
 
 
-        // CHoCH detection
         if(data.rsi14 > 50){
             choch = "BULLISH";
         }
@@ -30,7 +28,6 @@ public class StrategyEngine {
         }
 
 
-        // FVG placeholder
         if(data.ema20 > data.ema50){
             fvg = "FOUND";
         }
@@ -39,7 +36,6 @@ public class StrategyEngine {
         }
 
 
-        // Liquidity Sweep placeholder
         if(data.rsi14 > 55){
             liquidity = "BUY SIDE";
         }
@@ -52,9 +48,12 @@ public class StrategyEngine {
 
 
         // Signal Test
-if(data.rsi14 > 50){
-    signal = "BUY";
-}
-else{
-    signal = "SELL";
+        if(data.rsi14 > 50){
+            signal = "BUY";
+        }
+        else{
+            signal = "SELL";
+        }
+
+    }
 }
