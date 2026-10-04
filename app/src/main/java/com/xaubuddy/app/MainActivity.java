@@ -112,6 +112,7 @@ calculateButton.setOnClickListener(v -> {
     "\nFVG: " + strategy.fvg +
     "\nLiquidity: " + strategy.liquidity +
     "\nSIGNAL: " + strategy.signal +
+    "\nCONFIDENCE: " + strategy.confidence + "%" 
     "\n\nBalance: $" + balance +
     "\nRisk: " + risk + "%" +
     "\nRisk Amount: $" + String.format("%.2f", riskAmount) +
