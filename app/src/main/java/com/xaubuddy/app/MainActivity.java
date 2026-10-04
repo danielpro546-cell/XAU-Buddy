@@ -8,37 +8,26 @@ import android.widget.*;
 public class MainActivity extends Activity {
 
     TextView dashboard;
+
     EditText riskInput;
-EditText serverInput;
-EditText accountInput;
-    serverInput = new EditText(this);
-serverInput.setHint("MT5 Server");
+    EditText serverInput;
+    EditText accountInput;
+    EditText passwordInput;
 
+    Button calculateButton;
+    Button connectButton;
 
-accountInput = new EditText(this);
-accountInput.setHint("MT5 Account");
-
-
-passwordInput = new EditText(this);
-passwordInput.setHint("MT5 Password");
-passwordInput.setInputType(129);
-
-
-connectButton = new Button(this);
-connectButton.setText("CONNECT MT5");
-EditText passwordInput;
-Button connectButton;
     double balance = 10;
 
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
-RiskManager riskManager = new RiskManager();
+    RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
-    Button calculateButton;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
 
 
@@ -92,6 +81,27 @@ RiskManager riskManager = new RiskManager();
 
 
 
+        // MT5 Login
+
+        serverInput = new EditText(this);
+        serverInput.setHint("MT5 Server");
+
+
+        accountInput = new EditText(this);
+        accountInput.setHint("MT5 Account");
+
+
+        passwordInput = new EditText(this);
+        passwordInput.setHint("MT5 Password");
+        passwordInput.setInputType(129);
+
+
+
+        connectButton = new Button(this);
+        connectButton.setText("CONNECT MT5");
+
+
+
         calculateButton = new Button(this);
         calculateButton.setText("CALCULATE");
 
@@ -105,19 +115,26 @@ RiskManager riskManager = new RiskManager();
         ScrollView scroll = new ScrollView(this);
         scroll.addView(dashboard);
 
-connectButton.setOnClickListener(v -> {
 
-    mt5.connect(
-        serverInput.getText().toString(),
-        accountInput.getText().toString()
-    );
 
-    dashboard.setText(
-        dashboard.getText() +
-        "\n\nMT5: " + mt5.getStatus()
-    );
+        connectButton.setOnClickListener(v -> {
 
-});
+            mt5.connect(
+                    serverInput.getText().toString(),
+                    accountInput.getText().toString(),
+                    passwordInput.getText().toString()
+            );
+
+
+            dashboard.setText(
+                    dashboard.getText()
+                    + "\n\nMT5 STATUS: "
+                    + mt5.getStatus()
+            );
+
+        });
+
+
 
         calculateButton.setOnClickListener(v -> {
 
@@ -126,10 +143,12 @@ connectButton.setOnClickListener(v -> {
 
             strategy.analyze(marketData);
 
-riskManager.calculate(
-        marketData.price,
-        strategy.signal
-);
+
+            riskManager.calculate(
+                    marketData.price,
+                    strategy.signal
+            );
+
 
             double risk = 0.5;
 
@@ -137,7 +156,7 @@ riskManager.calculate(
             try {
 
                 risk = Double.parseDouble(
-                riskInput.getText().toString()
+                        riskInput.getText().toString()
                 );
 
             }catch(Exception e){}
@@ -146,7 +165,6 @@ riskManager.calculate(
 
             double riskAmount =
                     balance * risk / 100;
-
 
 
             double lot =
@@ -164,55 +182,88 @@ riskManager.calculate(
 
             dashboard.setText(
 
-            "===== XAU BUDDY V2 =====\n\n"+
+                    "===== XAU BUDDY V2 =====\n\n"
 
-            "PRICE: "+marketData.price+
+                    +"PRICE: "
+                    +marketData.price
 
-            "\nEMA20: "+marketData.ema20+
+                    +"\nEMA20: "
+                    +marketData.ema20
 
-            "\nEMA50: "+marketData.ema50+
+                    +"\nEMA50: "
+                    +marketData.ema50
 
-            "\nRSI14: "+marketData.rsi14+
+                    +"\nRSI14: "
+                    +marketData.rsi14
 
-            "\n\nH1: "+marketData.h1Bias+
 
-            "\nM5: "+marketData.m5Signal+
+                    +"\n\nH1: "
+                    +marketData.h1Bias
 
-            "\n\nBOS: "+strategy.bos+
+                    +"\nM5: "
+                    +marketData.m5Signal
 
-            "\nCHoCH: "+strategy.choch+
 
-            "\nFVG: "+strategy.fvg+
+                    +"\n\nBOS: "
+                    +strategy.bos
 
-            "\nLiquidity: "+strategy.liquidity+
+                    +"\nCHoCH: "
+                    +strategy.choch
 
-            "\n\nSIGNAL: "+strategy.signal+
+                    +"\nFVG: "
+                    +strategy.fvg
 
-            "\nCONFIDENCE: "+strategy.confidence+"%"+
+                    +"\nLiquidity: "
+                    +strategy.liquidity
 
-            "\n\nBalance: $"+balance+
 
-            "\nRisk: "+risk+"%"+
+                    +"\n\nSIGNAL: "
+                    +strategy.signal
 
-            "\nRisk Amount: $"+
-            String.format("%.2f",riskAmount)+
+                    +"\nCONFIDENCE: "
+                    +strategy.confidence
+                    +"%"
 
-            "\nLot Size: "+
-            String.format("%.2f",lot)+
 
-            "\nENTRY: " + riskManager.entry +
+                    +"\n\nBalance: $"
+                    +balance
 
-"\nSL: " + riskManager.sl +
+                    +"\nRisk: "
+                    +risk
+                    +"%"
 
-"\nTP1: " + riskManager.tp1 +
 
-"\nTP2: " + riskManager.tp2 +
+                    +"\nRisk Amount: $"
+                    +String.format("%.2f",riskAmount)
 
-"\nRR: " + riskManager.rr +
-"\n\nMT5: " + mt5.getStatus()
+
+                    +"\nLot Size: "
+                    +String.format("%.2f",lot)
+
+
+                    +"\n\nENTRY: "
+                    +riskManager.entry
+
+                    +"\nSL: "
+                    +riskManager.sl
+
+                    +"\nTP1: "
+                    +riskManager.tp1
+
+                    +"\nTP2: "
+                    +riskManager.tp2
+
+                    +"\nRR: "
+                    +riskManager.rr
+
+
+                    +"\n\nMT5: "
+                    +mt5.getStatus()
+
             );
 
         });
+
 
 
 
@@ -243,18 +294,20 @@ riskManager.calculate(
 
         mainLayout.addView(title);
         mainLayout.addView(mode);
+
         mainLayout.addView(balanceText);
         mainLayout.addView(balanceLayout);
+
         mainLayout.addView(riskInput);
 
-mainLayout.addView(serverInput);
-mainLayout.addView(accountInput);
-mainLayout.addView(passwordInput);
-mainLayout.addView(connectButton);
-        // Button အပေါ်မှာ အမြဲမြင်ရမယ်
+        mainLayout.addView(serverInput);
+        mainLayout.addView(accountInput);
+        mainLayout.addView(passwordInput);
+
+        mainLayout.addView(connectButton);
+
         mainLayout.addView(calculateButton);
 
-        // Data အောက်မှာ scroll
         mainLayout.addView(scroll);
 
 
