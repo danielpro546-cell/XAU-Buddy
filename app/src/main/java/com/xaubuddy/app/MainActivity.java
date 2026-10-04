@@ -4,12 +4,15 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.graphics.Color;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.*;
 
 public class MainActivity extends Activity {
 
-    TextView botStatus;
-
+    TextView dashboard;
+    EditText riskInput;
+    double balance = 10;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,74 +30,66 @@ public class MainActivity extends Activity {
         mode.setText("MODE: DEMO\nLIVE: LOCKED");
         mode.setTextSize(20);
 
-        TextView dashboard = new TextView(this);
-        dashboard.setText(
-                "Balance: $10\n" +
-                "Risk: 0.5%\n" +
-                "Lot Size: 0.01\n" +
-                "RR: 1:2\n" +
-                "SL: Waiting...\n" +
-                "TP: Waiting...\n" +
-                "Daily Loss: 0%\n" +
-                "Trades: 0/3\n" +
-                "Setup: Waiting..."
-        );
 
+        TextView balanceText = new TextView(this);
+        balanceText.setText("Balance: $10");
+        balanceText.setTextSize(20);
+
+
+        Button b10 = new Button(this);
+        b10.setText("$10");
+
+        Button b50 = new Button(this);
+        b50.setText("$50");
+
+        Button b100 = new Button(this);
+        b100.setText("$100");
+
+
+        LinearLayout balanceButtons = new LinearLayout(this);
+        balanceButtons.addView(b10);
+        balanceButtons.addView(b50);
+        balanceButtons.addView(b100);
+
+
+        riskInput = new EditText(this);
+        riskInput.setHint("Risk % (Default 0.5)");
+        riskInput.setText("0.5");
+        riskInput.setInputType(2);
+
+
+        dashboard = new TextView(this);
+        dashboard.setText(
+                "Lot Size: 0.01\n" +
+                "Risk Amount: $0.05\n" +
+                "SL: Waiting...\n" +
+                "TP: Waiting..."
+        );
         dashboard.setTextSize(18);
 
-        botStatus = new TextView(this);
-        botStatus.setText("BOT OFF");
-        botStatus.setTextSize(24);
 
-        Button botButton = new Button(this);
-        botButton.setText("BOT ON");
-
-        botButton.setOnClickListener(v -> {
-
-            if(botStatus.getText().toString().equals("BOT OFF")){
-                botStatus.setText("BOT ON");
-                botButton.setText("BOT OFF");
-            }
-            else{
-                botStatus.setText("BOT OFF");
-                botButton.setText("BOT ON");
-            }
-
+        b10.setOnClickListener(v -> {
+            balance = 10;
+            balanceText.setText("Balance: $10");
         });
 
-
-        Button scanButton = new Button(this);
-        scanButton.setText("SCAN SETUP");
-
-        scanButton.setOnClickListener(v -> {
-            dashboard.setText(
-                    "Balance: $10\n" +
-                    "Risk: 0.5%\n" +
-                    "Lot Size: 0.01\n" +
-                    "RR: 1:2\n" +
-                    "Setup: DEMO SCAN\n" +
-                    "Signal: WAITING"
-            );
+        b50.setOnClickListener(v -> {
+            balance = 50;
+            balanceText.setText("Balance: $50");
         });
 
-
-        Button closeButton = new Button(this);
-        closeButton.setText("EMERGENCY CLOSE ALL");
-
-        closeButton.setOnClickListener(v ->
-                Toast.makeText(this,
-                "DEMO CLOSE ALL",
-                Toast.LENGTH_SHORT).show()
-        );
+        b100.setOnClickListener(v -> {
+            balance = 100;
+            balanceText.setText("Balance: $100");
+        });
 
 
         layout.addView(title);
         layout.addView(mode);
+        layout.addView(balanceText);
+        layout.addView(balanceButtons);
+        layout.addView(riskInput);
         layout.addView(dashboard);
-        layout.addView(botStatus);
-        layout.addView(botButton);
-        layout.addView(scanButton);
-        layout.addView(closeButton);
 
 
         setContentView(layout);
