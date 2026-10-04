@@ -9,7 +9,25 @@ public class MainActivity extends Activity {
 
     TextView dashboard;
     EditText riskInput;
+EditText serverInput;
+EditText accountInput;
+    serverInput = new EditText(this);
+serverInput.setHint("MT5 Server");
 
+
+accountInput = new EditText(this);
+accountInput.setHint("MT5 Account");
+
+
+passwordInput = new EditText(this);
+passwordInput.setHint("MT5 Password");
+passwordInput.setInputType(129);
+
+
+connectButton = new Button(this);
+connectButton.setText("CONNECT MT5");
+EditText passwordInput;
+Button connectButton;
     double balance = 10;
 
     MarketData marketData = new MarketData();
@@ -87,7 +105,19 @@ RiskManager riskManager = new RiskManager();
         ScrollView scroll = new ScrollView(this);
         scroll.addView(dashboard);
 
+connectButton.setOnClickListener(v -> {
 
+    mt5.connect(
+        serverInput.getText().toString(),
+        accountInput.getText().toString()
+    );
+
+    dashboard.setText(
+        dashboard.getText() +
+        "\n\nMT5: " + mt5.getStatus()
+    );
+
+});
 
         calculateButton.setOnClickListener(v -> {
 
@@ -217,6 +247,10 @@ riskManager.calculate(
         mainLayout.addView(balanceLayout);
         mainLayout.addView(riskInput);
 
+mainLayout.addView(serverInput);
+mainLayout.addView(accountInput);
+mainLayout.addView(passwordInput);
+mainLayout.addView(connectButton);
         // Button အပေါ်မှာ အမြဲမြင်ရမယ်
         mainLayout.addView(calculateButton);
 
