@@ -12,6 +12,7 @@ public class MainActivity extends Activity {
     TextView dashboard;
     EditText riskInput;
     double balance = 10;
+    MarketData marketData = new MarketData();
     Button calculateButton;
     
     @Override
@@ -129,6 +130,16 @@ calculateButton.setOnClickListener(v -> {
         layout.addView(balanceText);
         layout.addView(balanceButtons);
         layout.addView(riskInput);
+        marketData.updateDemoData();
+
+dashboard.setText(
+        "XAUUSD PRICE: " + marketData.price +
+        "\nEMA20: " + marketData.ema20 +
+        "\nEMA50: " + marketData.ema50 +
+        "\nRSI14: " + marketData.rsi14 +
+        "\nH1 Bias: " + marketData.h1Bias +
+        "\nM5 Signal: " + marketData.m5Signal
+);
         layout.addView(dashboard);
         layout.addView(calculateButton);
 
