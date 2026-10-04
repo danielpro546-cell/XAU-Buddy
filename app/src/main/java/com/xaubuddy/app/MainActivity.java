@@ -13,6 +13,7 @@ public class MainActivity extends Activity {
     EditText riskInput;
     double balance = 10;
     MarketData marketData = new MarketData();
+    StrategyEngine strategy = new StrategyEngine();
     Button calculateButton;
     
     @Override
@@ -73,6 +74,9 @@ calculateButton.setText("CALCULATE RISK");
 
 calculateButton.setOnClickListener(v -> {
 
+    marketData.updateDemoData();
+    strategy.analyze(marketData);
+
     double risk = 0.5;
 
     try {
@@ -97,14 +101,25 @@ calculateButton.setOnClickListener(v -> {
     }
 
     dashboard.setText(
-        "Balance: $" + balance +
-        "\nRisk: " + risk + "%" +
-        "\nRisk Amount: $" + String.format("%.2f", riskAmount) +
-        "\nLot Size: " + String.format("%.2f", lot) +
-        warning +
-        "\nSL: Waiting..." +
-        "\nTP: Waiting..."
-    );
+    "XAUUSD PRICE: " + marketData.price +
+    "\nEMA20: " + marketData.ema20 +
+    "\nEMA50: " + marketData.ema50 +
+    "\nRSI14: " + marketData.rsi14 +
+    "\nH1 Bias: " + marketData.h1Bias +
+    "\nM5 Signal: " + marketData.m5Signal +
+    "\nBOS: " + strategy.bos +
+    "\nCHoCH: " + strategy.choch +
+    "\nFVG: " + strategy.fvg +
+    "\nLiquidity: " + strategy.liquidity +
+    "\nSIGNAL: " + strategy.signal +
+    "\n\nBalance: $" + balance +
+    "\nRisk: " + risk + "%" +
+    "\nRisk Amount: $" + String.format("%.2f", riskAmount) +
+    "\nLot Size: " + String.format("%.2f", lot) +
+    warning +
+    "\nSL: Waiting..." +
+    "\nTP: Waiting..."
+);
 
 });
 
@@ -131,14 +146,20 @@ calculateButton.setOnClickListener(v -> {
         layout.addView(balanceButtons);
         layout.addView(riskInput);
         marketData.updateDemoData();
-
-dashboard.setText(
+strategy.analyze(marketData);
+        
+        dashboard.setText(
         "XAUUSD PRICE: " + marketData.price +
         "\nEMA20: " + marketData.ema20 +
         "\nEMA50: " + marketData.ema50 +
         "\nRSI14: " + marketData.rsi14 +
         "\nH1 Bias: " + marketData.h1Bias +
-        "\nM5 Signal: " + marketData.m5Signal
+        "\nM5 Signal: " + marketData.m5Signal +
+        "\nBOS: " + strategy.bos +
+        "\nCHoCH: " + strategy.choch +
+        "\nFVG: " + strategy.fvg +
+        "\nLiquidity: " + strategy.liquidity +
+        "\nSIGNAL: " + strategy.signal
 );
         layout.addView(dashboard);
         layout.addView(calculateButton);
