@@ -12,6 +12,7 @@ public class MainActivity extends Activity {
     TextView dashboard;
     EditText riskInput;
     double balance = 10;
+    Button calculateButton;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +67,45 @@ public class MainActivity extends Activity {
                 "TP: Waiting..."
         );
         dashboard.setTextSize(18);
+        calculateButton = new Button(this);
+calculateButton.setText("CALCULATE RISK");
+
+calculateButton.setOnClickListener(v -> {
+
+    double risk = 0.5;
+
+    try {
+        risk = Double.parseDouble(
+                riskInput.getText().toString()
+        );
+    } catch(Exception e){
+
+    }
+
+    double riskAmount = balance * risk / 100;
+
+    double lot = riskAmount / 100;
+
+    String warning = "";
+
+    if(lot < 0.01){
+        lot = 0.01;
+        warning =
+        "\n⚠ Minimum lot 0.01 used\n" +
+        "Actual risk may be higher";
+    }
+
+    dashboard.setText(
+        "Balance: $" + balance +
+        "\nRisk: " + risk + "%" +
+        "\nRisk Amount: $" + String.format("%.2f", riskAmount) +
+        "\nLot Size: " + String.format("%.2f", lot) +
+        warning +
+        "\nSL: Waiting..." +
+        "\nTP: Waiting..."
+    );
+
+});
 
 
         b10.setOnClickListener(v -> {
@@ -90,6 +130,7 @@ public class MainActivity extends Activity {
         layout.addView(balanceButtons);
         layout.addView(riskInput);
         layout.addView(dashboard);
+        layout.addView(calculateButton);
 
 
         setContentView(layout);
