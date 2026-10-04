@@ -8,10 +8,12 @@ public class StrategyEngine {
     public String liquidity = "NONE";
 
     public String signal = "WAITING";
+    public int confidence = 0;
 
 
     public void analyze(MarketData data){
 
+        // BOS
         if(data.ema20 > data.ema50){
             bos = "YES";
         }
@@ -20,6 +22,7 @@ public class StrategyEngine {
         }
 
 
+        // CHoCH
         if(data.rsi14 > 50){
             choch = "BULLISH";
         }
@@ -28,6 +31,7 @@ public class StrategyEngine {
         }
 
 
+        // FVG
         if(data.ema20 > data.ema50){
             fvg = "FOUND";
         }
@@ -36,6 +40,7 @@ public class StrategyEngine {
         }
 
 
+        // Liquidity
         if(data.rsi14 > 55){
             liquidity = "BUY SIDE";
         }
@@ -47,12 +52,40 @@ public class StrategyEngine {
         }
 
 
-        // Signal Test
+        confidence = 0;
+
+
+        // BUY SCORE
+        if(data.ema20 > data.ema50){
+            confidence += 25;
+        }
+
         if(data.rsi14 > 50){
+            confidence += 25;
+        }
+
+        if(bos.equals("YES")){
+            confidence += 25;
+        }
+
+        if(fvg.equals("FOUND")){
+            confidence += 25;
+        }
+
+
+        if(confidence >= 75){
             signal = "BUY";
         }
-        else{
+
+        else if(
+            data.ema20 < data.ema50 &&
+            data.rsi14 < 50
+        ){
             signal = "SELL";
+        }
+
+        else{
+            signal = "WAITING";
         }
 
     }
