@@ -1,4 +1,4 @@
-name: Build XAU Buddy APK
+name: Build XAU Buddy APK V2
 
 on:
   workflow_dispatch:
