@@ -57,14 +57,14 @@ public class StrategyEngine {
             bos.equals("YES") &&
             fvg.equals("FOUND")
         ){
-            signal = "BUY DEMO";
+            signal = "BUY";
         }
 
         else if(
             data.h1Bias.equals("BEARISH") &&
             bos.equals("YES")
         ){
-            signal = "SELL DEMO";
+            signal = "SELL";
         }
 
         else{
