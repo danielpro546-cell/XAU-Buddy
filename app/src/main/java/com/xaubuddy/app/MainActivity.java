@@ -14,7 +14,7 @@ public class MainActivity extends Activity {
 
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
-
+RiskManager riskManager = new RiskManager();
     Button calculateButton;
 
 
@@ -95,7 +95,10 @@ public class MainActivity extends Activity {
 
             strategy.analyze(marketData);
 
-
+riskManager.calculate(
+        marketData.price,
+        strategy.signal
+);
 
             double risk = 0.5;
 
@@ -166,11 +169,15 @@ public class MainActivity extends Activity {
             "\nLot Size: "+
             String.format("%.2f",lot)+
 
-            "\n\nENTRY: "+marketData.price+
+            "\nENTRY: " + riskManager.entry +
 
-            "\nSL: Waiting..."+
+"\nSL: " + riskManager.sl +
 
-            "\nTP: Waiting..."
+"\nTP1: " + riskManager.tp1 +
+
+"\nTP2: " + riskManager.tp2 +
+
+"\nRR: " + riskManager.rr
 
             );
 
