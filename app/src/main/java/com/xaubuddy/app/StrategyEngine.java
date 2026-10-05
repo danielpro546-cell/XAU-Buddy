@@ -2,6 +2,7 @@ package com.xaubuddy.app;
 
 public class StrategyEngine {
 
+
     public String bos = "NO";
     public String choch = "NO";
     public String fvg = "NONE";
@@ -11,19 +12,19 @@ public class StrategyEngine {
     public int confidence = 0;
 
 
+
     public void analyze(MarketData data){
 
 
-        // =====================
-        // BOS Detection
-        // =====================
 
-        if(data.h1Close > data.h1High - 5){
+        // BOS
+
+        if(data.h1Close > data.h1Open){
 
             bos = "BULLISH BREAK";
 
         }
-        else if(data.h1Close < data.h1Low + 5){
+        else if(data.h1Close < data.h1Open){
 
             bos = "BEARISH BREAK";
 
@@ -36,9 +37,9 @@ public class StrategyEngine {
 
 
 
-        // =====================
-        // CHoCH Detection
-        // =====================
+
+
+        // CHoCH
 
         if(data.m5Close > data.m5Open){
 
@@ -53,16 +54,21 @@ public class StrategyEngine {
 
 
 
-        // =====================
-        // FVG Detection
-        // =====================
 
-        if(data.m5High > data.h1High){
+
+        // FVG
+
+        double gap =
+                data.m5Close - data.m5Open;
+
+
+
+        if(gap > 2){
 
             fvg = "BUY FVG";
 
         }
-        else if(data.m5Low < data.h1Low){
+        else if(gap < -2){
 
             fvg = "SELL FVG";
 
@@ -75,66 +81,106 @@ public class StrategyEngine {
 
 
 
-        // =====================
+
+
         // Liquidity
-        // =====================
 
-        if(data.m5Close > data.m5Open){
+        if(data.m5High >= data.h1High){
 
-            liquidity = "BUY SIDE";
+            liquidity = "BUY SIDE LIQUIDITY";
+
+        }
+        else if(data.m5Low <= data.h1Low){
+
+            liquidity = "SELL SIDE LIQUIDITY";
 
         }
         else{
 
-            liquidity = "SELL SIDE";
+            liquidity = "WAITING";
 
         }
 
 
 
-        // =====================
-        // Confidence Score
-        // =====================
+
+
+        // Confidence
 
         confidence = 0;
 
 
+
+        // Trend
+
         if(data.ema20 > data.ema50){
 
-            confidence += 25;
+            confidence += 30;
 
         }
 
+
+
+
+
+        // RSI
 
         if(data.rsi14 > 50){
 
-            confidence += 25;
+            confidence += 20;
 
         }
 
+
+
+
+
+        // CHoCH
 
         if(choch.equals("BULLISH")){
 
-            confidence += 25;
+            confidence += 20;
 
         }
 
+
+
+
+
+        // BOS
+
+        if(bos.equals("BULLISH BREAK")){
+
+            confidence += 20;
+
+        }
+
+
+
+
+
+        // FVG
 
         if(fvg.equals("BUY FVG")){
 
-            confidence += 25;
+            confidence += 10;
 
         }
 
 
 
-        // =====================
-        // Signal
-        // =====================
 
-        if(confidence >= 75){
+
+        // Signal
+
+
+        if(confidence >= 75
+                &&
+                data.h1Bias.equals("BULLISH")){
+
 
             signal = "BUY";
+
 
         }
 
@@ -146,13 +192,20 @@ public class StrategyEngine {
 
             signal = "SELL";
 
+
         }
 
         else{
 
+
             signal = "WAITING";
+
 
         }
 
+
+
     }
+
+
 }
