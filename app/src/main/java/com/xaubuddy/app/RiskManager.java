@@ -2,12 +2,14 @@ package com.xaubuddy.app;
 
 public class RiskManager {
 
+
     public double entry = 0;
     public double sl = 0;
     public double tp1 = 0;
     public double tp2 = 0;
 
-    public String rr = "1:2";
+    public String rr = "WAITING";
+
 
 
     public void calculate(
@@ -15,10 +17,13 @@ public class RiskManager {
             String signal
     ){
 
+
         entry = price;
 
 
+
         double riskDistance = 10;
+
 
 
         if(signal.equals("BUY")){
@@ -29,7 +34,6 @@ public class RiskManager {
             tp1 = entry + riskDistance;
 
             tp2 = entry + (riskDistance * 2);
-
 
             rr = "1:2";
 
@@ -46,7 +50,6 @@ public class RiskManager {
 
             tp2 = entry - (riskDistance * 2);
 
-
             rr = "1:2";
 
 
@@ -56,7 +59,7 @@ public class RiskManager {
         else{
 
 
-            entry = price;
+            // Signal မရသေးရင် potential level ပြမယ်
 
             sl = 0;
 
@@ -69,6 +72,10 @@ public class RiskManager {
 
         }
 
+
+
     }
+
+
 
 }
