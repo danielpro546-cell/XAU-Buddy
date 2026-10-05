@@ -535,34 +535,23 @@ public class MarketData {
 
     public String getStatus(){
 
+    if(apiError != null && apiError.length() > 0){
 
-        if(apiError != null
-                &&
-           apiError.length() > 0){
-
-
-            return apiError;
-
-
-        }
-
-
-
-        if(dataReady){
-
-
-            return "DATA READY";
-
-
-        }
-
-
-
-        return "WAITING API";
-
+        return "ERROR: " + apiError;
 
     }
 
+
+    if(dataReady){
+
+        return "DATA READY";
+
+    }
+
+
+    return "LOADING... API FINISHED = " + apiFinished;
+
+}
 
 
 }
