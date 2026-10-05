@@ -10,34 +10,62 @@ public class RiskManager {
     public String rr = "1:2";
 
 
-    public void calculate(double price, String signal){
+    public void calculate(
+            double price,
+            String signal
+    ){
 
         entry = price;
 
 
+        double riskDistance = 10;
+
+
         if(signal.equals("BUY")){
 
-            sl = entry - 10;
-            tp1 = entry + 10;
-            tp2 = entry + 20;
+
+            sl = entry - riskDistance;
+
+            tp1 = entry + riskDistance;
+
+            tp2 = entry + (riskDistance * 2);
+
+
+            rr = "1:2";
+
 
         }
 
 
         else if(signal.equals("SELL")){
 
-            sl = entry + 10;
-            tp1 = entry - 10;
-            tp2 = entry - 20;
+
+            sl = entry + riskDistance;
+
+            tp1 = entry - riskDistance;
+
+            tp2 = entry - (riskDistance * 2);
+
+
+            rr = "1:2";
+
 
         }
 
 
         else{
 
+
+            entry = price;
+
             sl = 0;
+
             tp1 = 0;
+
             tp2 = 0;
+
+            rr = "WAITING";
+
 
         }
 
