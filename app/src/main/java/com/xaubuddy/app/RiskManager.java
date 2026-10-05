@@ -13,13 +13,23 @@ public class RiskManager {
     public double tp2 = 0;
 
 
+    public double balance = 10;
+
+
     public double riskPercent = 0.5;
+
+
+    public double riskMoney = 0;
+
+
+    public double lotSize = 0.01;
 
 
     public double riskDistance = 0;
 
 
     public String rr = "WAITING";
+
 
 
 
@@ -32,10 +42,19 @@ public class RiskManager {
         entry = price;
 
 
+        riskMoney =
+                balance *
+                (riskPercent / 100);
 
-        // Dynamic XAU risk distance
 
-        riskDistance = calculateRiskDistance(price);
+
+        riskDistance =
+                calculateRiskDistance(price);
+
+
+
+
+        calculateLotSize();
 
 
 
@@ -52,12 +71,11 @@ public class RiskManager {
             tp2 = entry + (riskDistance * 2);
 
 
-
             rr = "1:2";
 
 
-
         }
+
 
 
         else if(signal.equals("SELL")){
@@ -72,12 +90,11 @@ public class RiskManager {
             tp2 = entry - (riskDistance * 2);
 
 
-
             rr = "1:2";
 
 
-
         }
+
 
 
         else{
@@ -88,7 +105,6 @@ public class RiskManager {
             tp1 = 0;
 
             tp2 = 0;
-
 
             rr = "WAITING";
 
@@ -107,8 +123,6 @@ public class RiskManager {
             double price
     ){
 
-
-        // XAU adaptive distance
 
 
         if(price >= 4000){
@@ -136,9 +150,46 @@ public class RiskManager {
         }
 
 
-
     }
 
+
+
+
+
+    private void calculateLotSize(){
+
+
+
+        // Simple XAU lot calculation
+
+
+        if(riskMoney <= 1){
+
+
+            lotSize = 0.01;
+
+
+        }
+
+        else if(riskMoney <= 5){
+
+
+            lotSize = 0.05;
+
+
+        }
+
+        else{
+
+
+            lotSize = 0.10;
+
+
+        }
+
+
+
+    }
 
 
 
