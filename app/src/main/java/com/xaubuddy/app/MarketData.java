@@ -12,91 +12,157 @@ import java.io.IOException;
 
 public class MarketData {
 
+
     public double price = 0.0;
+
     public double ema20 = 0.0;
     public double ema50 = 0.0;
     public double rsi14 = 0.0;
 
+
     public String h1Bias = "WAITING";
     public String m5Signal = "WAITING";
 
-    private final String API_KEY = "YOUR_API_KEY";
+
+    // API KEY ထည့်ရန်
+    private final String API_KEY = "4b21ab3f9f75467fb9346fc62966d58e";
+
 
     private OkHttpClient client = new OkHttpClient();
 
 
+
     public void updateLiveData(){
+
 
         String url =
         "https://api.twelvedata.com/price?symbol=XAU/USD&apikey="
         + API_KEY;
 
 
-        Request request = new Request.Builder()
+
+        Request request =
+                new Request.Builder()
                 .url(url)
                 .build();
 
 
-        client.newCall(request).enqueue(new Callback() {
+
+        client.newCall(request)
+        .enqueue(new Callback(){
+
+
 
             @Override
-            public void onFailure(Call call, IOException e){
+            public void onFailure(
+                    Call call,
+                    IOException e
+            ){
 
                 h1Bias = "API ERROR";
+                m5Signal = "WAITING";
 
             }
 
 
+
+
             @Override
-            public void onResponse(Call call, Response response)
-                    throws IOException {
+            public void onResponse(
+                    Call call,
+                    Response response
+            ) throws IOException {
+
 
 
                 try {
 
-                    String data = response.body().string();
+
+                    String result =
+                            response.body().string();
+
+
 
                     JSONObject json =
-                    new JSONObject(data);
+                            new JSONObject(result);
+
+
+
+                    if(!json.has("price")){
+
+                        h1Bias = "DATA ERROR";
+                        m5Signal = "WAITING";
+                        return;
+
+                    }
+
 
 
                     price =
-                    json.getDouble("price");
+                    Double.parseDouble(
+                    json.getString("price")
+                    );
 
 
-                    // Temporary indicator logic
-                    ema20 = price;
-                    ema50 = price;
+
+                    // Temporary indicator calculation
+
+                    ema20 = price - 2;
+
+                    ema50 = price - 5;
 
 
-                    rsi14 = 50;
+                    rsi14 = 55;
 
+
+
+                    // H1 Trend
 
                     if(ema20 > ema50){
+
                         h1Bias = "BULLISH";
+
                     }
                     else{
+
                         h1Bias = "BEARISH";
+
                     }
 
+
+
+                    // M5 Signal
 
                     if(rsi14 > 50){
+
                         m5Signal = "BUY SETUP";
+
                     }
                     else{
+
                         m5Signal = "SELL SETUP";
+
                     }
 
 
-                }catch(Exception e){
+
+                }
+                catch(Exception e){
+
 
                     h1Bias = "DATA ERROR";
+                    m5Signal = "WAITING";
+
 
                 }
 
             }
 
+
         });
 
+
     }
+
+
 }
