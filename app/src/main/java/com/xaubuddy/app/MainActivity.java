@@ -97,12 +97,12 @@ public class MainActivity extends Activity {
 
                 dashboard.setText(
 
-                        "===== XAU BUDDY V3 =====\n\n"
+                        "===== XAU BUDDY V4 =====\n\n"
 
                         +"STATUS: "
                         +marketData.getStatus()
 
-                        +"\n\nWaiting API Data..."
+                        +"\n\nWaiting Data..."
 
                         +"\n\nPRICE: "
                         +marketData.price
@@ -114,7 +114,7 @@ public class MainActivity extends Activity {
 
 
 
-        },5000);
+        },3000);
 
 
 
@@ -128,10 +128,18 @@ public class MainActivity extends Activity {
 
 
 
+        String time =
+
+        java.text.DateFormat
+        .getTimeInstance()
+        .format(new java.util.Date());
+
+
+
         dashboard.setText(
 
 
-                "===== XAU BUDDY V3 =====\n\n"
+                "===== XAU BUDDY V4 =====\n\n"
 
 
                 +"PRICE: "
@@ -212,8 +220,21 @@ public class MainActivity extends Activity {
 
 
 
-                +"\n\nDATA: "
+                +"\n\n========================"
+
+
+                +"\nDATA STATUS: "
                 +marketData.getStatus()
+
+
+                +"\nLAST UPDATE: "
+                +time
+
+
+                +"\nMODE: DEMO"
+
+
+                +"\nVERSION: V4"
 
 
 
@@ -260,7 +281,7 @@ public class MainActivity extends Activity {
 
 
         title.setText(
-                "XAU Buddy V3"
+                "XAU Buddy V4"
         );
 
 
