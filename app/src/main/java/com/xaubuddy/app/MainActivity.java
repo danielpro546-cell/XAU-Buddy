@@ -150,6 +150,18 @@ new android.os.Handler().postDelayed(() -> {
             strategy.signal
     );
 
+
+    dashboard.setText(
+        "===== XAU BUDDY V2 =====\n\n"
+        + "PRICE: " + marketData.price
+        + "\nEMA20: " + marketData.ema20
+        + "\nEMA50: " + marketData.ema50
+        + "\nRSI14: " + marketData.rsi14
+        + "\nSIGNAL: " + strategy.signal
+        + "\nCONFIDENCE: " + strategy.confidence + "%"
+    );
+
+
 }, 2000);
 
 
