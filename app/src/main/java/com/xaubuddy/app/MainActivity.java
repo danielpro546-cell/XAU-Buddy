@@ -139,15 +139,18 @@ public class MainActivity extends Activity {
         calculateButton.setOnClickListener(v -> {
 
 
-            marketData.updateDemoData();
+            marketData.updateLiveData();
 
-            strategy.analyze(marketData);
+new android.os.Handler().postDelayed(() -> {
 
+    strategy.analyze(marketData);
 
-            riskManager.calculate(
-                    marketData.price,
-                    strategy.signal
-            );
+    riskManager.calculate(
+            marketData.price,
+            strategy.signal
+    );
+
+}, 2000);
 
 
             double risk = 0.5;
