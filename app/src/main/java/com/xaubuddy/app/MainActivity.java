@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.view.Gravity;
 import android.widget.*;
 
+
 public class MainActivity extends Activity {
 
 
@@ -16,6 +17,7 @@ public class MainActivity extends Activity {
     EditText accountInput;
     EditText passwordInput;
 
+
     Button calculateButton;
     Button connectButton;
 
@@ -24,149 +26,254 @@ public class MainActivity extends Activity {
 
 
     MarketData marketData = new MarketData();
+
     StrategyEngine strategy = new StrategyEngine();
+
     RiskManager riskManager = new RiskManager();
+
     MT5Connector mt5 = new MT5Connector();
+
 
 
     Handler autoHandler = new Handler();
 
 
+
     Runnable autoUpdate = new Runnable() {
+
 
         @Override
         public void run() {
 
+
             marketData.updateLiveData();
+
 
 
             new Handler().postDelayed(() -> {
 
 
-                strategy.analyze(marketData);
+                if(marketData.dataReady){
 
 
-                riskManager.calculate(
-                        marketData.price,
-                        strategy.signal
-                );
+
+                    strategy.analyze(marketData);
 
 
-                if(dashboard != null){
+
+                    if(
+                            strategy.signal.equals("BUY")
+                            ||
+                            strategy.signal.equals("SELL")
+                    ){
+
+
+                        riskManager.calculate(
+
+                                marketData.price,
+
+                                strategy.signal
+
+                        );
+
+
+                    }
+
+
+
+                    updateDashboard();
+
+
+
+                }
+                else{
+
 
                     dashboard.setText(
 
-                            "===== XAU BUDDY V2 AUTO =====\n\n"
-
-                            +"PRICE: "
-                            +marketData.price
-
-                            +"\nEMA20: "
-                            +marketData.ema20
-
-                            +"\nEMA50: "
-                            +marketData.ema50
-
-                            +"\nRSI14: "
-                            +marketData.rsi14
-
-                            +"\n\nH1: "
-                            +marketData.h1Bias
-
-                            +"\nM5: "
-                            +marketData.m5Signal
-
-                            +"\n\nBOS: "
-                            +strategy.bos
-
-                            +"\nCHoCH: "
-                            +strategy.choch
-
-                            +"\nFVG: "
-                            +strategy.fvg
-
-                            +"\nLiquidity: "
-                            +strategy.liquidity
-
-                            +"\n\nSIGNAL: "
-                            +strategy.signal
-
-                            +"\nCONFIDENCE: "
-                            +strategy.confidence
-                            +"%"
-
-                            +"\n\nENTRY: "
-                            +riskManager.entry
-
-                            +"\nSL: "
-                            +riskManager.sl
-
-                            +"\nTP1: "
-                            +riskManager.tp1
-
-                            +"\nTP2: "
-                            +riskManager.tp2
-
-                            +"\nRR: "
-                            +riskManager.rr
-
-                            +"\n\nMT5: "
-                            +mt5.getStatus()
+                            "===== XAU BUDDY =====\n\n"
+                            +"DATA LOADING..."
 
                     );
+
 
                 }
 
 
-            },2000);
+
+            },5000);
 
 
 
-            autoHandler.postDelayed(this,5000);
+            autoHandler.postDelayed(this,10000);
+
+
 
         }
+
 
     };
 
 
 
-    @Override
+
+
+    private void updateDashboard(){
+
+
+
+        dashboard.setText(
+
+
+                "===== XAU BUDDY V3 =====\n\n"
+
+
+                +"PRICE: "
+                +marketData.price
+
+
+                +"\nEMA20: "
+                +marketData.ema20
+
+
+                +"\nEMA50: "
+                +marketData.ema50
+
+
+                +"\nRSI14: "
+                +marketData.rsi14
+
+
+
+                +"\n\nH1: "
+                +marketData.h1Bias
+
+
+
+                +"\nM5: "
+                +marketData.m5Signal
+
+
+
+                +"\n\nBOS: "
+                +strategy.bos
+
+
+
+                +"\nCHoCH: "
+                +strategy.choch
+
+
+
+                +"\nFVG: "
+                +strategy.fvg
+
+
+
+                +"\nLiquidity: "
+                +strategy.liquidity
+
+
+
+                +"\n\nSIGNAL: "
+                +strategy.signal
+
+
+
+                +"\nCONFIDENCE: "
+                +strategy.confidence
+                +"%"
+
+
+
+                +"\n\nENTRY: "
+                +riskManager.entry
+
+
+
+                +"\nSL: "
+                +riskManager.sl
+
+
+
+                +"\nTP1: "
+                +riskManager.tp1
+
+
+
+                +"\nTP2: "
+                +riskManager.tp2
+
+
+
+                +"\nRR: "
+                +riskManager.rr
+
+
+
+                +"\n\nMT5: "
+                +mt5.getStatus()
+
+
+        );
+
+    }
+        @Override
     protected void onCreate(Bundle savedInstanceState) {
 
 
         super.onCreate(savedInstanceState);
 
 
+
         LinearLayout mainLayout = new LinearLayout(this);
 
-        mainLayout.setOrientation(LinearLayout.VERTICAL);
+        mainLayout.setOrientation(
+                LinearLayout.VERTICAL
+        );
 
-        mainLayout.setPadding(30,40,30,30);
+        mainLayout.setPadding(
+                30,40,30,30
+        );
 
 
 
         TextView title = new TextView(this);
 
-        title.setText("XAU Buddy V2");
+        title.setText(
+                "XAU Buddy V3"
+        );
 
         title.setTextSize(30);
 
-        title.setGravity(Gravity.CENTER);
+        title.setGravity(
+                Gravity.CENTER
+        );
 
 
 
         TextView mode = new TextView(this);
 
-        mode.setText("MODE: DEMO\nLIVE: LOCKED");
+        mode.setText(
+                "MODE: DEMO\nLIVE: LOCKED"
+        );
 
         mode.setTextSize(20);
 
 
+
+
         TextView balanceText = new TextView(this);
 
-        balanceText.setText("Balance: $10");
+        balanceText.setText(
+                "Balance: $10"
+        );
 
         balanceText.setTextSize(20);
+
+
+
+
         Button b10 = new Button(this);
         b10.setText("$10");
 
@@ -179,45 +286,75 @@ public class MainActivity extends Activity {
         b100.setText("$100");
 
 
-        LinearLayout balanceLayout = new LinearLayout(this);
+
+        LinearLayout balanceLayout =
+                new LinearLayout(this);
+
 
         balanceLayout.addView(b10);
+
         balanceLayout.addView(b50);
+
         balanceLayout.addView(b100);
+
 
 
 
         riskInput = new EditText(this);
 
-        riskInput.setHint("Risk %");
+        riskInput.setHint(
+                "Risk %"
+        );
 
-        riskInput.setText("0.5");
+        riskInput.setText(
+                "0.5"
+        );
 
         riskInput.setInputType(2);
 
 
 
+
         serverInput = new EditText(this);
-        serverInput.setHint("MT5 Server");
+
+        serverInput.setHint(
+                "MT5 Server"
+        );
+
 
 
         accountInput = new EditText(this);
-        accountInput.setHint("MT5 Account");
+
+        accountInput.setHint(
+                "MT5 Account"
+        );
+
 
 
         passwordInput = new EditText(this);
-        passwordInput.setHint("MT5 Password");
+
+        passwordInput.setHint(
+                "MT5 Password"
+        );
 
         passwordInput.setInputType(129);
 
 
 
+
         connectButton = new Button(this);
-        connectButton.setText("CONNECT MT5");
+
+        connectButton.setText(
+                "CONNECT MT5"
+        );
+
 
 
         calculateButton = new Button(this);
-        calculateButton.setText("CALCULATE");
+
+        calculateButton.setText(
+                "CALCULATE"
+        );
 
 
 
@@ -227,9 +364,11 @@ public class MainActivity extends Activity {
 
 
 
-        ScrollView scroll = new ScrollView(this);
+        ScrollView scroll =
+                new ScrollView(this);
 
         scroll.addView(dashboard);
+
 
 
 
@@ -248,16 +387,18 @@ public class MainActivity extends Activity {
             );
 
 
+
             dashboard.setText(
 
                     "MT5 STATUS: "
-
-                    + mt5.getStatus()
+                    +mt5.getStatus()
 
             );
 
 
         });
+
+
 
 
 
@@ -268,25 +409,55 @@ public class MainActivity extends Activity {
             marketData.updateLiveData();
 
 
+
             new Handler().postDelayed(() -> {
 
 
-                strategy.analyze(marketData);
+
+                if(marketData.dataReady){
 
 
-                riskManager.calculate(
-
-                        marketData.price,
-
-                        strategy.signal
-
-                );
+                    strategy.analyze(
+                            marketData
+                    );
 
 
-            },2000);
+
+                    riskManager.calculate(
+
+                            marketData.price,
+
+                            strategy.signal
+
+                    );
+
+
+
+                    updateDashboard();
+
+
+                }
+                else{
+
+
+                    dashboard.setText(
+
+                            "DATA LOADING..."
+
+                    );
+
+
+                }
+
+
+
+            },5000);
+
 
 
         });
+
+
 
 
 
@@ -295,7 +466,9 @@ public class MainActivity extends Activity {
 
             balance = 10;
 
-            balanceText.setText("Balance: $10");
+            balanceText.setText(
+                    "Balance: $10"
+            );
 
         });
 
@@ -305,7 +478,9 @@ public class MainActivity extends Activity {
 
             balance = 50;
 
-            balanceText.setText("Balance: $50");
+            balanceText.setText(
+                    "Balance: $50"
+            );
 
         });
 
@@ -315,9 +490,14 @@ public class MainActivity extends Activity {
 
             balance = 100;
 
-            balanceText.setText("Balance: $100");
+            balanceText.setText(
+                    "Balance: $100"
+            );
 
         });
+
+
+
 
 
 
@@ -350,23 +530,32 @@ public class MainActivity extends Activity {
 
 
 
-        // START AUTO REFRESH
-
-        autoHandler.post(autoUpdate);
+        autoHandler.post(
+                autoUpdate
+        );
 
 
     }
+
+
+
 
 
 
     @Override
     protected void onDestroy(){
 
+
         super.onDestroy();
 
-        autoHandler.removeCallbacks(autoUpdate);
+
+        autoHandler.removeCallbacks(
+                autoUpdate
+        );
+
 
     }
+
 
 
 }
