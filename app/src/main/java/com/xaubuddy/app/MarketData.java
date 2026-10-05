@@ -1,20 +1,23 @@
 package com.xaubuddy.app;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-
 public class MarketData {
-
 
     public double price = 0.0;
 
+    // H1 Data
+    public double h1Open = 0.0;
+    public double h1High = 0.0;
+    public double h1Low = 0.0;
+    public double h1Close = 0.0;
+
+    // M5 Data
+    public double m5Open = 0.0;
+    public double m5High = 0.0;
+    public double m5Low = 0.0;
+    public double m5Close = 0.0;
+
+
+    // Indicators
     public double ema20 = 0.0;
     public double ema50 = 0.0;
     public double rsi14 = 0.0;
@@ -24,145 +27,58 @@ public class MarketData {
     public String m5Signal = "WAITING";
 
 
-    // API KEY ထည့်ရန်
-    private final String API_KEY = "4b21ab3f9f75467fb9346fc62966d58e";
-
-
-    private OkHttpClient client = new OkHttpClient();
-
-
-
     public void updateLiveData(){
 
+        // Temporary candle data
+        // Next step: API candle connection
 
-        String url =
-        "https://api.twelvedata.com/price?symbol=XAU/USD&apikey="
-        + API_KEY;
+        price = 4145.0;
 
 
+        h1Open = 4135.0;
+        h1High = 4150.0;
+        h1Low = 4130.0;
+        h1Close = price;
 
-        Request request =
-                new Request.Builder()
-                .url(url)
-                .build();
 
+        m5Open = 4140.0;
+        m5High = 4147.0;
+        m5Low = 4138.0;
+        m5Close = price;
 
 
-        client.newCall(request)
-        .enqueue(new Callback(){
 
+        // Simple indicator calculation
 
+        ema20 = 4143.0;
+        ema50 = 4140.0;
 
-            @Override
-            public void onFailure(
-                    Call call,
-                    IOException e
-            ){
+        rsi14 = 55.0;
 
-                h1Bias = "API ERROR";
-                m5Signal = "WAITING";
 
-            }
 
+        if(ema20 > ema50){
 
+            h1Bias = "BULLISH";
 
+        }else{
 
-            @Override
-            public void onResponse(
-                    Call call,
-                    Response response
-            ) throws IOException {
+            h1Bias = "BEARISH";
 
+        }
 
 
-                try {
 
+        if(rsi14 > 50){
 
-                    String result =
-                            response.body().string();
+            m5Signal = "BUY SETUP";
 
+        }else{
 
+            m5Signal = "SELL SETUP";
 
-                    JSONObject json =
-                            new JSONObject(result);
-
-
-
-                    if(!json.has("price")){
-
-                        h1Bias = "DATA ERROR";
-                        m5Signal = "WAITING";
-                        return;
-
-                    }
-
-
-
-                    price =
-                    Double.parseDouble(
-                    json.getString("price")
-                    );
-
-
-
-                    // Temporary indicator calculation
-
-                    ema20 = price - 2;
-
-                    ema50 = price - 5;
-
-
-                    rsi14 = 55;
-
-
-
-                    // H1 Trend
-
-                    if(ema20 > ema50){
-
-                        h1Bias = "BULLISH";
-
-                    }
-                    else{
-
-                        h1Bias = "BEARISH";
-
-                    }
-
-
-
-                    // M5 Signal
-
-                    if(rsi14 > 50){
-
-                        m5Signal = "BUY SETUP";
-
-                    }
-                    else{
-
-                        m5Signal = "SELL SETUP";
-
-                    }
-
-
-
-                }
-                catch(Exception e){
-
-
-                    h1Bias = "DATA ERROR";
-                    m5Signal = "WAITING";
-
-
-                }
-
-            }
-
-
-        });
-
+        }
 
     }
-
 
 }
