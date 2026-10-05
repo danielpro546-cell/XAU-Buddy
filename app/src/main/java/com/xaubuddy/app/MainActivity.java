@@ -97,7 +97,7 @@ public class MainActivity extends Activity {
 
                 dashboard.setText(
 
-                        "===== XAU BUDDY V4 =====\n\n"
+                        "===== XAU BUDDY V5 =====\n\n"
 
                         +"STATUS: "
                         +marketData.getStatus()
