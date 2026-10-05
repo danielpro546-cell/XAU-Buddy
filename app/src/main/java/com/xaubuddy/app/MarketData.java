@@ -52,10 +52,9 @@ public class MarketData {
 
 
 
-    public void updateLiveData(){
+    public synchronized void updateLiveData(){
 
 
-        dataReady = false;
         apiFinished = 0;
 
 
@@ -65,6 +64,7 @@ public class MarketData {
 
 
     }
+
 
 
 
@@ -92,9 +92,11 @@ public class MarketData {
             @Override
             public void onFailure(Call call, IOException e){
 
-                h1Bias = "API ERROR";
+                checkFinished();
+
 
             }
+
 
 
 
@@ -106,15 +108,20 @@ public class MarketData {
                 try {
 
 
+                    String body =
+                            response.body().string();
+
+
+
                     JSONObject json =
-                            new JSONObject(
-                                    response.body().string()
-                            );
+                            new JSONObject(body);
+
 
 
                     if(!json.has("values")){
 
-                        h1Bias="DATA ERROR";
+                        checkFinished();
+
                         return;
 
                     }
@@ -126,20 +133,20 @@ public class MarketData {
 
 
 
-                    ArrayList<Double> closes =
-                            new ArrayList<>();
-
-
-
                     JSONObject candle =
                             values.getJSONObject(0);
 
 
 
-                    price =
+                    double newPrice =
                             Double.parseDouble(
                             candle.getString("close")
                             );
+
+
+
+                    ArrayList<Double> closes =
+                            new ArrayList<>();
 
 
 
@@ -148,6 +155,7 @@ public class MarketData {
 
                         JSONObject c =
                                 values.getJSONObject(i);
+
 
 
                         closes.add(
@@ -161,6 +169,10 @@ public class MarketData {
 
 
 
+                    price = newPrice;
+
+
+
                     if(interval.equals("1h")){
 
 
@@ -168,18 +180,23 @@ public class MarketData {
                         Double.parseDouble(
                         candle.getString("open"));
 
+
                         h1High =
                         Double.parseDouble(
                         candle.getString("high"));
+
 
                         h1Low =
                         Double.parseDouble(
                         candle.getString("low"));
 
+
                         h1Close = price;
 
 
                     }
+
+
 
 
                     if(interval.equals("5min")){
@@ -189,13 +206,16 @@ public class MarketData {
                         Double.parseDouble(
                         candle.getString("open"));
 
+
                         m5High =
                         Double.parseDouble(
                         candle.getString("high"));
 
+
                         m5Low =
                         Double.parseDouble(
                         candle.getString("low"));
+
 
                         m5Close = price;
 
@@ -204,16 +224,28 @@ public class MarketData {
 
 
 
-                    ema20 =
-                    calculateEMA(closes,20);
+                    double newEMA20 =
+                            calculateEMA(closes,20);
 
 
-                    ema50 =
-                    calculateEMA(closes,50);
+                    double newEMA50 =
+                            calculateEMA(closes,50);
 
 
-                    rsi14 =
-                    calculateRSI(closes,14);
+                    double newRSI =
+                            calculateRSI(closes,14);
+
+
+
+                    if(newEMA20 > 0)
+                        ema20 = newEMA20;
+
+
+                    if(newEMA50 > 0)
+                        ema50 = newEMA50;
+
+
+                    rsi14 = newRSI;
 
 
 
@@ -221,9 +253,12 @@ public class MarketData {
 
 
 
-                }catch(Exception e){
+                }
+                catch(Exception e){
 
-                    h1Bias="DATA ERROR";
+
+                    checkFinished();
+
 
                 }
 
@@ -238,40 +273,48 @@ public class MarketData {
 
 
 
+
+
     private synchronized void checkFinished(){
 
 
         apiFinished++;
 
 
+
         if(apiFinished >= 2){
+
 
 
             if(ema20 > ema50){
 
-                h1Bias="BULLISH";
+                h1Bias = "BULLISH";
 
-            }else{
+            }
+            else if(ema20 < ema50){
 
-                h1Bias="BEARISH";
+                h1Bias = "BEARISH";
 
             }
 
 
 
+
             if(rsi14 > 50){
 
-                m5Signal="BUY SETUP";
+                m5Signal = "BUY SETUP";
 
-            }else{
+            }
+            else if(rsi14 < 50){
 
-                m5Signal="SELL SETUP";
+                m5Signal = "SELL SETUP";
 
             }
 
 
 
             dataReady = true;
+
 
 
         }
@@ -288,8 +331,8 @@ public class MarketData {
             int period){
 
 
-        if(data.size()<period)
-            return 0;
+        if(data.size() < period)
+            return ema20;
 
 
 
@@ -328,13 +371,13 @@ public class MarketData {
             int period){
 
 
-        if(data.size()<=period)
-            return 50;
+        if(data.size() <= period)
+            return rsi14;
 
 
 
-        double gain=0;
-        double loss=0;
+        double gain = 0;
+        double loss = 0;
 
 
 
@@ -346,17 +389,18 @@ public class MarketData {
 
 
 
-            if(diff>0)
-                gain+=diff;
+            if(diff > 0)
+                gain += diff;
+
             else
-                loss-=diff;
+                loss -= diff;
 
 
         }
 
 
 
-        if(loss==0)
+        if(loss == 0)
             return 100;
 
 
