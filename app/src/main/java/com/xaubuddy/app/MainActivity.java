@@ -234,7 +234,7 @@ public class MainActivity extends Activity {
                 +"\nMODE: DEMO"
 
 
-                +"\nVERSION: V4"
+                +"\nVERSION: V5"
 
 
 
