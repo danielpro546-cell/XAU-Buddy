@@ -2,7 +2,10 @@ package com.xaubuddy.app;
 
 public class MT5Connector {
 
-    String status = "DISCONNECTED";
+    private String status = "DISCONNECTED";
+
+    private String server;
+    private String account;
 
 
     public void connect(
@@ -11,15 +14,32 @@ public class MT5Connector {
             String password
     ){
 
+        this.server = server;
+        this.account = account;
+
+
+        if(server == null || account == null || password == null){
+
+            status = "LOGIN FAILED";
+
+            return;
+
+        }
+
+
         if(
-            server.length() > 0 &&
-            account.length() > 0 &&
-            password.length() > 0
+            server.trim().length() > 0 &&
+            account.trim().length() > 0 &&
+            password.trim().length() > 0
         ){
+
             status = "CONNECTED DEMO";
+
         }
         else{
+
             status = "LOGIN FAILED";
+
         }
 
     }
@@ -28,6 +48,20 @@ public class MT5Connector {
     public String getStatus(){
 
         return status;
+
+    }
+
+
+    public String getServer(){
+
+        return server;
+
+    }
+
+
+    public String getAccount(){
+
+        return account;
 
     }
 
