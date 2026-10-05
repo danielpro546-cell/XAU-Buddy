@@ -139,7 +139,7 @@ public class MainActivity extends Activity {
         dashboard.setText(
 
 
-                "===== XAU BUDDY V4 =====\n\n"
+                "===== XAU BUDDY V5 =====\n\n"
 
 
                 +"PRICE: "
@@ -281,7 +281,7 @@ public class MainActivity extends Activity {
 
 
         title.setText(
-                "XAU Buddy V4"
+                "XAU Buddy V5"
         );
 
 
