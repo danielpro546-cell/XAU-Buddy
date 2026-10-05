@@ -36,12 +36,10 @@ public class MainActivity extends Activity {
         mainLayout.setPadding(30,40,30,30);
 
 
-
         TextView title = new TextView(this);
         title.setText("XAU Buddy V2");
         title.setTextSize(30);
         title.setGravity(Gravity.CENTER);
-
 
 
         TextView mode = new TextView(this);
@@ -49,11 +47,9 @@ public class MainActivity extends Activity {
         mode.setTextSize(20);
 
 
-
         TextView balanceText = new TextView(this);
         balanceText.setText("Balance: $10");
         balanceText.setTextSize(20);
-
 
 
         Button b10 = new Button(this);
@@ -66,12 +62,10 @@ public class MainActivity extends Activity {
         b100.setText("$100");
 
 
-
         LinearLayout balanceLayout = new LinearLayout(this);
         balanceLayout.addView(b10);
         balanceLayout.addView(b50);
         balanceLayout.addView(b100);
-
 
 
         riskInput = new EditText(this);
@@ -80,8 +74,6 @@ public class MainActivity extends Activity {
         riskInput.setInputType(2);
 
 
-
-        // MT5 Login
 
         serverInput = new EditText(this);
         serverInput.setHint("MT5 Server");
@@ -96,39 +88,29 @@ public class MainActivity extends Activity {
         passwordInput.setInputType(129);
 
 
-
         connectButton = new Button(this);
         connectButton.setText("CONNECT MT5");
-
 
 
         calculateButton = new Button(this);
         calculateButton.setText("CALCULATE");
 
 
-
         dashboard = new TextView(this);
         dashboard.setTextSize(18);
 
 
-
         ScrollView scroll = new ScrollView(this);
         scroll.addView(dashboard);
-
-
-
-        connectButton.setOnClickListener(v -> {
+                connectButton.setOnClickListener(v -> {
 
             mt5.connect(
                     serverInput.getText().toString(),
-                    accountInput.getText().toString(),
-                    passwordInput.getText().toString()
+                    accountInput.getText().toString()
             );
 
-
             dashboard.setText(
-                    dashboard.getText()
-                    + "\n\nMT5 STATUS: "
+                    "MT5 STATUS: "
                     + mt5.getStatus()
             );
 
@@ -141,150 +123,116 @@ public class MainActivity extends Activity {
 
             marketData.updateLiveData();
 
-new android.os.Handler().postDelayed(() -> {
 
-    strategy.analyze(marketData);
-
-    riskManager.calculate(
-            marketData.price,
-            strategy.signal
-    );
+            new android.os.Handler().postDelayed(() -> {
 
 
-    dashboard.setText(
-        "===== XAU BUDDY V2 =====\n\n"
-        + "PRICE: " + marketData.price
-        + "\nEMA20: " + marketData.ema20
-        + "\nEMA50: " + marketData.ema50
-        + "\nRSI14: " + marketData.rsi14
-        + "\nSIGNAL: " + strategy.signal
-        + "\nCONFIDENCE: " + strategy.confidence + "%"
-    );
+                strategy.analyze(marketData);
 
 
-}, 2000);
-
-
-            double risk = 0.5;
-
-
-            try {
-
-                risk = Double.parseDouble(
-                        riskInput.getText().toString()
+                riskManager.calculate(
+                        marketData.price,
+                        strategy.signal
                 );
 
-            }catch(Exception e){}
+
+                double risk = 0.5;
+
+
+                try {
+
+                    risk = Double.parseDouble(
+                            riskInput.getText().toString()
+                    );
+
+                } catch(Exception e){}
 
 
 
-            double riskAmount =
-                    balance * risk / 100;
+                double riskAmount =
+                        balance * risk / 100;
 
 
-            double lot =
-                    riskAmount / 5;
+                double lot =
+                        riskAmount / 5;
 
 
-
-            if(lot < 0.01){
-
-                lot = 0.01;
-
-            }
+                if(lot < 0.01){
+                    lot = 0.01;
+                }
 
 
 
-            dashboard.setText(
+                dashboard.setText(
 
-                    "===== XAU BUDDY V2 =====\n\n"
+                        "===== XAU BUDDY V2 =====\n\n"
 
-                    +"PRICE: "
-                    +marketData.price
+                        +"PRICE: "
+                        +marketData.price
 
-                    +"\nEMA20: "
-                    +marketData.ema20
+                        +"\nEMA20: "
+                        +marketData.ema20
 
-                    +"\nEMA50: "
-                    +marketData.ema50
+                        +"\nEMA50: "
+                        +marketData.ema50
 
-                    +"\nRSI14: "
-                    +marketData.rsi14
+                        +"\nRSI14: "
+                        +marketData.rsi14
 
+                        +"\n\nH1: "
+                        +marketData.h1Bias
 
-                    +"\n\nH1: "
-                    +marketData.h1Bias
+                        +"\nM5: "
+                        +marketData.m5Signal
 
-                    +"\nM5: "
-                    +marketData.m5Signal
+                        +"\n\nSIGNAL: "
+                        +strategy.signal
 
+                        +"\nCONFIDENCE: "
+                        +strategy.confidence
+                        +"%"
 
-                    +"\n\nBOS: "
-                    +strategy.bos
+                        +"\n\nBalance: $"
+                        +balance
 
-                    +"\nCHoCH: "
-                    +strategy.choch
+                        +"\nRisk: "
+                        +risk
+                        +"%"
 
-                    +"\nFVG: "
-                    +strategy.fvg
+                        +"\nRisk Amount: $"
+                        +String.format("%.2f",riskAmount)
 
-                    +"\nLiquidity: "
-                    +strategy.liquidity
+                        +"\nLot Size: "
+                        +String.format("%.2f",lot)
 
+                        +"\n\nENTRY: "
+                        +riskManager.entry
 
-                    +"\n\nSIGNAL: "
-                    +strategy.signal
+                        +"\nSL: "
+                        +riskManager.sl
 
-                    +"\nCONFIDENCE: "
-                    +strategy.confidence
-                    +"%"
+                        +"\nTP1: "
+                        +riskManager.tp1
 
+                        +"\nTP2: "
+                        +riskManager.tp2
 
-                    +"\n\nBalance: $"
-                    +balance
+                        +"\nRR: "
+                        +riskManager.rr
 
-                    +"\nRisk: "
-                    +risk
-                    +"%"
-
-
-                    +"\nRisk Amount: $"
-                    +String.format("%.2f",riskAmount)
-
-
-                    +"\nLot Size: "
-                    +String.format("%.2f",lot)
-
-
-                    +"\n\nENTRY: "
-                    +riskManager.entry
-
-                    +"\nSL: "
-                    +riskManager.sl
-
-                    +"\nTP1: "
-                    +riskManager.tp1
-
-                    +"\nTP2: "
-                    +riskManager.tp2
-
-                    +"\nRR: "
-                    +riskManager.rr
+                );
 
 
-                    +"\n\nMT5: "
-                    +mt5.getStatus()
+            },2000);
 
-            );
 
         });
 
 
 
-
         b10.setOnClickListener(v -> {
 
-            balance=10;
+            balance = 10;
             balanceText.setText("Balance: $10");
 
         });
@@ -292,7 +240,7 @@ new android.os.Handler().postDelayed(() -> {
 
         b50.setOnClickListener(v -> {
 
-            balance=50;
+            balance = 50;
             balanceText.setText("Balance: $50");
 
         });
@@ -300,7 +248,7 @@ new android.os.Handler().postDelayed(() -> {
 
         b100.setOnClickListener(v -> {
 
-            balance=100;
+            balance = 100;
             balanceText.setText("Balance: $100");
 
         });
