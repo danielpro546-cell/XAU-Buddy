@@ -105,9 +105,10 @@ public class MainActivity extends Activity {
                 connectButton.setOnClickListener(v -> {
 
             mt5.connect(
-                    serverInput.getText().toString(),
-                    accountInput.getText().toString()
-            );
+        serverInput.getText().toString(),
+        accountInput.getText().toString(),
+        passwordInput.getText().toString()
+);
 
             dashboard.setText(
                     "MT5 STATUS: "
