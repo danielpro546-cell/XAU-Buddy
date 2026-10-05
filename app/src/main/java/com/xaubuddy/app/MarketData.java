@@ -1,6 +1,5 @@
 package com.xaubuddy.app;
 
-
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -14,13 +13,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 
-
 public class MarketData {
 
 
-
-    public double price = 0.0;
-
+    public double price = 0;
 
     public double h1Open = 0;
     public double h1High = 0;
@@ -34,25 +30,19 @@ public class MarketData {
     public double m5Close = 0;
 
 
-
     public double ema20 = 0;
     public double ema50 = 0;
     public double rsi14 = 0;
 
 
-
     public String h1Bias = "WAITING";
-
     public String m5Signal = "WAITING";
-
 
 
     public boolean dataReady = false;
 
 
-
     private int apiFinished = 0;
-
 
 
     private String apiError = "";
@@ -66,8 +56,6 @@ public class MarketData {
 
     OkHttpClient client =
             new OkHttpClient();
-
-
 
 
 
@@ -94,7 +82,6 @@ public class MarketData {
 
 
 
-
     private void getCandleData(String interval){
 
 
@@ -112,7 +99,6 @@ public class MarketData {
 
 
 
-
         Request request =
 
         new Request.Builder()
@@ -124,27 +110,19 @@ public class MarketData {
 
 
 
-
-
         client.newCall(request).enqueue(new Callback(){
 
 
-
             @Override
-
             public void onFailure(
                     Call call,
                     IOException e
             ){
 
-
                 apiError =
                 e.getMessage();
 
-
                 finish();
-
-
 
             }
 
@@ -152,19 +130,14 @@ public class MarketData {
 
 
 
-
-
             @Override
-
             public void onResponse(
                     Call call,
                     Response response
             ) throws IOException {
 
 
-
                 try{
-
 
 
                     String body =
@@ -184,65 +157,43 @@ public class MarketData {
                         apiError =
                         json.toString();
 
-
                         finish();
 
                         return;
-
 
                     }
 
 
 
-
-
                     JSONArray values =
-
                     json.getJSONArray("values");
 
 
 
-
-
                     JSONObject candle =
-
                     values.getJSONObject(0);
 
 
 
-
-
-
                     ArrayList<Double> closes =
-
                     new ArrayList<>();
-
-
 
 
 
                     for(int i=0;i<values.length();i++){
 
 
-
                         JSONObject c =
-
                         values.getJSONObject(i);
 
 
-
                         closes.add(
-
                         Double.parseDouble(
-
                         c.getString("close")
-
                         ));
 
+
                     }
-
-
-
 
 
 
@@ -254,11 +205,9 @@ public class MarketData {
                         candle.getString("open"));
 
 
-
                         h1High =
                         Double.parseDouble(
                         candle.getString("high"));
-
 
 
                         h1Low =
@@ -266,17 +215,11 @@ public class MarketData {
                         candle.getString("low"));
 
 
-
                         h1Close =
                         Double.parseDouble(
                         candle.getString("close"));
 
-
-
                     }
-
-
-
 
 
 
@@ -288,11 +231,9 @@ public class MarketData {
                         candle.getString("open"));
 
 
-
                         m5High =
                         Double.parseDouble(
                         candle.getString("high"));
-
 
 
                         m5Low =
@@ -300,38 +241,29 @@ public class MarketData {
                         candle.getString("low"));
 
 
-
                         m5Close =
                         Double.parseDouble(
                         candle.getString("close"));
 
 
-
                         price = m5Close;
-
 
 
                     }
 
 
+                    if(closes.size()>=20)
+                    {
+                        ema20 =
+                        calculateEMA(closes,20);
+                    }
 
 
-
-
-                    if(closes.size() >= 20)
-
-                    ema20 =
-                    calculateEMA(closes,20);
-
-
-
-
-                    if(closes.size() >= 50)
-
-                    ema50 =
-                    calculateEMA(closes,50);
-
-
+                    if(closes.size()>=50)
+                    {
+                        ema50 =
+                        calculateEMA(closes,50);
+                    }
 
 
                     rsi14 =
@@ -339,11 +271,7 @@ public class MarketData {
 
 
 
-
-
                     finish();
-
-
 
 
 
@@ -352,7 +280,7 @@ public class MarketData {
 
 
                     apiError =
-                    e.getMessage();
+                    e.toString();
 
 
                     finish();
@@ -365,9 +293,7 @@ public class MarketData {
             }
 
 
-
         });
-
 
 
 
@@ -398,7 +324,6 @@ public class MarketData {
                 }
 
 
-
             }
             else{
 
@@ -407,7 +332,6 @@ public class MarketData {
 
 
             }
-
 
 
 
@@ -440,13 +364,12 @@ public class MarketData {
 
 
 
-
             if(
-                price > 0
-                &&
-                h1Close > 0
-                &&
-                m5Close > 0
+                    price > 0
+                    &&
+                    h1Close > 0
+                    &&
+                    m5Close > 0
             ){
 
 
@@ -463,14 +386,11 @@ public class MarketData {
             }
 
 
-
         }
 
 
 
     }
-
-
 
 
 
@@ -483,17 +403,16 @@ public class MarketData {
     ){
 
 
-
-        if(data.size() < period)
+        if(data.size() < period){
 
             return 0;
 
+        }
 
 
 
         double multiplier =
                 2.0 / (period + 1);
-
 
 
 
@@ -504,20 +423,16 @@ public class MarketData {
 
 
         for(
-            int i=data.size()-2;
-            i>=0;
-            i--
+                int i=data.size()-2;
+                i>=0;
+                i--
         ){
 
 
-
             ema =
-
             ((data.get(i)-ema)
-            * multiplier)
-
-            + ema;
-
+            *multiplier)
+            +ema;
 
 
         }
@@ -527,10 +442,7 @@ public class MarketData {
         return ema;
 
 
-
     }
-
-
 
 
 
@@ -544,10 +456,11 @@ public class MarketData {
 
 
 
-        if(data.size() <= period)
+        if(data.size() <= period){
 
             return 50;
 
+        }
 
 
 
@@ -561,38 +474,29 @@ public class MarketData {
 
 
         for(
-            int i=1;
-            i<=period;
-            i++
+                int i=1;
+                i<=period;
+                i++
         ){
 
 
-
             double change =
-
-            data.get(i-1)
-            -
-            data.get(i);
-
-
+                    data.get(i-1)
+                    -
+                    data.get(i);
 
 
 
             if(change > 0){
 
-
                 gain += change;
-
 
             }
             else{
 
-
                 loss -= change;
 
-
             }
-
 
 
         }
@@ -601,30 +505,23 @@ public class MarketData {
 
 
 
-
-
-        if(loss == 0)
-
+        if(loss == 0){
 
             return 100;
 
-
+        }
 
 
 
 
         double rs =
-
                 gain / loss;
 
 
 
 
-
         return
-
         100 -
-
         (100/(1+rs));
 
 
@@ -639,13 +536,16 @@ public class MarketData {
     public String getStatus(){
 
 
-        if(apiError.length()>0){
+        if(apiError != null
+                &&
+           apiError.length() > 0){
 
 
-            return "API ERROR";
+            return apiError;
 
 
         }
+
 
 
         if(dataReady){
@@ -657,8 +557,8 @@ public class MarketData {
         }
 
 
-        return "LOADING";
 
+        return "WAITING API";
 
 
     }
