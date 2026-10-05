@@ -1,5 +1,6 @@
 package com.xaubuddy.app;
 
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,17 +13,9 @@ public class MainActivity extends Activity {
 
     TextView dashboard;
 
-    EditText riskInput;
-    EditText serverInput;
-    EditText accountInput;
-    EditText passwordInput;
 
-
-    Button calculateButton;
+    Button refreshButton;
     Button connectButton;
-
-
-    double balance = 10;
 
 
     MarketData marketData = new MarketData();
@@ -35,90 +28,103 @@ public class MainActivity extends Activity {
 
 
 
-    Handler autoHandler = new Handler();
+    Handler handler = new Handler();
 
 
 
-    Runnable autoUpdate = new Runnable() {
+    Runnable updateTask = new Runnable() {
 
 
         @Override
         public void run() {
 
 
-            marketData.updateLiveData();
+            loadData();
 
 
-
-            new Handler().postDelayed(() -> {
-
-
-                if(marketData.dataReady){
-
-
-
-                    strategy.analyze(marketData);
-
-
-
-                    if(
-                            strategy.signal.equals("BUY")
-                            ||
-                            strategy.signal.equals("SELL")
-                    ){
-
-
-                        riskManager.calculate(
-
-                                marketData.price,
-
-                                strategy.signal
-
-                        );
-
-
-                    }
-
-
-
-                    updateDashboard();
-
-
-
-                }
-                else{
-
-
-                    dashboard.setText(
-
-                            "===== XAU BUDDY =====\n\n"
-                            +"DATA LOADING..."
-
-                    );
-
-
-                }
-
-
-
-            },5000);
-
-
-
-            autoHandler.postDelayed(this,10000);
-
+            handler.postDelayed(
+                    this,
+                    10000
+            );
 
 
         }
-
 
     };
 
 
 
 
+    private void loadData(){
 
-    private void updateDashboard(){
+
+        marketData.updateLiveData();
+
+
+
+        new Handler().postDelayed(() -> {
+
+
+
+            if(marketData.dataReady){
+
+
+
+                strategy.analyze(
+                        marketData
+                );
+
+
+
+                riskManager.calculate(
+
+                        marketData.price,
+
+                        strategy.signal
+
+                );
+
+
+
+                showDashboard();
+
+
+
+            }
+
+            else{
+
+
+                dashboard.setText(
+
+                        "===== XAU BUDDY V3 =====\n\n"
+
+                        +"STATUS: "
+                        +marketData.getStatus()
+
+                        +"\n\nWaiting API Data..."
+
+                        +"\n\nPRICE: "
+                        +marketData.price
+
+                );
+
+
+            }
+
+
+
+        },5000);
+
+
+
+    }
+
+
+
+
+
+    private void showDashboard(){
 
 
 
@@ -185,25 +191,20 @@ public class MainActivity extends Activity {
                 +"%"
 
 
-
                 +"\n\nENTRY: "
                 +riskManager.entry
-
 
 
                 +"\nSL: "
                 +riskManager.sl
 
 
-
                 +"\nTP1: "
                 +riskManager.tp1
 
 
-
                 +"\nTP2: "
                 +riskManager.tp2
-
 
 
                 +"\nRR: "
@@ -211,40 +212,60 @@ public class MainActivity extends Activity {
 
 
 
-                +"\n\nMT5: "
+                +"\n\nDATA: "
+                +marketData.getStatus()
+
+
+
+                +"\nMT5: "
                 +mt5.getStatus()
 
 
         );
 
+
     }
-        @Override
-    protected void onCreate(Bundle savedInstanceState) {
+
+
+
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
 
 
         super.onCreate(savedInstanceState);
 
 
 
-        LinearLayout mainLayout = new LinearLayout(this);
+        LinearLayout layout =
+                new LinearLayout(this);
 
-        mainLayout.setOrientation(
+
+
+        layout.setOrientation(
                 LinearLayout.VERTICAL
         );
 
-        mainLayout.setPadding(
+
+        layout.setPadding(
                 30,40,30,30
         );
 
 
 
-        TextView title = new TextView(this);
+
+        TextView title =
+                new TextView(this);
+
 
         title.setText(
                 "XAU Buddy V3"
         );
 
+
         title.setTextSize(30);
+
 
         title.setGravity(
                 Gravity.CENTER
@@ -252,97 +273,27 @@ public class MainActivity extends Activity {
 
 
 
-        TextView mode = new TextView(this);
+        dashboard =
+                new TextView(this);
 
-        mode.setText(
-                "MODE: DEMO\nLIVE: LOCKED"
-        );
 
-        mode.setTextSize(20);
+        dashboard.setTextSize(18);
 
 
 
-
-        TextView balanceText = new TextView(this);
-
-        balanceText.setText(
-                "Balance: $10"
-        );
-
-        balanceText.setTextSize(20);
+        refreshButton =
+                new Button(this);
 
 
-
-
-        Button b10 = new Button(this);
-        b10.setText("$10");
-
-
-        Button b50 = new Button(this);
-        b50.setText("$50");
-
-
-        Button b100 = new Button(this);
-        b100.setText("$100");
-
-
-
-        LinearLayout balanceLayout =
-                new LinearLayout(this);
-
-
-        balanceLayout.addView(b10);
-
-        balanceLayout.addView(b50);
-
-        balanceLayout.addView(b100);
-
-
-
-
-        riskInput = new EditText(this);
-
-        riskInput.setHint(
-                "Risk %"
-        );
-
-        riskInput.setText(
-                "0.5"
-        );
-
-        riskInput.setInputType(2);
-
-
-
-
-        serverInput = new EditText(this);
-
-        serverInput.setHint(
-                "MT5 Server"
+        refreshButton.setText(
+                "REFRESH DATA"
         );
 
 
 
-        accountInput = new EditText(this);
+        connectButton =
+                new Button(this);
 
-        accountInput.setHint(
-                "MT5 Account"
-        );
-
-
-
-        passwordInput = new EditText(this);
-
-        passwordInput.setHint(
-                "MT5 Password"
-        );
-
-        passwordInput.setInputType(129);
-
-
-
-
-        connectButton = new Button(this);
 
         connectButton.setText(
                 "CONNECT MT5"
@@ -350,42 +301,30 @@ public class MainActivity extends Activity {
 
 
 
-        calculateButton = new Button(this);
+        ScrollView scroll =
+                new ScrollView(this);
 
-        calculateButton.setText(
-                "CALCULATE"
+
+        scroll.addView(
+                dashboard
         );
 
 
 
-        dashboard = new TextView(this);
-
-        dashboard.setTextSize(18);
 
 
+        refreshButton.setOnClickListener(v -> {
 
-        ScrollView scroll =
-                new ScrollView(this);
 
-        scroll.addView(dashboard);
+            loadData();
 
+
+        });
 
 
 
 
         connectButton.setOnClickListener(v -> {
-
-
-            mt5.connect(
-
-                    serverInput.getText().toString(),
-
-                    accountInput.getText().toString(),
-
-                    passwordInput.getText().toString()
-
-            );
-
 
 
             dashboard.setText(
@@ -402,136 +341,25 @@ public class MainActivity extends Activity {
 
 
 
+        layout.addView(title);
 
-        calculateButton.setOnClickListener(v -> {
 
+        layout.addView(refreshButton);
 
-            marketData.updateLiveData();
 
+        layout.addView(connectButton);
 
 
-            new Handler().postDelayed(() -> {
+        layout.addView(scroll);
 
 
 
-                if(marketData.dataReady){
+        setContentView(layout);
 
 
-                    strategy.analyze(
-                            marketData
-                    );
 
-
-
-                    riskManager.calculate(
-
-                            marketData.price,
-
-                            strategy.signal
-
-                    );
-
-
-
-                    updateDashboard();
-
-
-                }
-                else{
-
-
-                    dashboard.setText(
-
-                            "DATA LOADING..."
-
-                    );
-
-
-                }
-
-
-
-            },5000);
-
-
-
-        });
-
-
-
-
-
-
-        b10.setOnClickListener(v -> {
-
-            balance = 10;
-
-            balanceText.setText(
-                    "Balance: $10"
-            );
-
-        });
-
-
-
-        b50.setOnClickListener(v -> {
-
-            balance = 50;
-
-            balanceText.setText(
-                    "Balance: $50"
-            );
-
-        });
-
-
-
-        b100.setOnClickListener(v -> {
-
-            balance = 100;
-
-            balanceText.setText(
-                    "Balance: $100"
-            );
-
-        });
-
-
-
-
-
-
-
-        mainLayout.addView(title);
-
-        mainLayout.addView(mode);
-
-        mainLayout.addView(balanceText);
-
-        mainLayout.addView(balanceLayout);
-
-        mainLayout.addView(riskInput);
-
-        mainLayout.addView(serverInput);
-
-        mainLayout.addView(accountInput);
-
-        mainLayout.addView(passwordInput);
-
-        mainLayout.addView(connectButton);
-
-        mainLayout.addView(calculateButton);
-
-        mainLayout.addView(scroll);
-
-
-
-        setContentView(mainLayout);
-
-
-
-        autoHandler.post(
-                autoUpdate
+        handler.post(
+                updateTask
         );
 
 
@@ -549,8 +377,8 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
 
-        autoHandler.removeCallbacks(
-                autoUpdate
+        handler.removeCallbacks(
+                updateTask
         );
 
 
