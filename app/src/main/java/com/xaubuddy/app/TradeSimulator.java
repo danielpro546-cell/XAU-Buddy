@@ -21,10 +21,10 @@ public class TradeSimulator {
 
     public int winTrades = 0;
 
+    public int lossTrades = 0;
 
 
     public double winRate = 0;
-
 
 
     private double tp = 0;
@@ -39,6 +39,16 @@ public class TradeSimulator {
             double stopLoss,
             double takeProfit
     ){
+
+
+        // Prevent duplicate trade
+
+        if(status.equals("OPEN")){
+
+            return;
+
+        }
+
 
 
         if(
@@ -66,7 +76,6 @@ public class TradeSimulator {
         }
 
 
-
     }
 
 
@@ -78,87 +87,94 @@ public class TradeSimulator {
     ){
 
 
-        if(status.equals("OPEN")){
+        if(!status.equals("OPEN")){
 
+            return;
 
-            current = price;
-
-
-
-            if(type.equals("BUY")){
-
-
-                profit =
-                        current - entry;
+        }
 
 
 
-                if(current >= tp){
+        current = price;
 
 
-                    winTrades++;
 
-                    status = "TP HIT";
-
-
-                    calculateWinRate();
+        if(type.equals("BUY")){
 
 
-                }
+            profit =
+                    current - entry;
 
 
-                else if(current <= sl){
+
+            if(current >= tp){
 
 
-                    status = "SL HIT";
+                status = "TP1 HIT";
+
+                winTrades++;
 
 
-                    calculateWinRate();
+                calculateWinRate();
 
 
-                }
+            }
 
+
+            else if(current <= sl){
+
+
+                status = "STOP LOSS HIT";
+
+
+                lossTrades++;
+
+
+                calculateWinRate();
 
 
             }
 
 
 
-
-
-            else if(type.equals("SELL")){
-
-
-                profit =
-                        entry - current;
+        }
 
 
 
-                if(current <= tp){
+
+        else if(type.equals("SELL")){
 
 
-                    winTrades++;
-
-                    status = "TP HIT";
-
-
-                    calculateWinRate();
+            profit =
+                    entry - current;
 
 
-                }
+
+            if(current <= tp){
 
 
-                else if(current >= sl){
+                status = "TP1 HIT";
 
 
-                    status = "SL HIT";
+                winTrades++;
 
 
-                    calculateWinRate();
+                calculateWinRate();
 
 
-                }
+            }
 
+
+            else if(current >= sl){
+
+
+                status = "STOP LOSS HIT";
+
+
+                lossTrades++;
+
+
+                calculateWinRate();
 
 
             }
@@ -182,6 +198,7 @@ public class TradeSimulator {
 
 
             winRate =
+
                     ((double)winTrades
                     /
                     totalTrades)
@@ -192,7 +209,6 @@ public class TradeSimulator {
 
 
     }
-
 
 
 
