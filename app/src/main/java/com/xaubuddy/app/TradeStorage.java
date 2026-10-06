@@ -52,14 +52,9 @@ public class TradeStorage {
 
 
 
-
-
     public int getTotal(){
 
-        return prefs.getInt(
-                "TOTAL",
-                0
-        );
+        return prefs.getInt("TOTAL",0);
 
     }
 
@@ -67,10 +62,7 @@ public class TradeStorage {
 
     public int getWins(){
 
-        return prefs.getInt(
-                "WINS",
-                0
-        );
+        return prefs.getInt("WINS",0);
 
     }
 
@@ -78,10 +70,7 @@ public class TradeStorage {
 
     public int getLosses(){
 
-        return prefs.getInt(
-                "LOSSES",
-                0
-        );
+        return prefs.getInt("LOSSES",0);
 
     }
 
@@ -89,18 +78,13 @@ public class TradeStorage {
 
     public double getProfit(){
 
-        return prefs.getFloat(
-                "PROFIT",
-                0
-        );
+        return prefs.getFloat("PROFIT",0);
 
     }
 
 
 
 
-
-    // SAVE TRADE STATE
 
     public void saveTrade(
 
@@ -118,21 +102,14 @@ public class TradeStorage {
 
     ){
 
+
         SharedPreferences.Editor editor =
                 prefs.edit();
 
 
-        editor.putString(
-                "STATUS",
-                status
-        );
+        editor.putString("STATUS",status);
 
-
-        editor.putString(
-                "TYPE",
-                type
-        );
-
+        editor.putString("TYPE",type);
 
         editor.putString(
                 "LAST_RESULT",
@@ -165,7 +142,6 @@ public class TradeStorage {
 
 
 
-
     public String getTradeStatus(){
 
         return prefs.getString(
@@ -174,7 +150,6 @@ public class TradeStorage {
         );
 
     }
-
 
 
 
@@ -189,7 +164,6 @@ public class TradeStorage {
 
 
 
-
     public String getLastResult(){
 
         return prefs.getString(
@@ -198,7 +172,6 @@ public class TradeStorage {
         );
 
     }
-
 
 
 
@@ -213,7 +186,6 @@ public class TradeStorage {
 
 
 
-
     public double getTradeCurrent(){
 
         return prefs.getFloat(
@@ -225,7 +197,6 @@ public class TradeStorage {
 
 
 
-
     public double getTradeProfit(){
 
         return prefs.getFloat(
@@ -234,51 +205,106 @@ public class TradeStorage {
         );
 
     }
-public void saveTradeSaved(boolean saved){
-
-    SharedPreferences.Editor editor =
-            prefs.edit();
-
-    editor.putBoolean(
-            "TRADE_SAVED",
-            saved
-    );
-
-    editor.apply();
-
-}
 
 
-public boolean getTradeSaved(){
 
-    return prefs.getBoolean(
-            "TRADE_SAVED",
-            false
-    );
 
-}
+
+    public void saveTradeSaved(boolean saved){
+
+        SharedPreferences.Editor editor =
+                prefs.edit();
+
+
+        editor.putBoolean(
+                "TRADE_SAVED",
+                saved
+        );
+
+
+        editor.apply();
+
+    }
+
+
+
+    public boolean getTradeSaved(){
+
+        return prefs.getBoolean(
+                "TRADE_SAVED",
+                false
+        );
+
+    }
+
+
+
+
+
     public void saveLastTrade(String trade){
 
-    SharedPreferences.Editor editor =
-            prefs.edit();
-
-    editor.putString(
-            "LAST_TRADE",
-            trade
-    );
-
-    editor.apply();
-
-}
+        SharedPreferences.Editor editor =
+                prefs.edit();
 
 
-public String getLastTrade(){
+        editor.putString(
+                "LAST_TRADE",
+                trade
+        );
 
-    return prefs.getString(
-            "LAST_TRADE",
-            "NO TRADE"
-    );
 
-}
+        editor.apply();
+
+    }
+
+
+
+    public String getLastTrade(){
+
+        return prefs.getString(
+                "LAST_TRADE",
+                "NO TRADE"
+        );
+
+    }
+
+
+
+
+
+    // SAVE FULL JOURNAL HISTORY
+
+    public void saveJournal(String data){
+
+        SharedPreferences.Editor editor =
+                prefs.edit();
+
+
+        editor.putString(
+                "JOURNAL",
+                data
+        );
+
+
+        editor.apply();
+
+    }
+
+
+
+
+
+    // LOAD FULL JOURNAL HISTORY
+
+    public String getJournal(){
+
+        return prefs.getString(
+                "JOURNAL",
+                ""
+        );
+
+    }
+
+
 
 }
