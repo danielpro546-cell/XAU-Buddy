@@ -8,13 +8,15 @@ public class TradeSimulator {
 
     public String type = "NONE";
 
+    public String lastResult = "NONE";
+
 
     public double entry = 0;
 
     public double current = 0;
 
-
     public double profit = 0;
+
 
 
     public int totalTrades = 0;
@@ -25,6 +27,7 @@ public class TradeSimulator {
 
 
     public double winRate = 0;
+
 
 
     private double tp = 0;
@@ -40,8 +43,6 @@ public class TradeSimulator {
             double takeProfit
     ){
 
-
-        // Prevent duplicate trade
 
         if(status.equals("OPEN")){
 
@@ -110,31 +111,18 @@ public class TradeSimulator {
             if(current >= tp){
 
 
-                status = "TP1 HIT";
-
-                winTrades++;
-
-
-                calculateWinRate();
+                closeTrade(true);
 
 
             }
-
 
             else if(current <= sl){
 
 
-                status = "STOP LOSS HIT";
-
-
-                lossTrades++;
-
-
-                calculateWinRate();
+                closeTrade(false);
 
 
             }
-
 
 
         }
@@ -153,36 +141,64 @@ public class TradeSimulator {
             if(current <= tp){
 
 
-                status = "TP1 HIT";
-
-
-                winTrades++;
-
-
-                calculateWinRate();
+                closeTrade(true);
 
 
             }
-
 
             else if(current >= sl){
 
 
-                status = "STOP LOSS HIT";
-
-
-                lossTrades++;
-
-
-                calculateWinRate();
+                closeTrade(false);
 
 
             }
 
 
+        }
+
+
+
+    }
+
+
+
+
+
+    private void closeTrade(
+            boolean win
+    ){
+
+
+        if(win){
+
+
+            status = "TP HIT";
+
+            lastResult = "WIN";
+
+
+            winTrades++;
+
 
         }
 
+        else{
+
+
+            status = "SL HIT";
+
+            lastResult = "LOSS";
+
+
+            lossTrades++;
+
+
+        }
+
+
+
+        calculateWinRate();
 
 
     }
