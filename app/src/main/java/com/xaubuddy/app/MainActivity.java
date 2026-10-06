@@ -220,6 +220,22 @@ if(!demoPrice.running){
 
 +"\nLAST RESULT: "
 +tradeSimulator.lastResult
+            +"\n\n===== TRADE JOURNAL ====="
+
++"\nTOTAL JOURNAL: "
++tradeJournal.totalTrades
+
++"\nJOURNAL WIN: "
++tradeJournal.wins
+
++"\nJOURNAL LOSS: "
++tradeJournal.losses
+
++"\nJOURNAL PROFIT: "
++tradeJournal.totalProfit
+
++"\n\nLAST TRADE:\n"
++tradeJournal.getLastTrade()
                 +"\n\nBALANCE: $"
                 +riskManager.balance
 
