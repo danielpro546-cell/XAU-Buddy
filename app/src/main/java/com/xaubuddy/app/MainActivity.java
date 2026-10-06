@@ -22,7 +22,8 @@ public class MainActivity extends Activity {
 TradeJournal tradeJournal = new TradeJournal();
     TradeStorage tradeStorage;
     Handler handler = new Handler();
-
+    
+boolean tradeSaved = false;
     Runnable updateTask = new Runnable() {
 
         @Override
@@ -63,7 +64,11 @@ if(!demoPrice.running){
         strategy.signal.equals("SELL")
 ){
 
-    tradeSimulator.openTrade(
+    if(tradeSimulator.status.equals("NO TRADE")){
+
+        tradeSaved = false;
+
+        tradeSimulator.openTrade(
 
             strategy.signal,
 
@@ -73,9 +78,12 @@ if(!demoPrice.running){
 
             riskManager.tp1
 
-    );
+        );
+
+    }
 
 }
+
                 double simulatedPrice =
         demoPrice.movePrice(
                 strategy.signal
@@ -83,12 +91,17 @@ if(!demoPrice.running){
                 tradeSimulator.update(
         simulatedPrice
 );
-                boolean tradeSaved = false;
                 if(
-        tradeSimulator.status.equals("TP HIT")
-        ||
-        tradeSimulator.status.equals("SL HIT")
+(
+tradeSimulator.status.equals("TP HIT")
+||
+tradeSimulator.status.equals("SL HIT")
+)
+&&
+!tradeSaved
 ){
+
+    tradeSaved = true;
 
     tradeJournal.addTrade(
 
