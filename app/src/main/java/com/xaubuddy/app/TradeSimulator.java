@@ -4,6 +4,9 @@ package com.xaubuddy.app;
 public class TradeSimulator {
 
 
+    private TradeStorage storage;
+
+
     public String status = "NO TRADE";
 
     public String type = "NONE";
@@ -33,6 +36,38 @@ public class TradeSimulator {
     private double tp = 0;
 
     private double sl = 0;
+
+
+
+    public TradeSimulator(
+            TradeStorage storage
+    ){
+
+        this.storage = storage;
+
+
+        status = storage.getTradeStatus();
+
+        type = storage.getTradeType();
+
+        entry = storage.getTradeEntry();
+
+        current = storage.getTradeCurrent();
+
+        profit = storage.getTradeProfit();
+
+
+        totalTrades = storage.getTotal();
+
+        winTrades = storage.getWins();
+
+        lossTrades = storage.getLosses();
+
+
+        calculateWinRate();
+
+    }
+
 
 
 
@@ -74,6 +109,9 @@ public class TradeSimulator {
             totalTrades++;
 
 
+            saveTrade();
+
+
         }
 
 
@@ -103,54 +141,43 @@ public class TradeSimulator {
         if(type.equals("BUY")){
 
 
-            profit =
-                    current - entry;
+            profit = current - entry;
 
 
 
             if(current >= tp){
 
-
                 closeTrade(true);
-
 
             }
 
             else if(current <= sl){
 
-
                 closeTrade(false);
-
 
             }
 
 
         }
-
 
 
 
         else if(type.equals("SELL")){
 
 
-            profit =
-                    entry - current;
+            profit = entry - current;
 
 
 
             if(current <= tp){
 
-
                 closeTrade(true);
-
 
             }
 
             else if(current >= sl){
 
-
                 closeTrade(false);
-
 
             }
 
@@ -158,6 +185,8 @@ public class TradeSimulator {
         }
 
 
+
+        saveTrade();
 
     }
 
@@ -177,7 +206,6 @@ public class TradeSimulator {
 
             lastResult = "WIN";
 
-
             winTrades++;
 
 
@@ -190,7 +218,6 @@ public class TradeSimulator {
 
             lastResult = "LOSS";
 
-
             lossTrades++;
 
 
@@ -199,6 +226,9 @@ public class TradeSimulator {
 
 
         calculateWinRate();
+
+
+        saveTrade();
 
 
     }
@@ -214,7 +244,6 @@ public class TradeSimulator {
 
 
             winRate =
-
                     ((double)winTrades
                     /
                     totalTrades)
@@ -222,6 +251,42 @@ public class TradeSimulator {
 
 
         }
+
+
+    }
+
+
+
+
+    private void saveTrade(){
+
+
+        storage.saveTrade(
+
+                status,
+
+                type,
+
+                entry,
+
+                current,
+
+                profit
+
+        );
+
+
+        storage.saveStats(
+
+                totalTrades,
+
+                winTrades,
+
+                lossTrades,
+
+                profit
+
+        );
 
 
     }
