@@ -66,10 +66,7 @@ if(!demoPrice.running){
 
     if(
 tradeSimulator.status.equals("NO TRADE")
-||
-tradeSimulator.status.equals("TP HIT")
-||
-tradeSimulator.status.equals("SL HIT")
+
 ){
         tradeSaved = false;
 
