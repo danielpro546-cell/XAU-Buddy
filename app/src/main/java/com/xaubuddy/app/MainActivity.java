@@ -39,9 +39,13 @@ public class MainActivity extends Activity {
 
         marketData.updateLiveData();
         
-demoPrice.start(
-        marketData.price
-);
+if(!demoPrice.running){
+
+    demoPrice.start(
+            marketData.price
+    );
+
+}
         new Handler().postDelayed(() -> {
 
             if(marketData.dataReady){
