@@ -102,6 +102,17 @@ if(!demoPrice.running){
             tradeSimulator.lastResult
 
     );
+                    tradeStorage.saveStats(
+
+        tradeJournal.totalTrades,
+
+        tradeJournal.wins,
+
+        tradeJournal.losses,
+
+        tradeJournal.totalProfit
+
+);
 
 }
 
