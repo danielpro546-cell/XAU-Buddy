@@ -257,5 +257,28 @@ public boolean getTradeSaved(){
     );
 
 }
+    public void saveLastTrade(String trade){
+
+    SharedPreferences.Editor editor =
+            prefs.edit();
+
+    editor.putString(
+            "LAST_TRADE",
+            trade
+    );
+
+    editor.apply();
+
+}
+
+
+public String getLastTrade(){
+
+    return prefs.getString(
+            "LAST_TRADE",
+            "NO TRADE"
+    );
+
+}
 
 }
