@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
     MT5Connector mt5 = new MT5Connector();
     TradeSimulator tradeSimulator = new TradeSimulator();
     DemoPriceSimulator demoPrice = new DemoPriceSimulator();
-
+TradeJournal tradeJournal = new TradeJournal();
     Handler handler = new Handler();
 
     Runnable updateTask = new Runnable() {
@@ -82,6 +82,27 @@ if(!demoPrice.running){
                 tradeSimulator.update(
         simulatedPrice
 );
+                if(
+        tradeSimulator.status.equals("TP HIT")
+        ||
+        tradeSimulator.status.equals("SL HIT")
+){
+
+    tradeJournal.addTrade(
+
+            tradeSimulator.type,
+
+            tradeSimulator.entry,
+
+            tradeSimulator.current,
+
+            tradeSimulator.profit,
+
+            tradeSimulator.lastResult
+
+    );
+
+}
 
                 showDashboard();
 
