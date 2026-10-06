@@ -18,6 +18,7 @@ public class MainActivity extends Activity {
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
     TradeSimulator tradeSimulator = new TradeSimulator();
+    DemoPriceSimulator demoPrice = new DemoPriceSimulator();
 
     Handler handler = new Handler();
 
@@ -37,13 +38,19 @@ public class MainActivity extends Activity {
     private void loadData(){
 
         marketData.updateLiveData();
-
+        
+demoPrice.start(
+        marketData.price
+);
         new Handler().postDelayed(() -> {
 
             if(marketData.dataReady){
+                demoPrice.start(
+        marketData.price
+);
 
                 strategy.analyze(marketData);
-
+                
                 riskManager.calculate(
                         marketData.price,
                         strategy.signal
@@ -67,8 +74,12 @@ public class MainActivity extends Activity {
     );
 
 }
+                double simulatedPrice =
+        demoPrice.movePrice(
+                strategy.signal
+        );
                 tradeSimulator.update(
-        marketData.price
+        simulatedPrice
 );
 
                 showDashboard();
