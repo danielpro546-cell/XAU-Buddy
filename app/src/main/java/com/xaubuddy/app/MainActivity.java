@@ -119,10 +119,10 @@ if(!demoPrice.running){
                 showDashboard();
 
             }else{
-
+                
                 dashboard.setText(
 
-                        "===== XAU BUDDY V5 =====\n\n"
+                        "===== XAU BUDDY V5.8 =====\n\n"
 
                         +"STATUS: "
                         +marketData.getStatus()
@@ -141,7 +141,28 @@ if(!demoPrice.running){
     }
 
     private void showDashboard(){
+        
+if(strategy.signal.equals("BUY")){
 
+    dashboard.setTextColor(
+            android.graphics.Color.GREEN
+    );
+
+}
+else if(strategy.signal.equals("SELL")){
+
+    dashboard.setTextColor(
+            android.graphics.Color.RED
+    );
+
+}
+else{
+
+    dashboard.setTextColor(
+            android.graphics.Color.WHITE
+    );
+
+}
         String time =
                 java.text.DateFormat
                         .getTimeInstance()
@@ -149,7 +170,7 @@ if(!demoPrice.running){
 
         dashboard.setText(
 
-                "===== XAU BUDDY V5 =====\n\n"
+                "===== XAU BUDDY V5.8 =====\n\n"
 
                 +"PRICE: "
                 +marketData.price
@@ -270,7 +291,7 @@ if(!demoPrice.running){
 
                 +"\nMODE: DEMO"
 
-                +"\nVERSION: V5"
+                +"\nVERSION: V5.8"
 
                 +"\nMT5: "
                 +mt5.getStatus()
