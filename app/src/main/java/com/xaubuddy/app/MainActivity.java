@@ -176,6 +176,17 @@ public class MainActivity extends Activity {
 +"\nWIN RATE: "
 +tradeSimulator.winRate
 +"%"
+            +"\nTOTAL TRADES: "
++tradeSimulator.totalTrades
+
++"\nWINS: "
++tradeSimulator.winTrades
+
++"\nLOSSES: "
++tradeSimulator.lossTrades
+
++"\nLAST RESULT: "
++tradeSimulator.lastResult
                 +"\n\nBALANCE: $"
                 +riskManager.balance
 
