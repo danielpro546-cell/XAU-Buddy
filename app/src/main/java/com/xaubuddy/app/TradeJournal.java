@@ -117,6 +117,22 @@ public class TradeJournal {
 
 
     }
+    public void loadStats(
+        int total,
+        int win,
+        int loss,
+        double profit
+){
+
+    totalTrades = total;
+
+    wins = win;
+
+    losses = loss;
+
+    totalProfit = profit;
+
+}
 
 
 
