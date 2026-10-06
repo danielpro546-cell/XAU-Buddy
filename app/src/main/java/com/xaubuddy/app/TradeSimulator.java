@@ -271,17 +271,19 @@ public class TradeSimulator {
 
         storage.saveTrade(
 
-                status,
+    status,
 
-                type,
+    type,
 
-                entry,
+    lastResult,
 
-                current,
+    entry,
 
-                profit
+    current,
 
-        );
+    profit
+
+);
 
 
         storage.saveStats(
