@@ -31,6 +31,16 @@ public class TradeJournal {
     ){
 
 
+        // prevent invalid duplicate result
+
+        if(result.equals("NONE")){
+
+            return;
+
+        }
+
+
+
         totalTrades++;
 
 
@@ -82,6 +92,7 @@ public class TradeJournal {
 
 
 
+
     public double getWinRate(){
 
 
@@ -97,6 +108,7 @@ public class TradeJournal {
 
 
     }
+
 
 
 
@@ -117,22 +129,31 @@ public class TradeJournal {
 
 
     }
+
+
+
+
+
     public void loadStats(
-        int total,
-        int win,
-        int loss,
-        double profit
-){
+            int total,
+            int win,
+            int loss,
+            double profit
+    ){
 
-    totalTrades = total;
 
-    wins = win;
+        totalTrades = total;
 
-    losses = loss;
+        wins = win;
 
-    totalProfit = profit;
+        losses = loss;
 
-}
+        totalProfit = profit;
+
+
+    }
+
+
 
 
 
