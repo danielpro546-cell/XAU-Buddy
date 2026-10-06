@@ -49,9 +49,6 @@ if(!demoPrice.running){
         new Handler().postDelayed(() -> {
 
             if(marketData.dataReady){
-                demoPrice.start(
-        marketData.price
-);
 
                 strategy.analyze(marketData);
                 
