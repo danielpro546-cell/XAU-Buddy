@@ -11,13 +11,14 @@ public class TradeStorage {
     private SharedPreferences prefs;
 
 
+
     public TradeStorage(Context context){
 
         prefs =
-        context.getSharedPreferences(
-                "XAU_BUDDY_TRADES",
-                Context.MODE_PRIVATE
-        );
+                context.getSharedPreferences(
+                        "XAU_BUDDY_TRADES",
+                        Context.MODE_PRIVATE
+                );
 
     }
 
@@ -64,9 +65,57 @@ public class TradeStorage {
 
 
 
-    // SAVE CURRENT OPEN TRADE STATE
 
-    public void saveTradeState(
+
+    public int getTotal(){
+
+        return prefs.getInt(
+                "TOTAL",
+                0
+        );
+
+    }
+
+
+
+    public int getWins(){
+
+        return prefs.getInt(
+                "WINS",
+                0
+        );
+
+    }
+
+
+
+    public int getLosses(){
+
+        return prefs.getInt(
+                "LOSSES",
+                0
+        );
+
+    }
+
+
+
+    public double getProfit(){
+
+        return prefs.getFloat(
+                "PROFIT",
+                0
+        );
+
+    }
+
+
+
+
+
+    // SAVE OPEN TRADE STATE
+
+    public void saveTrade(
 
             String status,
 
@@ -80,8 +129,10 @@ public class TradeStorage {
 
     ){
 
+
         SharedPreferences.Editor editor =
                 prefs.edit();
+
 
 
         editor.putString(
@@ -116,42 +167,6 @@ public class TradeStorage {
 
         editor.apply();
 
-    }
-
-
-
-
-
-    public int getTotal(){
-
-        return prefs.getInt(
-                "TOTAL",
-                0
-        );
-
-    }
-
-
-
-
-    public int getWins(){
-
-        return prefs.getInt(
-                "WINS",
-                0
-        );
-
-    }
-
-
-
-
-    public int getLosses(){
-
-        return prefs.getInt(
-                "LOSSES",
-                0
-        );
 
     }
 
@@ -159,20 +174,7 @@ public class TradeStorage {
 
 
 
-    public double getProfit(){
-
-        return prefs.getFloat(
-                "PROFIT",
-                0
-        );
-
-    }
-
-
-
-
-
-    // LOAD TRADE STATE
+    // LOAD OPEN TRADE STATE
 
 
     public String getTradeStatus(){
@@ -190,7 +192,7 @@ public class TradeStorage {
 
         return prefs.getString(
                 "TYPE",
-                ""
+                "NONE"
         );
 
     }
