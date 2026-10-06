@@ -11,7 +11,6 @@ public class TradeStorage {
     private SharedPreferences prefs;
 
 
-
     public TradeStorage(Context context){
 
         prefs =
@@ -109,6 +108,8 @@ public class TradeStorage {
 
             String type,
 
+            String lastResult,
+
             double entry,
 
             double current,
@@ -121,7 +122,6 @@ public class TradeStorage {
                 prefs.edit();
 
 
-
         editor.putString(
                 "STATUS",
                 status
@@ -131,6 +131,12 @@ public class TradeStorage {
         editor.putString(
                 "TYPE",
                 type
+        );
+
+
+        editor.putString(
+                "LAST_RESULT",
+                lastResult
         );
 
 
@@ -171,107 +177,13 @@ public class TradeStorage {
 
 
 
+
     public String getTradeType(){
 
         return prefs.getString(
                 "TYPE",
                 "NONE"
         );
-
-    }
-
-
-
-    public double getTradeEntry(){
-
-        return prefs.getFloat(
-                "ENTRY",
-                0
-        );
-
-    }
-
-
-
-    public double getTradeCurrent(){
-
-        return prefs.getFloat(
-                "CURRENT",
-                0
-        );
-
-    }
-
-
-
-    public double getTradeProfit(){
-
-        return prefs.getFloat(
-                "TRADE_PROFIT",
-                0
-        );
-
-    }
-
-
-
-
-
-    // PREVENT DUPLICATE JOURNAL AFTER RESTART
-
-
-    public void saveTradeClosed(
-            boolean closed
-    ){
-
-        SharedPreferences.Editor editor =
-                prefs.edit();
-
-
-        editor.putBoolean(
-                "TRADE_CLOSED",
-                closed
-        );
-
-
-        editor.apply();
-
-    }
-
-
-
-
-    public boolean isTradeClosed(){
-
-        return prefs.getBoolean(
-                "TRADE_CLOSED",
-                false
-        );
-
-    }
-
-
-
-
-
-    // SAVE LAST RESULT
-
-
-    public void saveLastResult(
-            String result
-    ){
-
-        SharedPreferences.Editor editor =
-                prefs.edit();
-
-
-        editor.putString(
-                "LAST_RESULT",
-                result
-        );
-
-
-        editor.apply();
 
     }
 
@@ -287,6 +199,41 @@ public class TradeStorage {
 
     }
 
+
+
+
+    public double getTradeEntry(){
+
+        return prefs.getFloat(
+                "ENTRY",
+                0
+        );
+
+    }
+
+
+
+
+    public double getTradeCurrent(){
+
+        return prefs.getFloat(
+                "CURRENT",
+                0
+        );
+
+    }
+
+
+
+
+    public double getTradeProfit(){
+
+        return prefs.getFloat(
+                "TRADE_PROFIT",
+                0
+        );
+
+    }
 
 
 }
