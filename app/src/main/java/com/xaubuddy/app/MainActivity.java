@@ -64,8 +64,13 @@ if(!demoPrice.running){
         strategy.signal.equals("SELL")
 ){
 
-    if(tradeSimulator.status.equals("NO TRADE")){
-
+    if(
+tradeSimulator.status.equals("NO TRADE")
+||
+tradeSimulator.status.equals("TP HIT")
+||
+tradeSimulator.status.equals("SL HIT")
+){
         tradeSaved = false;
 
         tradeStorage.saveTradeSaved(false);
