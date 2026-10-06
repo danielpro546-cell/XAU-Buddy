@@ -328,7 +328,7 @@ else{
         super.onCreate(savedInstanceState);
         
 tradeStorage = new TradeStorage(this);
-        tradeJournal = new TradeJournal();
+        tradeJournal = new TradeJournal(tradeStorage);
         tradeSaved = tradeStorage.getTradeSaved();
         tradeSimulator = new TradeSimulator(tradeStorage);
         tradeJournal.loadStats(
