@@ -17,6 +17,7 @@ public class MainActivity extends Activity {
     StrategyEngine strategy = new StrategyEngine();
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
+    TradeSimulator tradeSimulator = new TradeSimulator();
 
     Handler handler = new Handler();
 
@@ -47,6 +48,28 @@ public class MainActivity extends Activity {
                         marketData.price,
                         strategy.signal
                 );
+                if(
+        strategy.signal.equals("BUY")
+        ||
+        strategy.signal.equals("SELL")
+){
+
+    tradeSimulator.openTrade(
+
+            strategy.signal,
+
+            marketData.price,
+
+            riskManager.sl,
+
+            riskManager.tp1
+
+    );
+
+}
+                tradeSimulator.update(
+        marketData.price
+);
 
                 showDashboard();
 
@@ -134,7 +157,25 @@ public class MainActivity extends Activity {
 
                 +"\nRR: "
                 +riskManager.rr
+            
++"\n\nTRADE STATUS: "
++tradeSimulator.status
 
++"\nTYPE: "
++tradeSimulator.type
+
++"\nTRADE ENTRY: "
++tradeSimulator.entry
+
++"\nCURRENT PRICE: "
++tradeSimulator.current
+
++"\nPROFIT: "
++tradeSimulator.profit
+
++"\nWIN RATE: "
++tradeSimulator.winRate
++"%"
                 +"\n\nBALANCE: $"
                 +riskManager.balance
 
