@@ -234,6 +234,28 @@ public class TradeStorage {
         );
 
     }
+public void saveTradeSaved(boolean saved){
 
+    SharedPreferences.Editor editor =
+            prefs.edit();
+
+    editor.putBoolean(
+            "TRADE_SAVED",
+            saved
+    );
+
+    editor.apply();
+
+}
+
+
+public boolean getTradeSaved(){
+
+    return prefs.getBoolean(
+            "TRADE_SAVED",
+            false
+    );
+
+}
 
 }
