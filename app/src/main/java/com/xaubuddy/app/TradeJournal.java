@@ -25,6 +25,7 @@ public class TradeJournal {
 
 
 
+
     public TradeJournal(
             TradeStorage storage
     ){
@@ -32,27 +33,26 @@ public class TradeJournal {
         this.storage = storage;
 
 
-        String lastTrade =
-                storage.getLastTrade();
-
-
-        if(!lastTrade.equals("NO TRADE")){
-
-            history.add(lastTrade);
-
-        }
+        loadJournal();
 
     }
 
 
 
 
+
     public void addTrade(
+
             String type,
+
             double entry,
+
             double exit,
+
             double profit,
+
             String result
+
     ){
 
 
@@ -112,9 +112,68 @@ public class TradeJournal {
 
 
 
-        // SAVE LAST TRADE
-
         storage.saveLastTrade(record);
+
+
+        saveJournal();
+
+    }
+
+
+
+
+
+    private void saveJournal(){
+
+
+        String data = "";
+
+
+        for(String trade : history){
+
+            data += trade;
+
+            data += "\n\n";
+
+        }
+
+
+        storage.saveJournal(data);
+
+
+    }
+
+
+
+
+
+    private void loadJournal(){
+
+
+        String data =
+                storage.getJournal();
+
+
+
+        if(!data.equals("")){
+
+
+            String[] trades =
+                    data.split("\n\n");
+
+
+            for(String t : trades){
+
+                if(!t.trim().equals("")){
+
+                    history.add(t);
+
+                }
+
+            }
+
+
+        }
 
 
     }
@@ -146,7 +205,7 @@ public class TradeJournal {
     public String getLastTrade(){
 
 
-        if(history.size() == 0){
+        if(history.size()==0){
 
             return "NO TRADE";
 
@@ -165,10 +224,15 @@ public class TradeJournal {
 
 
     public void loadStats(
+
             int total,
+
             int win,
+
             int loss,
+
             double profit
+
     ){
 
 
