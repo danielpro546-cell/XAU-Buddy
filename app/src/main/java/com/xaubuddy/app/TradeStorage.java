@@ -13,15 +13,18 @@ public class TradeStorage {
 
     public TradeStorage(Context context){
 
-        prefs =
-                context.getSharedPreferences(
-                        "XAU_BUDDY_TRADES",
-                        Context.MODE_PRIVATE
-                );
+        prefs = context.getSharedPreferences(
+                "XAU_BUDDY_TRADES",
+                Context.MODE_PRIVATE
+        );
 
     }
 
 
+
+    // =========================
+    // JOURNAL STATISTICS
+    // =========================
 
     public void saveStats(
             int total,
@@ -30,23 +33,12 @@ public class TradeStorage {
             double profit
     ){
 
-        SharedPreferences.Editor editor =
-                prefs.edit();
-
-
-        editor.putInt("TOTAL", total);
-
-        editor.putInt("WINS", wins);
-
-        editor.putInt("LOSSES", losses);
-
-        editor.putFloat(
-                "PROFIT",
-                (float)profit
-        );
-
-
-        editor.apply();
+        prefs.edit()
+                .putInt("TOTAL", total)
+                .putInt("WINS", wins)
+                .putInt("LOSSES", losses)
+                .putFloat("PROFIT",(float)profit)
+                .apply();
 
     }
 
@@ -86,6 +78,11 @@ public class TradeStorage {
 
 
 
+    // =========================
+    // CURRENT TRADE SAVE
+    // =========================
+
+
     public void saveTrade(
 
             String status,
@@ -102,42 +99,24 @@ public class TradeStorage {
 
     ){
 
+        prefs.edit()
 
-        SharedPreferences.Editor editor =
-                prefs.edit();
+        .putString("STATUS",status)
 
+        .putString("TYPE",type)
 
-        editor.putString("STATUS",status);
+        .putString("LAST_RESULT",lastResult)
 
-        editor.putString("TYPE",type);
+        .putFloat("ENTRY",(float)entry)
 
-        editor.putString(
-                "LAST_RESULT",
-                lastResult
-        );
+        .putFloat("CURRENT",(float)current)
 
+        .putFloat("TRADE_PROFIT",(float)profit)
 
-        editor.putFloat(
-                "ENTRY",
-                (float)entry
-        );
-
-
-        editor.putFloat(
-                "CURRENT",
-                (float)current
-        );
-
-
-        editor.putFloat(
-                "TRADE_PROFIT",
-                (float)profit
-        );
-
-
-        editor.apply();
+        .apply();
 
     }
+
 
 
 
@@ -210,19 +189,21 @@ public class TradeStorage {
 
 
 
+    // =========================
+    // TRADE SAVED FLAG
+    // =========================
+
+
     public void saveTradeSaved(boolean saved){
 
-        SharedPreferences.Editor editor =
-                prefs.edit();
+        prefs.edit()
 
-
-        editor.putBoolean(
+        .putBoolean(
                 "TRADE_SAVED",
                 saved
-        );
+        )
 
-
-        editor.apply();
+        .apply();
 
     }
 
@@ -241,19 +222,21 @@ public class TradeStorage {
 
 
 
+    // =========================
+    // LAST TRADE
+    // =========================
+
+
     public void saveLastTrade(String trade){
 
-        SharedPreferences.Editor editor =
-                prefs.edit();
+        prefs.edit()
 
-
-        editor.putString(
+        .putString(
                 "LAST_TRADE",
                 trade
-        );
+        )
 
-
-        editor.apply();
+        .apply();
 
     }
 
@@ -272,21 +255,21 @@ public class TradeStorage {
 
 
 
-    // SAVE FULL JOURNAL HISTORY
-
-    public void saveJournal(String data){
-
-        SharedPreferences.Editor editor =
-                prefs.edit();
+    // =========================
+    // FULL JOURNAL HISTORY
+    // =========================
 
 
-        editor.putString(
-                "JOURNAL",
-                data
-        );
+    public void saveJournal(String history){
 
+        prefs.edit()
 
-        editor.apply();
+        .putString(
+                "TRADE_HISTORY",
+                history
+        )
+
+        .apply();
 
     }
 
@@ -294,17 +277,28 @@ public class TradeStorage {
 
 
 
-    // LOAD FULL JOURNAL HISTORY
-
     public String getJournal(){
 
         return prefs.getString(
-                "JOURNAL",
+                "TRADE_HISTORY",
                 ""
         );
 
     }
 
+
+
+
+
+    // Clear data (Testing)
+
+    public void clearAll(){
+
+        prefs.edit()
+        .clear()
+        .apply();
+
+    }
 
 
 }
