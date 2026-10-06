@@ -19,7 +19,7 @@ public class MainActivity extends Activity {
     MT5Connector mt5 = new MT5Connector();
     TradeSimulator tradeSimulator;
 DemoPriceSimulator demoPrice = new DemoPriceSimulator();
-TradeJournal tradeJournal = new TradeJournal();
+TradeJournal tradeJournal;
 TradeStorage tradeStorage;
 Handler handler = new Handler();
     
@@ -324,6 +324,7 @@ else{
         super.onCreate(savedInstanceState);
         
 tradeStorage = new TradeStorage(this);
+        tradeJournal = new TradeJournal();
         tradeSaved = tradeStorage.getTradeSaved();
         tradeSimulator = new TradeSimulator(tradeStorage);
         tradeJournal.loadStats(
