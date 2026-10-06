@@ -400,6 +400,34 @@ tradeStorage = new TradeStorage(this);
         layout.addView(connectButton);
         layout.addView(scroll);
 
+      // DARK MODE
+layout.setBackgroundColor(
+        android.graphics.Color.BLACK
+);
+
+title.setTextColor(
+        android.graphics.Color.WHITE
+);
+
+dashboard.setTextColor(
+        android.graphics.Color.WHITE
+);
+
+refreshButton.setTextColor(
+        android.graphics.Color.WHITE
+);
+
+connectButton.setTextColor(
+        android.graphics.Color.WHITE
+);
+
+refreshButton.setBackgroundColor(
+        android.graphics.Color.DKGRAY
+);
+
+connectButton.setBackgroundColor(
+        android.graphics.Color.DKGRAY
+);  
         setContentView(layout);
 
         handler.post(updateTask);
