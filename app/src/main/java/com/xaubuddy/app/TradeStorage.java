@@ -35,23 +35,11 @@ public class TradeStorage {
                 prefs.edit();
 
 
-        editor.putInt(
-                "TOTAL",
-                total
-        );
+        editor.putInt("TOTAL", total);
 
+        editor.putInt("WINS", wins);
 
-        editor.putInt(
-                "WINS",
-                wins
-        );
-
-
-        editor.putInt(
-                "LOSSES",
-                losses
-        );
-
+        editor.putInt("LOSSES", losses);
 
         editor.putFloat(
                 "PROFIT",
@@ -113,7 +101,7 @@ public class TradeStorage {
 
 
 
-    // SAVE OPEN TRADE STATE
+    // SAVE TRADE STATE
 
     public void saveTrade(
 
@@ -128,7 +116,6 @@ public class TradeStorage {
             double profit
 
     ){
-
 
         SharedPreferences.Editor editor =
                 prefs.edit();
@@ -167,14 +154,10 @@ public class TradeStorage {
 
         editor.apply();
 
-
     }
 
 
 
-
-
-    // LOAD OPEN TRADE STATE
 
 
     public String getTradeStatus(){
@@ -226,6 +209,80 @@ public class TradeStorage {
         return prefs.getFloat(
                 "TRADE_PROFIT",
                 0
+        );
+
+    }
+
+
+
+
+
+    // PREVENT DUPLICATE JOURNAL AFTER RESTART
+
+
+    public void saveTradeClosed(
+            boolean closed
+    ){
+
+        SharedPreferences.Editor editor =
+                prefs.edit();
+
+
+        editor.putBoolean(
+                "TRADE_CLOSED",
+                closed
+        );
+
+
+        editor.apply();
+
+    }
+
+
+
+
+    public boolean isTradeClosed(){
+
+        return prefs.getBoolean(
+                "TRADE_CLOSED",
+                false
+        );
+
+    }
+
+
+
+
+
+    // SAVE LAST RESULT
+
+
+    public void saveLastResult(
+            String result
+    ){
+
+        SharedPreferences.Editor editor =
+                prefs.edit();
+
+
+        editor.putString(
+                "LAST_RESULT",
+                result
+        );
+
+
+        editor.apply();
+
+    }
+
+
+
+
+    public String getLastResult(){
+
+        return prefs.getString(
+                "LAST_RESULT",
+                "NONE"
         );
 
     }
