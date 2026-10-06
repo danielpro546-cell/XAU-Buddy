@@ -83,6 +83,7 @@ if(!demoPrice.running){
                 tradeSimulator.update(
         simulatedPrice
 );
+                boolean tradeSaved = false;
                 if(
         tradeSimulator.status.equals("TP HIT")
         ||
