@@ -98,12 +98,19 @@ public class TradeSimulator {
 
             entry = price;
 
+            current = price;
+
+            profit = 0;
+
+
             sl = stopLoss;
 
             tp = takeProfit;
 
 
             status = "OPEN";
+
+            lastResult = "NONE";
 
 
             totalTrades++;
@@ -254,6 +261,7 @@ public class TradeSimulator {
 
 
     }
+
 
 
 
