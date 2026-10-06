@@ -50,6 +50,8 @@ public class TradeSimulator {
 
         type = storage.getTradeType();
 
+        lastResult = storage.getLastResult();
+
         entry = storage.getTradeEntry();
 
         current = storage.getTradeCurrent();
