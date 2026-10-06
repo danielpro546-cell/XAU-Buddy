@@ -30,7 +30,6 @@ public class TradeStorage {
             double profit
     ){
 
-
         SharedPreferences.Editor editor =
                 prefs.edit();
 
@@ -61,6 +60,61 @@ public class TradeStorage {
 
         editor.apply();
 
+    }
+
+
+
+    // SAVE CURRENT OPEN TRADE STATE
+
+    public void saveTradeState(
+
+            String status,
+
+            String type,
+
+            double entry,
+
+            double current,
+
+            double profit
+
+    ){
+
+        SharedPreferences.Editor editor =
+                prefs.edit();
+
+
+        editor.putString(
+                "STATUS",
+                status
+        );
+
+
+        editor.putString(
+                "TYPE",
+                type
+        );
+
+
+        editor.putFloat(
+                "ENTRY",
+                (float)entry
+        );
+
+
+        editor.putFloat(
+                "CURRENT",
+                (float)current
+        );
+
+
+        editor.putFloat(
+                "TRADE_PROFIT",
+                (float)profit
+        );
+
+
+        editor.apply();
 
     }
 
@@ -109,6 +163,66 @@ public class TradeStorage {
 
         return prefs.getFloat(
                 "PROFIT",
+                0
+        );
+
+    }
+
+
+
+
+
+    // LOAD TRADE STATE
+
+
+    public String getTradeStatus(){
+
+        return prefs.getString(
+                "STATUS",
+                "NO TRADE"
+        );
+
+    }
+
+
+
+    public String getTradeType(){
+
+        return prefs.getString(
+                "TYPE",
+                ""
+        );
+
+    }
+
+
+
+    public double getTradeEntry(){
+
+        return prefs.getFloat(
+                "ENTRY",
+                0
+        );
+
+    }
+
+
+
+    public double getTradeCurrent(){
+
+        return prefs.getFloat(
+                "CURRENT",
+                0
+        );
+
+    }
+
+
+
+    public double getTradeProfit(){
+
+        return prefs.getFloat(
+                "TRADE_PROFIT",
                 0
         );
 
