@@ -23,7 +23,7 @@ TradeJournal tradeJournal = new TradeJournal();
 TradeStorage tradeStorage;
 Handler handler = new Handler();
     
-boolean tradeSaved = false;
+boolean tradeSaved; 
     Runnable updateTask = new Runnable() {
 
         @Override
@@ -67,6 +67,8 @@ if(!demoPrice.running){
     if(tradeSimulator.status.equals("NO TRADE")){
 
         tradeSaved = false;
+
+        tradeStorage.saveTradeSaved(false);
 
         tradeSimulator.openTrade(
 
@@ -116,6 +118,7 @@ tradeSimulator.status.equals("SL HIT")
             tradeSimulator.lastResult
 
     );
+                    tradeStorage.saveTradeSaved(true);
                     tradeStorage.saveStats(
 
         tradeJournal.totalTrades,
@@ -321,6 +324,7 @@ else{
         super.onCreate(savedInstanceState);
         
 tradeStorage = new TradeStorage(this);
+        tradeSaved = tradeStorage.getTradeSaved();
         tradeSimulator = new TradeSimulator(tradeStorage);
         tradeJournal.loadStats(
 
