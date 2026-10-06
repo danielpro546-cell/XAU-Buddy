@@ -21,7 +21,6 @@ public class TradeSimulator {
     public double profit = 0;
 
 
-
     public int totalTrades = 0;
 
     public int winTrades = 0;
@@ -30,7 +29,6 @@ public class TradeSimulator {
 
 
     public double winRate = 0;
-
 
 
     private double tp = 0;
@@ -52,6 +50,7 @@ public class TradeSimulator {
 
         lastResult = storage.getLastResult();
 
+
         entry = storage.getTradeEntry();
 
         current = storage.getTradeCurrent();
@@ -69,6 +68,7 @@ public class TradeSimulator {
         calculateWinRate();
 
     }
+
 
 
 
@@ -117,7 +117,6 @@ public class TradeSimulator {
 
             saveTrade();
 
-
         }
 
 
@@ -150,13 +149,11 @@ public class TradeSimulator {
             profit = current - entry;
 
 
-
             if(current >= tp){
 
                 closeTrade(true);
 
             }
-
             else if(current <= sl){
 
                 closeTrade(false);
@@ -174,13 +171,11 @@ public class TradeSimulator {
             profit = entry - current;
 
 
-
             if(current <= tp){
 
                 closeTrade(true);
 
             }
-
             else if(current >= sl){
 
                 closeTrade(false);
@@ -216,7 +211,6 @@ public class TradeSimulator {
 
 
         }
-
         else{
 
 
@@ -257,6 +251,11 @@ public class TradeSimulator {
 
 
         }
+        else{
+
+            winRate = 0;
+
+        }
 
 
     }
@@ -270,36 +269,25 @@ public class TradeSimulator {
 
         storage.saveTrade(
 
-    status,
+                status,
 
-    type,
+                type,
 
-    lastResult,
+                lastResult,
 
-    entry,
+                entry,
 
-    current,
-
-    profit
-
-);
-
-
-        storage.saveStats(
-
-                totalTrades,
-
-                winTrades,
-
-                lossTrades,
+                current,
 
                 profit
 
         );
 
 
-    }
 
+        // stats ကို journal ကပဲ update လုပ်မယ်
+
+    }
 
 
 }
