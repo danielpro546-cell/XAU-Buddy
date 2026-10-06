@@ -7,6 +7,9 @@ import java.util.ArrayList;
 public class TradeJournal {
 
 
+    private TradeStorage storage;
+
+
     public ArrayList<String> history =
             new ArrayList<>();
 
@@ -22,6 +25,28 @@ public class TradeJournal {
 
 
 
+    public TradeJournal(
+            TradeStorage storage
+    ){
+
+        this.storage = storage;
+
+
+        String lastTrade =
+                storage.getLastTrade();
+
+
+        if(!lastTrade.equals("NO TRADE")){
+
+            history.add(lastTrade);
+
+        }
+
+    }
+
+
+
+
     public void addTrade(
             String type,
             double entry,
@@ -30,8 +55,6 @@ public class TradeJournal {
             String result
     ){
 
-
-        // prevent invalid duplicate result
 
         if(result.equals("NONE")){
 
@@ -42,6 +65,7 @@ public class TradeJournal {
 
 
         totalTrades++;
+
 
 
         if(result.equals("WIN")){
@@ -85,6 +109,12 @@ public class TradeJournal {
 
 
         history.add(record);
+
+
+
+        // SAVE LAST TRADE
+
+        storage.saveLastTrade(record);
 
 
     }
@@ -152,9 +182,6 @@ public class TradeJournal {
 
 
     }
-
-
-
 
 
 }
