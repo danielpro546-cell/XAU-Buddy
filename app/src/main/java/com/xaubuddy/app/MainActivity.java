@@ -17,11 +17,11 @@ public class MainActivity extends Activity {
     StrategyEngine strategy = new StrategyEngine();
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
-    TradeSimulator tradeSimulator = new TradeSimulator();
-    DemoPriceSimulator demoPrice = new DemoPriceSimulator();
+    TradeSimulator tradeSimulator;
+DemoPriceSimulator demoPrice = new DemoPriceSimulator();
 TradeJournal tradeJournal = new TradeJournal();
-    TradeStorage tradeStorage;
-    Handler handler = new Handler();
+TradeStorage tradeStorage;
+Handler handler = new Handler();
     
 boolean tradeSaved = false;
     Runnable updateTask = new Runnable() {
@@ -321,6 +321,7 @@ else{
         super.onCreate(savedInstanceState);
         
 tradeStorage = new TradeStorage(this);
+        tradeSimulator = new TradeSimulator(tradeStorage);
         tradeJournal.loadStats(
 
         tradeStorage.getTotal(),
