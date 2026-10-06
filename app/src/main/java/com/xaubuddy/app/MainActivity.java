@@ -286,6 +286,17 @@ if(!demoPrice.running){
         super.onCreate(savedInstanceState);
         
 tradeStorage = new TradeStorage(this);
+        tradeJournal.loadStats(
+
+        tradeStorage.getTotal(),
+
+        tradeStorage.getWins(),
+
+        tradeStorage.getLosses(),
+
+        tradeStorage.getProfit()
+
+);
         LinearLayout layout =
                 new LinearLayout(this);
 
