@@ -118,6 +118,10 @@ tradeSimulator.status.equals("SL HIT")
             tradeSimulator.lastResult
 
     );
+                    tradeStorage.saveLastTrade(
+        tradeJournal.getLastTrade()
+);
+                    
                     tradeStorage.saveTradeSaved(true);
                     tradeStorage.saveStats(
 
@@ -285,7 +289,7 @@ else{
 +tradeJournal.totalProfit
 
 +"\n\nLAST TRADE:\n"
-+tradeJournal.getLastTrade()
++tradeStorage.getLastTrade()
                 +"\n\nBALANCE: $"
                 +riskManager.balance
 
