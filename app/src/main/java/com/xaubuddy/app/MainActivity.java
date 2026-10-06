@@ -20,6 +20,7 @@ public class MainActivity extends Activity {
     TradeSimulator tradeSimulator = new TradeSimulator();
     DemoPriceSimulator demoPrice = new DemoPriceSimulator();
 TradeJournal tradeJournal = new TradeJournal();
+    TradeStorage tradeStorage;
     Handler handler = new Handler();
 
     Runnable updateTask = new Runnable() {
@@ -272,7 +273,8 @@ if(!demoPrice.running){
     protected void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-
+        
+tradeStorage = new TradeStorage(this);
         LinearLayout layout =
                 new LinearLayout(this);
 
