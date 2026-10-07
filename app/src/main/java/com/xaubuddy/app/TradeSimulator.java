@@ -116,7 +116,6 @@ public class TradeSimulator {
 
             lastResult = "NONE";
 
-totalTrades++;
             saveTrade();
 
         }
