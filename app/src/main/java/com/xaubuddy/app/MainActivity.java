@@ -534,7 +534,7 @@ public class MainActivity extends Activity {
 
 
         +"\nLOT: "
-        +riskManager.lotSize
++String.format("%.2f", riskManager.lotSize)
 
 
 
