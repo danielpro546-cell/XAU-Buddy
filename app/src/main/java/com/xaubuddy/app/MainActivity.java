@@ -24,7 +24,9 @@ TradeStorage tradeStorage;
 Handler handler = new Handler();
     
 boolean tradeSaved; 
- boolean waitingNewSetup = false;   
+ boolean waitingNewSetup = false;
+   long lastTradeCloseTime = 0;
+long tradeCooldown = 30000; // 30 seconds 
     Runnable updateTask = new Runnable() {
 
         @Override
@@ -97,6 +99,8 @@ marketData.m5Signal.equals("SELL SETUP"))
 tradeSimulator.status.equals("NO TRADE")
 &&
 !waitingNewSetup
+  &&
+System.currentTimeMillis() - lastTradeCloseTime >= tradeCooldown      
 
 ){
         tradeSaved = false;
@@ -177,7 +181,8 @@ tradeSimulator.lossTrades = tradeJournal.losses;
 tradeSimulator.calculateWinRate();   
                     tradeSimulator.resetTrade();
                     waitingNewSetup = true;
-
+                    
+lastTradeCloseTime = System.currentTimeMillis();
 }
 
                 showDashboard();
