@@ -7,7 +7,7 @@ public class RiskManager {
     public double tp1 = 0;
     public double tp2 = 0;
 
-    public double balance = 10;
+    public double balance = 10.0;
 
     public double riskPercent = 0.5;
 
@@ -15,62 +15,59 @@ public class RiskManager {
 
     public double lotSize = 0.01;
 
-    public double riskDistance = 0;
+    public double riskDistance = 15.0;
 
-    public String rr = "WAITING";
+    public String rr = "1:2";
 
-    public void calculate(double price, String signal){
+    public void calculate(double price, String signal) {
 
-        riskMoney = balance * (riskPercent / 100);
+        riskMoney = round(balance * (riskPercent / 100.0));
 
         riskDistance = calculateRiskDistance(price);
 
         calculateLotSize();
 
-        if(signal.equals("BUY")){
+        if (signal.equals("BUY")) {
 
-            entry = price;
-            sl = entry - riskDistance;
-            tp1 = entry + riskDistance;
-            tp2 = entry + (riskDistance * 2);
+            entry = round(price);
+            sl = round(entry - riskDistance);
+            tp1 = round(entry + riskDistance);
+            tp2 = round(entry + (riskDistance * 2));
             rr = "1:2";
 
-        }
-        else if(signal.equals("SELL")){
+        } else if (signal.equals("SELL")) {
 
-            entry = price;
-            sl = entry + riskDistance;
-            tp1 = entry - riskDistance;
-            tp2 = entry - (riskDistance * 2);
+            entry = round(price);
+            sl = round(entry + riskDistance);
+            tp1 = round(entry - riskDistance);
+            tp2 = round(entry - (riskDistance * 2));
             rr = "1:2";
-
-        }
-        // WAITING ဖြစ်ရင် နောက်ဆုံး Entry / SL / TP ကို မဖျက်တော့ဘူး
-    }
-
-    private double calculateRiskDistance(double price){
-
-        if(price >= 4000){
-            return 15;
-        }
-        else if(price >= 3000){
-            return 12;
-        }
-        else{
-            return 10;
         }
     }
 
-    private void calculateLotSize(){
+    private double calculateRiskDistance(double price) {
 
-        if(riskMoney <= 1){
+        if (price >= 4000) {
+            return 15.0;
+        } else if (price >= 3000) {
+            return 12.0;
+        } else {
+            return 10.0;
+        }
+    }
+
+    private void calculateLotSize() {
+
+        if (riskMoney <= 1.0) {
             lotSize = 0.01;
-        }
-        else if(riskMoney <= 5){
+        } else if (riskMoney <= 5.0) {
             lotSize = 0.05;
-        }
-        else{
+        } else {
             lotSize = 0.10;
         }
+    }
+
+    private double round(double value) {
+        return Math.round(value * 100.0) / 100.0;
     }
 }
