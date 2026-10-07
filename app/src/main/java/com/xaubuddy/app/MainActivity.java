@@ -66,6 +66,20 @@ strategy.signal.equals("SELL")
 )
 &&
 strategy.confidence >= 70
+    &&
+(
+(strategy.signal.equals("BUY")
+&&
+marketData.h1Bias.equals("BULLISH")
+&&
+marketData.m5Signal.equals("BUY SETUP"))
+||
+(strategy.signal.equals("SELL")
+&&
+marketData.h1Bias.equals("BEARISH")
+&&
+marketData.m5Signal.equals("SELL SETUP"))
+)                
 ){
 
     if(
