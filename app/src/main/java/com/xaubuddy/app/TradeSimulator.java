@@ -243,7 +243,7 @@ public class TradeSimulator {
 
 
 
-    private void calculateWinRate(){
+    public void calculateWinRate(){
 
 
         if(totalTrades > 0){
