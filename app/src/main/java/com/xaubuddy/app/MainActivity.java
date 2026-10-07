@@ -499,11 +499,11 @@ public class MainActivity extends Activity {
 
 
         +"\nCURRENT: "
-        +tradeSimulator.current
++String.format("%.2f", tradeSimulator.current)
 
 
         +"\nPROFIT: "
-        +tradeSimulator.profit
++String.format("%.2f", tradeSimulator.profit)
 
 
 
