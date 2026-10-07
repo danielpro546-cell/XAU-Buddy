@@ -116,7 +116,7 @@ public class TradeSimulator {
 
             lastResult = "NONE";
 
-
+totalTrades++;
             saveTrade();
 
         }
@@ -288,7 +288,13 @@ public class TradeSimulator {
                 profit
 
         );
-
+        
+storage.saveStats(
+        totalTrades,
+        winTrades,
+        lossTrades,
+        profit
+);
 
     }
 
