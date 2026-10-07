@@ -1,130 +1,71 @@
 package com.xaubuddy.app;
 
-import java.util.ArrayList;
-
-
 public class MarketData {
 
-
     public double price = 4167.00;
-
 
     public double h1Open = 4160;
     public double h1High = 4170;
     public double h1Low = 4155;
     public double h1Close = 4167;
 
-
     public double m5Open = 4165;
     public double m5High = 4168;
     public double m5Low = 4162;
     public double m5Close = 4167;
 
-
     public double ema20 = 4165;
     public double ema50 = 4160;
     public double rsi14 = 60;
-    public int candleId = 0;
-
-private int tick = 0;
-
 
     public String h1Bias = "BULLISH";
-
     public String m5Signal = "BUY SETUP";
-
 
     public boolean dataReady = false;
 
-
     private String status = "WAITING";
 
+    public void updateLiveData() {
 
+        double move = (Math.random() * 8) - 4;
+        price += move;
 
-    public void updateLiveData(){
+        h1Close = price;
+        m5Close = price;
 
+        if(price > h1High) h1High = price;
+        if(price < h1Low) h1Low = price;
 
-        // Demo Feed
-        // MT5 Feed later replace here
+        ema20 = ema20 + (price - ema20) * 0.20;
+        ema50 = ema50 + (price - ema50) * 0.08;
 
+        rsi14 = 50 + (price - ema50);
 
-        tick++;
-
-if(tick >= 3){
-
-    tick = 0;
-
-    candleId++;
-
-}
-
-price = 4167.0 + (candleId * 2);
-
-h1Close = price;
-
-m5Close = price;
-
-
-
-        ema20 = 4165;
-
-        ema50 = 4160;
-
-
-        rsi14 = 60;
-
-
-
+        if(rsi14 > 70) rsi14 = 70;
+        if(rsi14 < 30) rsi14 = 30;
 
         if(ema20 > ema50){
-
             h1Bias = "BULLISH";
+        }else{
+            h1Bias = "BEARISH";
+        }
 
+        if(h1Bias.equals("BULLISH") && rsi14 > 55){
+            m5Signal = "BUY SETUP";
+        }
+        else if(h1Bias.equals("BEARISH") && rsi14 < 45){
+            m5Signal = "SELL SETUP";
         }
         else{
-
-            h1Bias = "BEARISH";
-
+            m5Signal = "WAIT";
         }
 
-
-
-
-        if(candleId % 2 == 0){
-
-    m5Signal = "BUY SETUP";
-
-    rsi14 = 60;
-
-}
-else{
-
-    m5Signal = "SELL SETUP";
-
-    rsi14 = 40;
-
-}
-
-
-
         dataReady = true;
-
-
-        status = "DEMO DATA READY";
-
-
+        status = "DEMO LIVE DATA";
     }
 
-
-
-
-    public String getStatus(){
-
-
+    public String getStatus() {
         return status;
-
-
     }
-
 
 }
