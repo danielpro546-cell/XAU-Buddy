@@ -136,6 +136,7 @@ tradeSimulator.status.equals("SL HIT")
         tradeJournal.totalProfit
 
 );
+                    tradeSimulator.resetTrade();
 
 }
 
