@@ -24,6 +24,9 @@ public class MarketData {
     public double ema20 = 4165;
     public double ema50 = 4160;
     public double rsi14 = 60;
+    public int candleId = 0;
+
+private int tick = 0;
 
 
     public String h1Bias = "BULLISH";
