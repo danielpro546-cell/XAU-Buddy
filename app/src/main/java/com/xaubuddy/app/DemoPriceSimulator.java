@@ -6,30 +6,38 @@ public class DemoPriceSimulator {
 
     public boolean running = false;
 
-    public void start(double startPrice){
+    public void start(double startPrice) {
 
         demoPrice = startPrice;
+
         running = true;
 
     }
 
-    public double movePrice(String signal){
+    public double movePrice(String signal) {
 
-        if(!running){
+        if (!running) {
             return demoPrice;
         }
 
-        // Random movement -3 to +3
-        double move = (Math.random() * 6) - 3;
+        double move = (Math.random() * 4.0) - 2.0;
+
+        if (signal.equals("BUY")) {
+            move += 0.5;
+        } else if (signal.equals("SELL")) {
+            move -= 0.5;
+        }
 
         demoPrice += move;
 
-        return demoPrice;
+        return Math.round(demoPrice * 100.0) / 100.0;
+
     }
 
-    public void reset(double price){
+    public void reset(double price) {
 
         demoPrice = price;
+
         running = false;
 
     }
