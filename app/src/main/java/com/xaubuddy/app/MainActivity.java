@@ -137,6 +137,13 @@ tradeSimulator.status.equals("SL HIT")
         tradeJournal.totalProfit
 
 );
+                 tradeSimulator.totalTrades = tradeJournal.totalTrades;
+
+tradeSimulator.winTrades = tradeJournal.wins;
+
+tradeSimulator.lossTrades = tradeJournal.losses;
+
+tradeSimulator.calculateWinRate();   
                     tradeSimulator.resetTrade();
 
 }
