@@ -59,7 +59,8 @@ if(!demoPrice.running){
                         marketData.price,
                         strategy.signal
                 );
-                if(
+                
+            if(
 marketData.m5Signal.equals("BUY SETUP")
 ||
 marketData.m5Signal.equals("SELL SETUP")
