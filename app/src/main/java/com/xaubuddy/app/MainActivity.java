@@ -8,437 +8,708 @@ import android.widget.*;
 
 public class MainActivity extends Activity {
 
+
     TextView dashboard;
 
     Button refreshButton;
     Button connectButton;
 
+
     MarketData marketData = new MarketData();
+
     StrategyEngine strategy = new StrategyEngine();
+
     RiskManager riskManager = new RiskManager();
+
     MT5Connector mt5 = new MT5Connector();
+
+
     TradeSimulator tradeSimulator;
-DemoPriceSimulator demoPrice = new DemoPriceSimulator();
-TradeJournal tradeJournal;
-TradeStorage tradeStorage;
-Handler handler = new Handler();
-    
-boolean tradeSaved; 
- boolean waitingNewSetup = false;
-   long lastTradeCloseTime = 0;
-long tradeCooldown = 30000; // 30 seconds 
-    Runnable updateTask = new Runnable() {
+
+    DemoPriceSimulator demoPrice =
+            new DemoPriceSimulator();
+
+
+    TradeJournal tradeJournal;
+
+    TradeStorage tradeStorage;
+
+
+    Handler handler = new Handler();
+
+
+
+    boolean tradeSaved = false;
+
+
+    boolean waitingNewSetup = false;
+
+
+    long lastTradeCloseTime = 0;
+
+
+    long tradeCooldown = 30000;
+
+
+
+    String lastTradeSignal = "";
+
+
+
+    Runnable updateTask =
+            new Runnable() {
 
         @Override
         public void run() {
 
             loadData();
 
-            handler.postDelayed(this,10000);
+            handler.postDelayed(
+                    this,
+                    10000
+            );
 
         }
 
     };
 
+
+
+
     private void loadData(){
 
+
         marketData.updateLiveData();
-        
-if(!demoPrice.running){
 
-    demoPrice.start(
-            marketData.price
-    );
 
-}
-        new Handler().postDelayed(() -> {
+
+        if(!demoPrice.running){
+
+            demoPrice.start(
+                    marketData.price
+            );
+
+        }
+
+
+
+        new Handler().postDelayed(
+                () -> {
+
 
             if(marketData.dataReady){
 
-                strategy.analyze(marketData);
-                
-                riskManager.calculate(
-                        marketData.price,
-                        strategy.signal
+
+
+                strategy.analyze(
+                        marketData
                 );
-                
-            if(
-marketData.m5Signal.equals("BUY SETUP")
-||
-marketData.m5Signal.equals("SELL SETUP")
-){
 
-    waitingNewSetup = false;
 
-}
-                if(
-(
-strategy.signal.equals("BUY")
-||
-strategy.signal.equals("SELL")
-)
-&&
-strategy.confidence >= 70
-    &&
-(
-(strategy.signal.equals("BUY")
-&&
-marketData.h1Bias.equals("BULLISH")
-&&
-marketData.m5Signal.equals("BUY SETUP"))
-||
-(strategy.signal.equals("SELL")
-&&
-marketData.h1Bias.equals("BEARISH")
-&&
-marketData.m5Signal.equals("SELL SETUP"))
-)                
-){
 
-    if(
-tradeSimulator.status.equals("NO TRADE")
-&&
-!waitingNewSetup
-  &&
-System.currentTimeMillis() - lastTradeCloseTime >= tradeCooldown      
+                riskManager.calculate(
 
-){
-        tradeSaved = false;
+                        marketData.price,
 
-        tradeStorage.saveTradeSaved(false);
+                        strategy.signal
 
-        tradeSimulator.openTrade(
+                );
 
-            strategy.signal,
 
-            marketData.price,
 
-            riskManager.sl,
+                // =====================
+                // NEW SETUP DETECTION
+                // =====================
 
-            riskManager.tp1
+                if(waitingNewSetup){
 
-        );
 
-    }
+                    if(
+                    marketData.m5Signal.equals("BUY SETUP")
+                    ||
+                    marketData.m5Signal.equals("SELL SETUP")
+                    ){
 
-}
+                        waitingNewSetup = false;
+
+                    }
+
+                }
+
+
+
+                checkTradeEntry();
+
+
 
                 double simulatedPrice =
-        demoPrice.movePrice(
-                strategy.signal
-        );
+                        demoPrice.movePrice(
+                                strategy.signal
+                        );
+
+
+
                 tradeSimulator.update(
-        simulatedPrice
-);
-                if(
-(
-tradeSimulator.status.equals("TP HIT")
-||
-tradeSimulator.status.equals("SL HIT")
-)
-&&
-!tradeSaved
-){
+                        simulatedPrice
+                );
 
-    tradeSaved = true;
 
-    tradeJournal.addTrade(
 
-            tradeSimulator.type,
+                checkTradeClose();
 
-            tradeSimulator.entry,
 
-            tradeSimulator.current,
-
-            tradeSimulator.profit,
-
-            tradeSimulator.lastResult
-
-    );
-                    tradeStorage.saveLastTrade(
-        tradeJournal.getLastTrade()
-);
-                    
-                    tradeStorage.saveTradeSaved(true);
-                    
-                    tradeStorage.saveStats(
-
-        tradeJournal.totalTrades,
-
-        tradeJournal.wins,
-
-        tradeJournal.losses,
-
-        tradeJournal.totalProfit
-
-);
-                 tradeSimulator.totalTrades = tradeJournal.totalTrades;
-
-tradeSimulator.winTrades = tradeJournal.wins;
-
-tradeSimulator.lossTrades = tradeJournal.losses;
-
-tradeSimulator.calculateWinRate();   
-                    tradeSimulator.resetTrade();
-                    waitingNewSetup = true;
-                    
-lastTradeCloseTime = System.currentTimeMillis();
-}
 
                 showDashboard();
 
-            }else{
-                
+
+
+            }
+            else{
+
+
                 dashboard.setText(
 
-                        "===== XAU BUDDY V5.8 =====\n\n"
+                        "===== XAU BUDDY V5.9 =====\n\n"
 
                         +"STATUS: "
                         +marketData.getStatus()
 
                         +"\n\nWaiting Data..."
 
-                        +"\n\nPRICE: "
+                        +"\nPRICE: "
                         +marketData.price
 
                 );
 
+
             }
+
+
 
         },3000);
 
+
+    }
+    private void checkTradeEntry(){
+
+
+        if(
+            strategy.signal.equals("BUY")
+            ||
+            strategy.signal.equals("SELL")
+        ){
+
+
+            if(
+                strategy.confidence >= 70
+                &&
+                !waitingNewSetup
+                &&
+                tradeSimulator.status.equals("NO TRADE")
+                &&
+                System.currentTimeMillis()
+                -
+                lastTradeCloseTime
+                >=
+                tradeCooldown
+            ){
+
+
+                if(
+                    (strategy.signal.equals("BUY")
+                    &&
+                    marketData.h1Bias.equals("BULLISH")
+                    &&
+                    marketData.m5Signal.equals("BUY SETUP"))
+
+                    ||
+
+                    (strategy.signal.equals("SELL")
+                    &&
+                    marketData.h1Bias.equals("BEARISH")
+                    &&
+                    marketData.m5Signal.equals("SELL SETUP"))
+                ){
+
+
+                    tradeSaved = false;
+
+
+                    tradeStorage.saveTradeSaved(false);
+
+
+
+                    lastTradeSignal =
+                            strategy.signal;
+
+
+
+                    tradeSimulator.openTrade(
+
+                            strategy.signal,
+
+                            marketData.price,
+
+                            riskManager.sl,
+
+                            riskManager.tp1
+
+                    );
+
+
+                }
+
+
+            }
+
+
+        }
+
+
     }
 
+
+
+
+
+    private void checkTradeClose(){
+
+
+
+        if(
+        (
+        tradeSimulator.status.equals("TP HIT")
+        ||
+        tradeSimulator.status.equals("SL HIT")
+        )
+        &&
+        !tradeSaved
+        ){
+
+
+
+            tradeSaved = true;
+
+
+
+            tradeJournal.addTrade(
+
+                    tradeSimulator.type,
+
+                    tradeSimulator.entry,
+
+                    tradeSimulator.current,
+
+                    tradeSimulator.profit,
+
+                    tradeSimulator.lastResult
+
+            );
+
+
+
+            tradeStorage.saveLastTrade(
+
+                    tradeJournal.getLastTrade()
+
+            );
+
+
+
+            tradeStorage.saveTradeSaved(
+                    true
+            );
+
+
+
+            tradeStorage.saveStats(
+
+                    tradeJournal.totalTrades,
+
+                    tradeJournal.wins,
+
+                    tradeJournal.losses,
+
+                    tradeJournal.totalProfit
+
+            );
+
+
+
+            tradeSimulator.totalTrades =
+                    tradeJournal.totalTrades;
+
+
+            tradeSimulator.winTrades =
+                    tradeJournal.wins;
+
+
+            tradeSimulator.lossTrades =
+                    tradeJournal.losses;
+
+
+
+            tradeSimulator.calculateWinRate();
+
+
+
+            tradeSimulator.resetTrade();
+
+
+
+            waitingNewSetup = true;
+
+
+
+            lastTradeCloseTime =
+                    System.currentTimeMillis();
+
+
+
+        }
+
+
+    }
     private void showDashboard(){
-        
-if(strategy.signal.equals("BUY")){
 
-    dashboard.setTextColor(
-            android.graphics.Color.GREEN
-    );
 
-}
-else if(strategy.signal.equals("SELL")){
+        if(strategy.signal.equals("BUY")){
 
-    dashboard.setTextColor(
-            android.graphics.Color.RED
-    );
+            dashboard.setTextColor(
+                    android.graphics.Color.GREEN
+            );
 
-}
-else{
+        }
+        else if(strategy.signal.equals("SELL")){
 
-    dashboard.setTextColor(
-            android.graphics.Color.WHITE
-    );
+            dashboard.setTextColor(
+                    android.graphics.Color.RED
+            );
 
-}
+        }
+        else{
+
+            dashboard.setTextColor(
+                    android.graphics.Color.WHITE
+            );
+
+        }
+
+
+
         String time =
                 java.text.DateFormat
-                        .getTimeInstance()
-                        .format(new java.util.Date());
+                .getTimeInstance()
+                .format(
+                    new java.util.Date()
+                );
+
+
 
         dashboard.setText(
 
-                "===== XAU BUDDY V5.8 =====\n\n"
 
-                +"PRICE: "
-                +marketData.price
+        "===== XAU BUDDY V5.9 =====\n\n"
 
-                +"\nEMA20: "
-                +marketData.ema20
 
-                +"\nEMA50: "
-                +marketData.ema50
+        +"PRICE: "
+        +marketData.price
 
-                +"\nRSI14: "
-                +marketData.rsi14
 
-                +"\n\nH1: "
-                +marketData.h1Bias
+        +"\nEMA20: "
+        +marketData.ema20
 
-                +"\nM5: "
-                +marketData.m5Signal
 
-                +"\n\nBOS: "
-                +strategy.bos
+        +"\nEMA50: "
+        +marketData.ema50
 
-                +"\nCHoCH: "
-                +strategy.choch
 
-                +"\nFVG: "
-                +strategy.fvg
+        +"\nRSI14: "
+        +marketData.rsi14
 
-                +"\nLiquidity: "
-                +strategy.liquidity
 
-                +"\n\nSIGNAL: "
-                +strategy.signal
 
-                +"\nCONFIDENCE: "
-                +strategy.confidence
-                +"%"
+        +"\n\nH1: "
+        +marketData.h1Bias
 
-                +"\n\nENTRY: "
-                +riskManager.entry
 
-                +"\nSL: "
-                +riskManager.sl
+        +"\nM5: "
+        +marketData.m5Signal
 
-                +"\nTP1: "
-                +riskManager.tp1
 
-                +"\nTP2: "
-                +riskManager.tp2
 
-                +"\nRR: "
-                +riskManager.rr
-            
-+"\n\nTRADE STATUS: "
-+tradeSimulator.status
+        +"\n\nBOS: "
+        +strategy.bos
 
-+"\nTYPE: "
-+tradeSimulator.type
 
-+"\nTRADE ENTRY: "
-+tradeSimulator.entry
+        +"\nCHoCH: "
+        +strategy.choch
 
-+"\nCURRENT PRICE: "
-+tradeSimulator.current
 
-+"\nPROFIT: "
-+tradeSimulator.profit
+        +"\nFVG: "
+        +strategy.fvg
 
-+"\nWIN RATE: "
-+tradeSimulator.winRate
-+"%"
-            +"\nTOTAL TRADES: "
-+tradeSimulator.totalTrades
 
-+"\nWINS: "
-+tradeSimulator.winTrades
+        +"\nLiquidity: "
+        +strategy.liquidity
 
-+"\nLOSSES: "
-+tradeSimulator.lossTrades
 
-+"\nLAST RESULT: "
-+tradeSimulator.lastResult
-            +"\n\n===== TRADE JOURNAL ====="
 
-+"\nTOTAL JOURNAL: "
-+tradeJournal.totalTrades
+        +"\n\nSIGNAL: "
+        +strategy.signal
 
-+"\nJOURNAL WIN: "
-+tradeJournal.wins
 
-+"\nJOURNAL LOSS: "
-+tradeJournal.losses
+        +"\nCONFIDENCE: "
+        +strategy.confidence
+        +"%"
 
-+"\nJOURNAL PROFIT: "
-+tradeJournal.totalProfit
 
-+"\n\nLAST TRADE:\n"
-+tradeStorage.getLastTrade()
-                +"\n\nBALANCE: $"
-                +riskManager.balance
 
-                +"\nRISK: "
-                +riskManager.riskPercent
-                +"%"
+        +"\n\nENTRY: "
+        +riskManager.entry
 
-                +"\nRISK MONEY: $"
-                +riskManager.riskMoney
 
-                +"\nLOT SIZE: "
-                +riskManager.lotSize
-                            +"\n\n========================"
+        +"\nSL: "
+        +riskManager.sl
 
-                +"\nDATA STATUS: "
-                +marketData.getStatus()
 
-                +"\nLAST UPDATE: "
-                +time
+        +"\nTP1: "
+        +riskManager.tp1
 
-                +"\nMODE: DEMO"
 
-                +"\nVERSION: V5.8"
+        +"\nTP2: "
+        +riskManager.tp2
 
-                +"\nMT5: "
-                +mt5.getStatus()
-            +"\nWAITING NEW SETUP: "
-+waitingNewSetup
+
+        +"\nRR: "
+        +riskManager.rr
+
+
+
+        +"\n\nTRADE STATUS: "
+        +tradeSimulator.status
+
+
+        +"\nTYPE: "
+        +tradeSimulator.type
+
+
+        +"\nENTRY PRICE: "
+        +tradeSimulator.entry
+
+
+        +"\nCURRENT: "
+        +tradeSimulator.current
+
+
+        +"\nPROFIT: "
+        +tradeSimulator.profit
+
+
+
+        +"\n\nWIN RATE: "
+        +tradeSimulator.winRate
+        +"%"
+
+
+
+        +"\nTOTAL TRADES: "
+        +tradeSimulator.totalTrades
+
+
+        +"\nWINS: "
+        +tradeSimulator.winTrades
+
+
+        +"\nLOSSES: "
+        +tradeSimulator.lossTrades
+
+
+
+        +"\nLAST RESULT: "
+        +tradeSimulator.lastResult
+
+
+
+        +"\n\n===== JOURNAL ====="
+
+
+        +"\nTOTAL: "
+        +tradeJournal.totalTrades
+
+
+        +"\nWIN: "
+        +tradeJournal.wins
+
+
+        +"\nLOSS: "
+        +tradeJournal.losses
+
+
+        +"\nPROFIT: "
+        +tradeJournal.totalProfit
+
+
+
+        +"\n\nLAST TRADE:\n"
+        +tradeStorage.getLastTrade()
+
+
+
+        +"\n\nBALANCE: $"
+        +riskManager.balance
+
+
+        +"\nRISK: "
+        +riskManager.riskPercent
+        +"%"
+
+
+        +"\nLOT: "
+        +riskManager.lotSize
+
+
+
+        +"\n\nDATA: "
+        +marketData.getStatus()
+
+
+        +"\nMODE: DEMO"
+
+
+        +"\nVERSION: V5.9"
+
+
+        +"\nMT5: "
+        +mt5.getStatus()
+
+
+        +"\nWAITING NEW SETUP: "
+        +waitingNewSetup
+
+
+        +"\n\nLAST UPDATE: "
+        +time
+
 
         );
 
+
     }
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState){
 
         super.onCreate(savedInstanceState);
-        
-tradeStorage = new TradeStorage(this);
-        tradeJournal = new TradeJournal(tradeStorage);
-        tradeSaved = tradeStorage.getTradeSaved();
-        tradeSimulator = new TradeSimulator(tradeStorage);
+
+
+        tradeStorage =
+                new TradeStorage(this);
+
+
+        tradeJournal =
+                new TradeJournal(
+                        tradeStorage
+                );
+
+
+        tradeSaved =
+                tradeStorage.getTradeSaved();
+
+
+        tradeSimulator =
+                new TradeSimulator(
+                        tradeStorage
+                );
+
+
+
         tradeJournal.loadStats(
 
-        tradeStorage.getTotal(),
+                tradeStorage.getTotal(),
 
-        tradeStorage.getWins(),
+                tradeStorage.getWins(),
 
-        tradeStorage.getLosses(),
+                tradeStorage.getLosses(),
 
-        tradeStorage.getProfit()
+                tradeStorage.getProfit()
 
-);
+        );
+
+
+
         LinearLayout layout =
                 new LinearLayout(this);
+
 
         layout.setOrientation(
                 LinearLayout.VERTICAL
         );
 
+
         layout.setPadding(
-                30,40,30,30
+                30,
+                40,
+                30,
+                30
         );
+
+
 
         TextView title =
                 new TextView(this);
 
+
         title.setText(
-                "XAU Buddy V5"
+                "XAU Buddy V5.9"
         );
 
+
         title.setTextSize(30);
+
 
         title.setGravity(
                 Gravity.CENTER
         );
 
+
+
         dashboard =
                 new TextView(this);
 
+
         dashboard.setTextSize(18);
+
+
 
         refreshButton =
                 new Button(this);
+
 
         refreshButton.setText(
                 "REFRESH DATA"
         );
 
+
+
         connectButton =
                 new Button(this);
+
 
         connectButton.setText(
                 "CONNECT MT5"
         );
 
+
+
         ScrollView scroll =
                 new ScrollView(this);
 
-        scroll.addView(dashboard);
+
+        scroll.addView(
+                dashboard
+        );
+
+
 
         refreshButton.setOnClickListener(v -> {
 
@@ -446,53 +717,84 @@ tradeStorage = new TradeStorage(this);
 
         });
 
+
+
         connectButton.setOnClickListener(v -> {
 
+
             dashboard.setText(
+
                     "MT5 STATUS: "
-                    + mt5.getStatus()
+                    +
+                    mt5.getStatus()
+
             );
+
 
         });
 
+
+
         layout.addView(title);
+
         layout.addView(refreshButton);
+
         layout.addView(connectButton);
+
         layout.addView(scroll);
 
-      // DARK MODE
-layout.setBackgroundColor(
-        android.graphics.Color.BLACK
-);
 
-title.setTextColor(
-        android.graphics.Color.WHITE
-);
 
-dashboard.setTextColor(
-        android.graphics.Color.WHITE
-);
+        // DARK MODE
 
-refreshButton.setTextColor(
-        android.graphics.Color.WHITE
-);
+        layout.setBackgroundColor(
+                android.graphics.Color.BLACK
+        );
 
-connectButton.setTextColor(
-        android.graphics.Color.WHITE
-);
 
-refreshButton.setBackgroundColor(
-        android.graphics.Color.DKGRAY
-);
+        title.setTextColor(
+                android.graphics.Color.WHITE
+        );
 
-connectButton.setBackgroundColor(
-        android.graphics.Color.DKGRAY
-);  
+
+        dashboard.setTextColor(
+                android.graphics.Color.WHITE
+        );
+
+
+        refreshButton.setTextColor(
+                android.graphics.Color.WHITE
+        );
+
+
+        connectButton.setTextColor(
+                android.graphics.Color.WHITE
+        );
+
+
+
+        refreshButton.setBackgroundColor(
+                android.graphics.Color.DKGRAY
+        );
+
+
+        connectButton.setBackgroundColor(
+                android.graphics.Color.DKGRAY
+        );
+
+
+
         setContentView(layout);
+
+
 
         handler.post(updateTask);
 
+
     }
+
+
+
 
 
     @Override
@@ -500,8 +802,12 @@ connectButton.setBackgroundColor(
 
         super.onDestroy();
 
-        handler.removeCallbacks(updateTask);
+
+        handler.removeCallbacks(
+                updateTask
+        );
 
     }
+
 
 }
