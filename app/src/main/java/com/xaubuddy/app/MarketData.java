@@ -90,16 +90,20 @@ m5Close = price;
 
 
 
-        if(rsi14 > 50){
+        if(candleId % 2 == 0){
 
-            m5Signal = "BUY SETUP";
+    m5Signal = "BUY SETUP";
 
-        }
-        else{
+    rsi14 = 60;
 
-            m5Signal = "SELL SETUP";
+}
+else{
 
-        }
+    m5Signal = "SELL SETUP";
+
+    rsi14 = 40;
+
+}
 
 
 
