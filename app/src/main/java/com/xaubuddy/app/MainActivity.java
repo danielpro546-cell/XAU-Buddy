@@ -59,9 +59,13 @@ if(!demoPrice.running){
                         strategy.signal
                 );
                 if(
-        strategy.signal.equals("BUY")
-        ||
-        strategy.signal.equals("SELL")
+(
+strategy.signal.equals("BUY")
+||
+strategy.signal.equals("SELL")
+)
+&&
+strategy.confidence >= 70
 ){
 
     if(
