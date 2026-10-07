@@ -358,6 +358,8 @@ else{
 
                 +"\nMT5: "
                 +mt5.getStatus()
+            +"\nWAITING NEW SETUP: "
++waitingNewSetup
 
         );
 
