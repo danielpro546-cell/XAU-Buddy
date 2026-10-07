@@ -48,13 +48,21 @@ private int tick = 0;
         // MT5 Feed later replace here
 
 
-        price = 4167.00;
+        tick++;
 
+if(tick >= 3){
 
-        h1Close = price;
+    tick = 0;
 
+    candleId++;
 
-        m5Close = price;
+}
+
+price = 4167.0 + (candleId * 2);
+
+h1Close = price;
+
+m5Close = price;
 
 
 
