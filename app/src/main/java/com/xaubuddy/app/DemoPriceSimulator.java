@@ -38,22 +38,17 @@ public class DemoPriceSimulator {
 
 
 
-        if(signal.equals("BUY")){
+        public double movePrice(String signal){
 
+    if(!running){
+        return demoPrice;
+    }
 
-            demoPrice += 2;
+    double move = (Math.random() * 6) - 3;
+    demoPrice += move;
 
-
-        }
-
-        else if(signal.equals("SELL")){
-
-
-            demoPrice -= 2;
-
-
-        }
-
+    return demoPrice;
+}
 
 
         return demoPrice;
