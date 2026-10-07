@@ -125,6 +125,7 @@ tradeSimulator.status.equals("SL HIT")
 );
                     
                     tradeStorage.saveTradeSaved(true);
+                    
                     tradeStorage.saveStats(
 
         tradeJournal.totalTrades,
