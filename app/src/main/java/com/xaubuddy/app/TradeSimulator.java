@@ -115,7 +115,8 @@ public class TradeSimulator {
             status = "OPEN";
 
             lastResult = "NONE";
-
+            
+totalTrades++;
             saveTrade();
 
         }
