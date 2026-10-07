@@ -24,6 +24,7 @@ TradeStorage tradeStorage;
 Handler handler = new Handler();
     
 boolean tradeSaved; 
+ boolean waitingNewSetup = false;   
     Runnable updateTask = new Runnable() {
 
         @Override
@@ -163,6 +164,7 @@ tradeSimulator.lossTrades = tradeJournal.losses;
 
 tradeSimulator.calculateWinRate();   
                     tradeSimulator.resetTrade();
+                    waitingNewSetup = true;
 
 }
 
