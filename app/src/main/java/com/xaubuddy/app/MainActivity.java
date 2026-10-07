@@ -60,6 +60,15 @@ if(!demoPrice.running){
                         strategy.signal
                 );
                 if(
+marketData.m5Signal.equals("BUY SETUP")
+||
+marketData.m5Signal.equals("SELL SETUP")
+){
+
+    waitingNewSetup = false;
+
+}
+                if(
 (
 strategy.signal.equals("BUY")
 ||
@@ -85,6 +94,8 @@ marketData.m5Signal.equals("SELL SETUP"))
 
     if(
 tradeSimulator.status.equals("NO TRADE")
+&&
+!waitingNewSetup
 
 ){
         tradeSaved = false;
