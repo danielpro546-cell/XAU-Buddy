@@ -322,8 +322,6 @@ Uri m5Image;
 
 + "\n\n===== MARKET DATA =====\n\n"
 
-+ "PRICE: " + marketData.price
-
                 + "PRICE: " + marketData.price
                 + "\nEMA20: " + marketData.ema20
                 + "\nEMA50: " + marketData.ema50
