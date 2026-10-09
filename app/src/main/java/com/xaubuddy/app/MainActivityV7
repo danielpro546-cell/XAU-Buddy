@@ -478,4 +478,57 @@ analyzeButton.setOnClickListener(v->{
 
 }
 
+private void refreshDashboard() {
+
+    marketData.updateLiveData();
+    strategy.analyze(marketData);
+
+    riskManager.calculate(
+            marketData.price,
+            strategy.signal
+    );
+
+    marketView.setText(
+            "===== MARKET DATA =====\n\n"
+            + "PRICE : " + marketData.price
+            + "\nEMA20 : " + marketData.ema20
+            + "\nEMA50 : " + marketData.ema50
+            + "\nRSI14 : " + marketData.rsi14
+            + "\nH1 : " + marketData.h1Bias
+            + "\nM5 : " + marketData.m5Signal
+    );
+
+    analysisView.setText(
+            "===== AI ANALYSIS =====\n\n"
+            + "BOS : " + strategy.bos
+            + "\nCHoCH : " + strategy.choch
+            + "\nFVG : " + strategy.fvg
+            + "\nLiquidity : " + strategy.liquidity
+            + "\nSignal : " + strategy.signal
+            + "\nConfidence : " + strategy.confidence + "%"
+    );
+
+    tradeView.setText(
+            "===== TRADE =====\n\n"
+            + "Entry : " + riskManager.entry
+            + "\nSL : " + riskManager.sl
+            + "\nTP1 : " + riskManager.tp1
+            + "\nTP2 : " + riskManager.tp2
+            + "\nLot : " + riskManager.lotSize
+    );
+
+    journalView.setText(
+            "===== JOURNAL =====\n\n"
+            + "Trades : " + tradeJournal.totalTrades
+            + "\nWins : " + tradeJournal.wins
+            + "\nLosses : " + tradeJournal.losses
+            + "\nProfit : " + tradeJournal.totalProfit
+    );
+
+    systemView.setText(
+            "===== SYSTEM =====\n\n"
+            + "MT5 : " + mt5.getStatus()
+    );
+}
+
 
