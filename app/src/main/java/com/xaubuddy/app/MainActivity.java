@@ -537,6 +537,16 @@ passwordInput.setTextColor(android.graphics.Color.WHITE);
 passwordInput.setHintTextColor(android.graphics.Color.LTGRAY);
 loginButton = new Button(this);
 loginButton.setText("LOGIN MT5");
+uploadH1Button = new Button(this);
+uploadH1Button.setText("UPLOAD H1 SCREENSHOT");
+
+
+uploadM5Button = new Button(this);
+uploadM5Button.setText("UPLOAD M5 SCREENSHOT");
+
+
+analyzeButton = new Button(this);
+analyzeButton.setText("ANALYZE");        
 
 loginButton.setOnClickListener(v -> {
 
