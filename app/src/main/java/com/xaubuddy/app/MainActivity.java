@@ -609,14 +609,17 @@ loginButton.setOnClickListener(v -> {
 });
 
         dashboard = new TextView(this);
-        dashboard.setTextSize(14);
+        dashboard.setTextSize(12);
         dashboard.setTextColor(
                 android.graphics.Color.WHITE
         );
+        dashboard.setGravity(Gravity.TOP);
+dashboard.setIncludeFontPadding(false);
 
         ScrollView scroll = new ScrollView(this);
-        scroll.setFillViewport(true);
-        scroll.addView(dashboard);
+scroll.setFillViewport(true);
+scroll.setSmoothScrollingEnabled(true);
+scroll.addView(dashboard);
 
         layout.addView(title);
         layout.addView(balanceLabel);
