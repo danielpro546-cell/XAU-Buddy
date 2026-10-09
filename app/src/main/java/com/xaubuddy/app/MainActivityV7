@@ -1,0 +1,481 @@
+package com.xaubuddy.app;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.provider.MediaStore;
+import android.view.Gravity;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+    // ===== TITLE =====
+    TextView title;
+
+    // ===== PANELS =====
+    TextView marketView;
+    TextView analysisView;
+    TextView tradeView;
+    TextView journalView;
+    TextView systemView;
+    TextView riskWarning;
+
+    // ===== INPUT =====
+    EditText riskInput;
+    EditText serverInput;
+    EditText accountInput;
+    EditText passwordInput;
+
+    // ===== BUTTON =====
+    Button balance10;
+    Button balance50;
+    Button balance100;
+    Button customBalance;
+
+    Button applyRiskButton;
+
+    Button refreshButton;
+    Button connectButton;
+    Button loginButton;
+
+    Button uploadH1Button;
+    Button uploadM5Button;
+    Button analyzeButton;
+
+    // ===== IMAGE =====
+    Uri h1Image;
+    Uri m5Image;
+
+    // ===== ENGINE =====
+    MarketData marketData = new MarketData();
+    StrategyEngine strategy = new StrategyEngine();
+    RiskManager riskManager = new RiskManager();
+    MT5Connector mt5 = new MT5Connector();
+
+    DemoPriceSimulator demoPrice =
+            new DemoPriceSimulator();
+
+    TradeSimulator tradeSimulator;
+    TradeJournal tradeJournal;
+    TradeStorage tradeStorage;
+
+    // ===== SYSTEM =====
+    Handler handler = new Handler();
+
+    boolean tradeSaved = false;
+    boolean waitingNewSetup = false;
+    boolean candleTraded = false;
+
+    String lastSignal = "";
+
+    long lastTradeCloseTime = 0;
+    long tradeCooldown = 30000;
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+
+    super.onCreate(savedInstanceState);
+
+    tradeStorage = new TradeStorage(this);
+    tradeJournal = new TradeJournal(tradeStorage);
+    tradeSimulator = new TradeSimulator(tradeStorage);
+
+    LinearLayout root = new LinearLayout(this);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setBackgroundColor(Color.BLACK);
+
+    ScrollView scroll = new ScrollView(this);
+    scroll.setFillViewport(true);
+
+    LinearLayout layout = new LinearLayout(this);
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(24,24,24,24);
+
+    scroll.addView(layout);
+
+    title = new TextView(this);
+    title.setText("XAU Buddy V7");
+    title.setTextColor(Color.WHITE);
+    title.setGravity(Gravity.CENTER);
+    title.setTextSize(28);
+
+    layout.addView(title);
+marketView = new TextView(this);
+marketView.setTextColor(Color.CYAN);
+marketView.setTextSize(16);
+
+analysisView = new TextView(this);
+analysisView.setTextColor(Color.GREEN);
+analysisView.setTextSize(16);
+
+tradeView = new TextView(this);
+tradeView.setTextColor(Color.YELLOW);
+tradeView.setTextSize(16);
+
+journalView = new TextView(this);
+journalView.setTextColor(Color.WHITE);
+journalView.setTextSize(16);
+
+systemView = new TextView(this);
+systemView.setTextColor(Color.LTGRAY);
+systemView.setTextSize(14);
+// ================================
+// BALANCE
+// ================================
+
+TextView balanceTitle = new TextView(this);
+balanceTitle.setText("Select Demo Balance (USD)");
+balanceTitle.setTextColor(Color.WHITE);
+layout.addView(balanceTitle);
+
+LinearLayout balanceRow = new LinearLayout(this);
+balanceRow.setOrientation(LinearLayout.HORIZONTAL);
+
+balance10 = new Button(this);
+balance10.setText("$10");
+
+balance50 = new Button(this);
+balance50.setText("$50");
+
+balance100 = new Button(this);
+balance100.setText("$100");
+
+balanceRow.addView(balance10,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+balanceRow.addView(balance50,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+balanceRow.addView(balance100,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+layout.addView(balanceRow);
+
+customBalance = new Button(this);
+customBalance.setText("CUSTOM");
+layout.addView(customBalance);
+
+// ================================
+// RISK
+// ================================
+
+TextView riskTitle = new TextView(this);
+riskTitle.setText("Risk %");
+riskTitle.setTextColor(Color.WHITE);
+
+layout.addView(riskTitle);
+
+riskInput = new EditText(this);
+riskInput.setHint("0.50");
+riskInput.setText("0.50");
+riskInput.setTextColor(Color.WHITE);
+riskInput.setHintTextColor(Color.GRAY);
+
+layout.addView(riskInput);
+
+applyRiskButton = new Button(this);
+applyRiskButton.setText("APPLY RISK");
+
+layout.addView(applyRiskButton);
+
+riskWarning = new TextView(this);
+riskWarning.setTextColor(Color.RED);
+
+layout.addView(riskWarning);
+
+// ================================
+// MT5 LOGIN
+// ================================
+
+TextView mt5Title = new TextView(this);
+mt5Title.setText("MT5 LOGIN");
+mt5Title.setTextColor(Color.YELLOW);
+mt5Title.setTextSize(18);
+
+layout.addView(mt5Title);
+
+serverInput = new EditText(this);
+serverInput.setHint("Server");
+
+accountInput = new EditText(this);
+accountInput.setHint("Account");
+
+passwordInput = new EditText(this);
+passwordInput.setHint("Password");
+
+layout.addView(serverInput);
+layout.addView(accountInput);
+layout.addView(passwordInput);
+
+loginButton = new Button(this);
+loginButton.setText("LOGIN MT5");
+
+layout.addView(loginButton);
+// ================================
+// SCREENSHOT
+// ================================
+
+TextView screenshotTitle = new TextView(this);
+screenshotTitle.setText("SCREENSHOT ANALYSIS");
+screenshotTitle.setTextColor(Color.YELLOW);
+screenshotTitle.setTextSize(18);
+
+layout.addView(screenshotTitle);
+
+uploadH1Button = new Button(this);
+uploadH1Button.setText("UPLOAD H1");
+
+uploadM5Button = new Button(this);
+uploadM5Button.setText("UPLOAD M5");
+
+analyzeButton = new Button(this);
+analyzeButton.setText("ANALYZE");
+
+layout.addView(uploadH1Button);
+layout.addView(uploadM5Button);
+layout.addView(analyzeButton);
+
+// ================================
+// DASHBOARD
+// ================================
+
+marketView.setText(
+        "===== MARKET DATA =====\n\n"
+      + "PRICE : WAITING...\n"
+      + "EMA20 : WAITING...\n"
+      + "EMA50 : WAITING...\n"
+      + "RSI14 : WAITING...\n"
+      + "H1 : WAITING...\n"
+      + "M5 : WAITING..."
+);
+
+analysisView.setText(
+        "===== AI ANALYSIS =====\n\n"
+      + "Trend : WAITING...\n"
+      + "BOS : WAITING...\n"
+      + "CHoCH : WAITING...\n"
+      + "FVG : WAITING...\n"
+      + "Liquidity : WAITING...\n"
+      + "Signal : WAITING...\n"
+      + "Confidence : 0%"
+);
+
+tradeView.setText(
+        "===== TRADE =====\n\n"
+      + "Entry : -\n"
+      + "SL : -\n"
+      + "TP1 : -\n"
+      + "TP2 : -\n"
+      + "RR : -"
+);
+
+journalView.setText(
+        "===== JOURNAL =====\n\n"
+      + "Trades : 0\n"
+      + "Wins : 0\n"
+      + "Losses : 0\n"
+      + "Profit : 0"
+);
+
+systemView.setText(
+        "===== SYSTEM =====\n\n"
+      + "Mode : DEMO\n"
+      + "MT5 : DISCONNECTED\n"
+      + "Status : READY"
+);
+
+layout.addView(marketView);
+layout.addView(analysisView);
+layout.addView(tradeView);
+layout.addView(journalView);
+layout.addView(systemView);
+
+root.addView(scroll);
+
+setContentView(root);
+// =====================================
+// BALANCE BUTTONS
+// =====================================
+
+balance10.setOnClickListener(v -> {
+    riskManager.setBalance(10);
+    refreshDashboard();
+});
+
+balance50.setOnClickListener(v -> {
+    riskManager.setBalance(50);
+    refreshDashboard();
+});
+
+balance100.setOnClickListener(v -> {
+    riskManager.setBalance(100);
+    refreshDashboard();
+});
+
+customBalance.setOnClickListener(v -> {
+
+    EditText input = new EditText(this);
+    input.setHint("Balance");
+
+    new AlertDialog.Builder(this)
+            .setTitle("Custom Balance")
+            .setView(input)
+            .setPositiveButton("OK",(d,w)->{
+
+                try{
+
+                    double b =
+                            Double.parseDouble(
+                                    input.getText().toString()
+                            );
+
+                    riskManager.setBalance(b);
+
+                    refreshDashboard();
+
+                }catch(Exception e){
+
+                    Toast.makeText(
+                            this,
+                            "Invalid Balance",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                }
+
+            })
+            .setNegativeButton("Cancel",null)
+            .show();
+
+});
+
+// =====================================
+// APPLY RISK
+// =====================================
+
+applyRiskButton.setOnClickListener(v->{
+
+    try{
+
+        double r =
+                Double.parseDouble(
+                        riskInput.getText().toString()
+                );
+
+        riskManager.setRiskPercent(r);
+
+        refreshDashboard();
+
+    }catch(Exception e){
+
+        Toast.makeText(
+                this,
+                "Invalid Risk",
+                Toast.LENGTH_SHORT
+        ).show();
+
+    }
+
+});
+
+// =====================================
+// LOGIN
+// =====================================
+
+loginButton.setOnClickListener(v->{
+
+    mt5.connect(
+
+            serverInput.getText().toString(),
+
+            accountInput.getText().toString(),
+
+            passwordInput.getText().toString(),
+
+            false
+
+    );
+
+    refreshDashboard();
+
+});
+
+// =====================================
+// UPLOAD H1
+// =====================================
+
+uploadH1Button.setOnClickListener(v->{
+
+    Intent intent =
+            new Intent(
+
+                    Intent.ACTION_PICK,
+
+                    MediaStore.Images.Media
+                            .EXTERNAL_CONTENT_URI
+
+            );
+
+    startActivityForResult(intent,100);
+
+});
+
+// =====================================
+// UPLOAD M5
+// =====================================
+
+uploadM5Button.setOnClickListener(v->{
+
+    Intent intent =
+            new Intent(
+
+                    Intent.ACTION_PICK,
+
+                    MediaStore.Images.Media
+                            .EXTERNAL_CONTENT_URI
+
+            );
+
+    startActivityForResult(intent,200);
+
+});
+
+// =====================================
+// ANALYZE
+// =====================================
+
+analyzeButton.setOnClickListener(v->{
+
+    analysisView.setText(
+
+            "===== AI ANALYSIS =====\n\n"
+
+            +"Analyzing...\n\n"
+
+            +"Trend : WAITING\n"
+
+            +"Entry : WAITING\n"
+
+            +"SL : WAITING\n"
+
+            +"TP : WAITING\n"
+
+            +"Signal : WAITING\n"
+
+            +"Confidence : WAITING"
+
+    );
+
+});
+
+}
+
+
