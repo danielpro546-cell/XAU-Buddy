@@ -609,7 +609,7 @@ loginButton.setOnClickListener(v -> {
 });
 
         dashboard = new TextView(this);
-        dashboard.setTextSize(16);
+        dashboard.setTextSize(14);
         dashboard.setTextColor(
                 android.graphics.Color.WHITE
         );
@@ -641,9 +641,16 @@ layout.addView(analyzeButton);
                 -1
         );
 
+LinearLayout.LayoutParams dashboardParams =
+        new LinearLayout.LayoutParams(
+                -1,
+                0,
+                1
+        );
+
 layout.addView(
         scroll,
-        scrollParams
+        dashboardParams
 );
         setContentView(layout);
 
