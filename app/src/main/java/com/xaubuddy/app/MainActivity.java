@@ -546,7 +546,17 @@ uploadM5Button.setText("UPLOAD M5 SCREENSHOT");
 
 
 analyzeButton = new Button(this);
-analyzeButton.setText("ANALYZE");        
+analyzeButton.setText("ANALYZE");
+uploadH1Button.setOnClickListener(v -> {
+
+    Intent intent = new Intent(
+            Intent.ACTION_PICK,
+            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    );
+
+    startActivityForResult(intent, 100);
+
+});        
 
 loginButton.setOnClickListener(v -> {
 
