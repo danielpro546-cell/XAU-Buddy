@@ -525,11 +525,11 @@ loginButton.setText("LOGIN MT5");
 loginButton.setOnClickListener(v -> {
 
     mt5.connect(
-            serverInput.getText().toString(),
-            accountInput.getText().toString(),
-            passwordInput.getText().toString()
-    );
-
+    serverInput.getText().toString(),
+    accountInput.getText().toString(),
+    passwordInput.getText().toString(),
+    false
+);
     showDashboard();
 
 });
