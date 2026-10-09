@@ -635,10 +635,16 @@ layout.addView(uploadH1Button);
 layout.addView(uploadM5Button);
 layout.addView(analyzeButton);      
 
-        layout.addView(scroll, new LinearLayout.LayoutParams(
-                -1, 0, 1
-        ));
+        LinearLayout.LayoutParams scrollParams =
+        new LinearLayout.LayoutParams(
+                -1,
+                -1
+        );
 
+layout.addView(
+        scroll,
+        scrollParams
+);
         setContentView(layout);
 
         handler.post(updateTask);
