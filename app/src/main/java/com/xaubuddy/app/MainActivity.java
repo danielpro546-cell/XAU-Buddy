@@ -615,6 +615,7 @@ loginButton.setOnClickListener(v -> {
         );
 
         ScrollView scroll = new ScrollView(this);
+        scroll.setFillViewport(true);
         scroll.addView(dashboard);
 
         layout.addView(title);
@@ -634,12 +635,6 @@ layout.addView(loginButton);
 layout.addView(uploadH1Button);
 layout.addView(uploadM5Button);
 layout.addView(analyzeButton);      
-
-        LinearLayout.LayoutParams scrollParams =
-        new LinearLayout.LayoutParams(
-                -1,
-                -1
-        );
 
 LinearLayout.LayoutParams dashboardParams =
         new LinearLayout.LayoutParams(
