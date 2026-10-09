@@ -8,39 +8,44 @@ public class RiskManager {
     public double tp2 = 0;
 
     public double balance = 10.0;
-
     public double riskPercent = 0.5;
-
-    public double riskMoney = 0;
-
+    public double riskMoney = 0.05;
     public double lotSize = 0.01;
-
     public double riskDistance = 15.0;
+    public double actualRiskMoney = 0;
+    public boolean minimumLotWarning = false;
 
     public String rr = "1:2";
 
+    // D Prime / Doo Prime XAUUSD assumptions
+    public double contractSize = 100.0;
+    public double minLot = 0.01;
+    public double lotStep = 0.01;
+
     public void calculate(double price, String signal) {
 
-        riskMoney = round(balance * (riskPercent / 100.0));
+        riskMoney = round(
+                balance * riskPercent / 100.0
+        );
 
         riskDistance = calculateRiskDistance(price);
 
         calculateLotSize();
 
-        if (signal.equals("BUY")) {
+        if ("BUY".equals(signal)) {
 
             entry = round(price);
             sl = round(entry - riskDistance);
             tp1 = round(entry + riskDistance);
-            tp2 = round(entry + (riskDistance * 2));
+            tp2 = round(entry + riskDistance * 2);
             rr = "1:2";
 
-        } else if (signal.equals("SELL")) {
+        } else if ("SELL".equals(signal)) {
 
             entry = round(price);
             sl = round(entry + riskDistance);
             tp1 = round(entry - riskDistance);
-            tp2 = round(entry - (riskDistance * 2));
+            tp2 = round(entry - riskDistance * 2);
             rr = "1:2";
         }
     }
@@ -58,12 +63,37 @@ public class RiskManager {
 
     private void calculateLotSize() {
 
-        if (riskMoney <= 1.0) {
-            lotSize = 0.01;
-        } else if (riskMoney <= 5.0) {
-            lotSize = 0.05;
+        double rawLot = riskMoney /
+                (riskDistance * contractSize);
+
+        minimumLotWarning = rawLot < minLot;
+
+        if (rawLot < minLot) {
+            lotSize = minLot;
         } else {
-            lotSize = 0.10;
+            lotSize = Math.floor(
+                    rawLot / lotStep
+            ) * lotStep;
+        }
+
+        lotSize = round(lotSize);
+
+        actualRiskMoney = round(
+                lotSize * riskDistance * contractSize
+        );
+    }
+
+    public void setBalance(double value) {
+
+        if (value > 0) {
+            balance = value;
+        }
+    }
+
+    public void setRiskPercent(double value) {
+
+        if (value > 0 && value <= 10) {
+            riskPercent = value;
         }
     }
 
