@@ -396,14 +396,16 @@ private void refreshDashboard() {
     );
 
     marketView.setText(
-            "===== MARKET DATA =====\n\n"
-            + "PRICE : " + marketData.price
-            + "\nEMA20 : " + marketData.ema20
-            + "\nEMA50 : " + marketData.ema50
-            + "\nRSI14 : " + marketData.rsi14
-            + "\nH1 : " + marketData.h1Bias
-            + "\nM5 : " + marketData.m5Signal
-    );
+        "===== MARKET DATA =====\n\n"
+        + "PRICE : " + marketData.price
+        + "\nEMA20 : " + marketData.ema20
+        + "\nEMA50 : " + marketData.ema50
+        + "\nRSI14 : " + marketData.rsi14
+        + "\nH1 : " + marketData.h1Bias
+        + "\nM5 : " + marketData.m5Signal
+        + "\nBalance : $" + riskManager.balance
+        + "\nRisk % : " + riskManager.riskPercent
+);       
 
     analysisView.setText(
             "===== AI ANALYSIS =====\n\n"
