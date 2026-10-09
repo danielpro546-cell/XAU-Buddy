@@ -13,8 +13,12 @@ import android.provider.MediaStore;
 
 public class MainActivity extends Activity {
 
-    TextView dashboard;
-    TextView riskWarning;
+    TextView marketView;
+TextView analysisView;
+TextView tradeView;
+
+TextView dashboard;
+TextView riskWarning;
 
     EditText riskInput;
 
@@ -306,6 +310,15 @@ Uri m5Image;
             riskStatus = "RISK CHECK: BLOCKED";
         }
 
+        marketView.setText(
+        "===== MARKET DATA =====\n\n"
+        + "PRICE: " + marketData.price
+        + "\nEMA20: " + marketData.ema20
+        + "\nEMA50: " + marketData.ema50
+        + "\nRSI14: " + marketData.rsi14
+        + "\nH1: " + marketData.h1Bias
+        + "\nM5: " + marketData.m5Signal
+);
         dashboard.setText(
                 "===== AI MARKET ANALYSIS =====\n\n"
 
@@ -626,6 +639,17 @@ loginButton.setOnClickListener(v -> {
         dashboard.setTextColor(
                 android.graphics.Color.WHITE
         );
+        marketView = new TextView(this);
+marketView.setTextColor(android.graphics.Color.CYAN);
+marketView.setTextSize(16);
+
+analysisView = new TextView(this);
+analysisView.setTextColor(android.graphics.Color.GREEN);
+analysisView.setTextSize(16);
+
+tradeView = new TextView(this);
+tradeView.setTextColor(android.graphics.Color.YELLOW);
+tradeView.setTextSize(16);
         dashboard.setGravity(Gravity.TOP);
 dashboard.setIncludeFontPadding(false);
 
@@ -652,7 +676,10 @@ layout.addView(passwordInput);
 layout.addView(loginButton);
 layout.addView(uploadH1Button);
 layout.addView(uploadM5Button);
-layout.addView(analyzeButton);      
+layout.addView(analyzeButton); 
+layout.addView(marketView);
+layout.addView(analysisView);
+layout.addView(tradeView);       
 
 LinearLayout.LayoutParams dashboardParams =
         new LinearLayout.LayoutParams(
