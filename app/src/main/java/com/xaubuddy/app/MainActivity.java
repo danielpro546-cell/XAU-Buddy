@@ -2,605 +2,351 @@ package com.xaubuddy.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.*;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.MediaStore;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
+    TextView title;
     TextView marketView;
-TextView analysisView;
-TextView tradeView;
-
-TextView dashboard;
-TextView riskWarning;
+    TextView analysisView;
+    TextView tradeView;
+    TextView journalView;
+    TextView systemView;
+    TextView riskWarning;
 
     EditText riskInput;
-
-    Button refreshButton;
-    Button connectButton;
     EditText serverInput;
-EditText accountInput;
-EditText passwordInput;
+    EditText accountInput;
+    EditText passwordInput;
 
-Button loginButton;
+    Button balance10;
+    Button balance50;
+    Button balance100;
+    Button customBalance;
+
     Button applyRiskButton;
-    Button customBalanceButton;
+    Button loginButton;
     Button uploadH1Button;
-Button uploadM5Button;
-Button analyzeButton;
+    Button uploadM5Button;
+    Button analyzeButton;
 
-Uri h1Image;
-Uri m5Image;
+    Uri h1Image;
+    Uri m5Image;
 
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
 
-    TradeSimulator tradeSimulator;
-    DemoPriceSimulator demoPrice = new DemoPriceSimulator();
-
-    TradeJournal tradeJournal;
     TradeStorage tradeStorage;
+    TradeJournal tradeJournal;
+    TradeSimulator tradeSimulator;
 
     Handler handler = new Handler();
+@Override
+protected void onCreate(Bundle savedInstanceState) {
 
-    boolean tradeSaved = false;
-    boolean waitingNewSetup = false;
-    boolean candleTraded = false;
+    super.onCreate(savedInstanceState);
 
-    long lastTradeCloseTime = 0;
-    long tradeCooldown = 30000;
-
-    String lastSignal = "";
-
-    Runnable updateTask = new Runnable() {
-        @Override
-        public void run() {
-            loadData();
-            handler.postDelayed(this, 10000);
-        }
-    };
-
-    private void loadData() {
-
-        marketData.updateLiveData();
-
-        if (!demoPrice.running) {
-            demoPrice.start(marketData.price);
-        }
-
-        if (marketData.dataReady) {
-
-            strategy.analyze(marketData);
-
-            riskManager.calculate(
-                    marketData.price,
-                    strategy.signal
-            );
-
-            checkNewSetup();
-            checkEntry();
-
-            double price = demoPrice.movePrice(
-                    strategy.signal
-            );
-
-            tradeSimulator.update(price);
-
-            checkClose();
-            showDashboard();
-
-        } else {
-            dashboard.setText("WAITING DATA...");
-        }
-    }
-
-    private void checkNewSetup() {
-
-        if (
-                marketData.m5Signal.equals("BUY SETUP")
-                || marketData.m5Signal.equals("SELL SETUP")
-        ) {
-            if (!marketData.m5Signal.equals(lastSignal)) {
-                waitingNewSetup = false;
-                candleTraded = false;
-            }
-        }
-    }
+    tradeStorage = new TradeStorage(this);
+    tradeJournal = new TradeJournal(tradeStorage);
+    tradeSimulator = new TradeSimulator(tradeStorage);
 
-    private void checkEntry() {
+    LinearLayout root = new LinearLayout(this);
+    root.setOrientation(LinearLayout.VERTICAL);
+    root.setBackgroundColor(Color.BLACK);
 
-        if (
-                strategy.signal.equals("BUY")
-                || strategy.signal.equals("SELL")
-        ) {
+    ScrollView scroll = new ScrollView(this);
+    scroll.setFillViewport(true);
 
-            if (
-                    strategy.confidence >= 70
-                    && riskManager.canTrade
-                    && tradeSimulator.status.equals("NO TRADE")
-                    && !waitingNewSetup
-                    && !candleTraded
-                    && System.currentTimeMillis()
-                    - lastTradeCloseTime >= tradeCooldown
-            ) {
-
-                if (strategy.signal.equals(lastSignal)) {
-                    return;
-                }
-
-                tradeSaved = false;
-                tradeStorage.saveTradeSaved(false);
-
-                tradeSimulator.openTrade(
-                        strategy.signal,
-                        marketData.price,
-                        riskManager.sl,
-                        riskManager.tp1
-                );
-
-                lastSignal = strategy.signal;
-                candleTraded = true;
-            }
-        }
-    }
-
-    private void checkClose() {
-
-        if (
-                (
-                        tradeSimulator.status.equals("TP HIT")
-                        || tradeSimulator.status.equals("SL HIT")
-                )
-                && !tradeSaved
-        ) {
-
-            tradeSaved = true;
-
-            tradeJournal.addTrade(
-                    tradeSimulator.type,
-                    tradeSimulator.entry,
-                    tradeSimulator.current,
-                    tradeSimulator.profit,
-                    tradeSimulator.lastResult
-            );
-
-            tradeStorage.saveLastTrade(
-                    tradeJournal.getLastTrade()
-            );
-
-            tradeStorage.saveTradeSaved(true);
-
-            tradeStorage.saveStats(
-                    tradeJournal.totalTrades,
-                    tradeJournal.wins,
-                    tradeJournal.losses,
-                    tradeJournal.totalProfit
-            );
-
-            tradeSimulator.totalTrades =
-                    tradeJournal.totalTrades;
-
-            tradeSimulator.winTrades =
-                    tradeJournal.wins;
-
-            tradeSimulator.lossTrades =
-                    tradeJournal.losses;
-
-            tradeSimulator.calculateWinRate();
-            tradeSimulator.resetTrade();
-
-            waitingNewSetup = true;
-            lastTradeCloseTime = System.currentTimeMillis();
-        }
-    }
-
-    private void setBalance(double value) {
-
-        riskManager.setBalance(value);
-
-        riskManager.calculate(
-                marketData.price,
-                strategy.signal
-        );
-
-        showDashboard();
-    }
-
-    private void showCustomBalanceDialog() {
-
-        EditText input = new EditText(this);
-        input.setInputType(8194);
-        input.setHint("Enter balance in USD");
-
-        new AlertDialog.Builder(this)
-                .setTitle("Custom Balance")
-                .setMessage("Enter a balance greater than zero.")
-                .setView(input)
-                .setNegativeButton("CANCEL", null)
-                .setPositiveButton("SET", (dialog, which) -> {
-                    try {
-                        double value = Double.parseDouble(
-                                input.getText().toString().trim()
-                        );
-
-                        if (value <= 0 || Double.isNaN(value)
-                                || Double.isInfinite(value)) {
-                            Toast.makeText(
-                                    this,
-                                    "Enter a valid positive balance",
-                                    Toast.LENGTH_LONG
-                            ).show();
-                            return;
-                        }
-
-                        setBalance(value);
-
-                    } catch (Exception e) {
-                        Toast.makeText(
-                                this,
-                                "Invalid balance",
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
-                })
-                .show();
-    }
-
-    private void applyRiskSettings() {
-
-        try {
-            double value = Double.parseDouble(
-                    riskInput.getText().toString().trim()
-            );
-
-            if (value <= 0 || value > 10
-                    || Double.isNaN(value)
-                    || Double.isInfinite(value)) {
-                Toast.makeText(
-                        this,
-                        "Risk must be greater than 0 and at most 10%",
-                        Toast.LENGTH_LONG
-                ).show();
-                return;
-            }
-
-            riskManager.setRiskPercent(value);
-
-            riskManager.calculate(
-                    marketData.price,
-                    strategy.signal
-            );
-
-            showDashboard();
-
-            Toast.makeText(
-                    this,
-                    "Risk setting updated",
-                    Toast.LENGTH_SHORT
-            ).show();
-
-        } catch (Exception e) {
-            Toast.makeText(
-                    this,
-                    "Enter a valid risk percentage",
-                    Toast.LENGTH_LONG
-            ).show();
-        }
-    }
-
-    private void showDashboard() {
-
-        String time = java.text.DateFormat
-                .getTimeInstance()
-                .format(new java.util.Date());
-
-        String riskStatus;
-
-        if (riskManager.canTrade) {
-            riskStatus = "RISK CHECK: PASSED";
-        } else {
-            riskStatus = "RISK CHECK: BLOCKED";
-        }
-
-        marketView.setText(
-        "===== MARKET DATA =====\n\n"
-        + "PRICE: " + marketData.price
-        + "\nEMA20: " + marketData.ema20
-        + "\nEMA50: " + marketData.ema50
-        + "\nRSI14: " + marketData.rsi14
-        + "\nH1: " + marketData.h1Bias
-        + "\nM5: " + marketData.m5Signal
-);
-        dashboard.setText(
-                "===== AI MARKET ANALYSIS =====\n\n"
-
-+ "Trend : WAITING...\n"
-+ "Entry : WAITING...\n"
-+ "SL : WAITING...\n"
-+ "TP : WAITING...\n"
-+ "BOS : " + strategy.bos + "\n"
-+ "\nCHoCH : " + strategy.choch
-+ "\nFVG : " + strategy.fvg
-+ "\nLiquidity : " + strategy.liquidity
-+ "\nSignal : " + strategy.signal
-+ "\nConfidence : " + strategy.confidence
-
-+ "\n\n===== MARKET DATA =====\n\n"
-
-                + "PRICE: " + marketData.price
-                + "\nEMA20: " + marketData.ema20
-                + "\nEMA50: " + marketData.ema50
-                + "\nRSI14: " + marketData.rsi14
-
-                + "\n\nH1: " + marketData.h1Bias
-                + "\nM5: " + marketData.m5Signal
-
-                + "\n\nBOS: " + strategy.bos
-                + "\nCHoCH: " + strategy.choch
-                + "\nFVG: " + strategy.fvg
-                + "\nLiquidity: " + strategy.liquidity
-
-                + "\n\nSIGNAL: " + strategy.signal
-                + "\nCONFIDENCE: " + strategy.confidence + "%"
-
-                + "\n\nENTRY: " + riskManager.entry
-                + "\nSL: " + riskManager.sl
-                + "\nTP1: " + riskManager.tp1
-                + "\nTP2: " + riskManager.tp2
-                + "\nRR: " + riskManager.rr
-
-                + "\n\nBALANCE: $" + money(riskManager.balance)
-                + "\nPLANNED RISK: " + riskManager.riskPercent + "%"
-                + "\nRISK AMOUNT: $" + money(riskManager.riskMoney)
-                + "\nLOT SIZE: " + String.format(
-                        java.util.Locale.US,
-                        "%.2f",
-                        riskManager.lotSize
-                )
-                + "\nESTIMATED ACTUAL RISK: $"
-                + money(riskManager.actualRiskMoney)
-
-                + "\n" + riskStatus
-                + "\nWARNING: " + riskManager.warning
-
-                + "\n\nTRADE STATUS: " + tradeSimulator.status
-                + "\nTYPE: " + tradeSimulator.type
-                + "\nTRADE ENTRY: " + tradeSimulator.entry
-                + "\nCURRENT: " + tradeSimulator.current
-                + "\nPROFIT: " + tradeSimulator.profit
-
-                + "\n\nWIN RATE: " + tradeSimulator.winRate + "%"
-                + "\nTOTAL TRADES: " + tradeSimulator.totalTrades
-                + "\nWINS: " + tradeSimulator.winTrades
-                + "\nLOSSES: " + tradeSimulator.lossTrades
-
-                + "\n\n===== JOURNAL ====="
-                + "\nTOTAL: " + tradeJournal.totalTrades
-                + "\nWIN: " + tradeJournal.wins
-                + "\nLOSS: " + tradeJournal.losses
-                + "\nPROFIT: " + tradeJournal.totalProfit
-
-                + "\n\nDATA: " + marketData.getStatus()
-                + "\nMODE: DEMO ONLY"
-                + "\nVERSION: V6.1"
-                + "\nMT5: " + mt5.getStatus()
-                + "\nWAITING NEW SETUP: " + waitingNewSetup
-                + "\n\nUPDATE: " + time
-        );
-
-        if (riskManager.canTrade) {
-            riskWarning.setText("Risk check passed");
-            riskWarning.setTextColor(
-                    android.graphics.Color.GREEN
-            );
-        } else {
-            riskWarning.setText(
-                    "TRADE BLOCKED\n" + riskManager.warning
-            );
-            riskWarning.setTextColor(
-                    android.graphics.Color.RED
-            );
-        }
-    }
-
-    private String money(double value) {
-        return String.format(
-                java.util.Locale.US,
-                "%.2f",
-                value
-        );
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-
-        super.onCreate(savedInstanceState);
-
-        tradeStorage = new TradeStorage(this);
-        tradeJournal = new TradeJournal(tradeStorage);
-
-        tradeSaved = tradeStorage.getTradeSaved();
-
-        tradeSimulator = new TradeSimulator(tradeStorage);
-
-        tradeJournal.loadStats(
-                tradeStorage.getTotal(),
-                tradeStorage.getWins(),
-                tradeStorage.getLosses(),
-                tradeStorage.getProfit()
-        );
-
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(30, 24, 30, 24);
-        layout.setBackgroundColor(
-                android.graphics.Color.BLACK
-        );
-
-        TextView title = new TextView(this);
-        title.setText("XAU Buddy V6.1");
-        title.setTextSize(28);
-        title.setGravity(Gravity.CENTER);
-        title.setTextColor(
-                android.graphics.Color.WHITE
-        );
-
-        TextView balanceLabel = new TextView(this);
-        balanceLabel.setText("Select Demo Balance (USD)");
-        balanceLabel.setTextColor(
-                android.graphics.Color.WHITE
-        );
-
-        LinearLayout balanceRow = new LinearLayout(this);
-        balanceRow.setOrientation(LinearLayout.HORIZONTAL);
-
-        Button b10 = new Button(this);
-        b10.setText("$10");
-        Button b50 = new Button(this);
-        b50.setText("$50");
-        Button b100 = new Button(this);
-        b100.setText("$100");
-
-        customBalanceButton = new Button(this);
-        customBalanceButton.setText("CUSTOM");
-
-        balanceRow.addView(b10, new LinearLayout.LayoutParams(
-                0, -2, 1
-        ));
-        balanceRow.addView(b50, new LinearLayout.LayoutParams(
-                0, -2, 1
-        ));
-        balanceRow.addView(b100, new LinearLayout.LayoutParams(
-                0, -2, 1
-        ));
-
-        LinearLayout customRow = new LinearLayout(this);
-        customRow.addView(customBalanceButton,
-                new LinearLayout.LayoutParams(-1, -2));
-
-        b10.setOnClickListener(v -> setBalance(10));
-        b50.setOnClickListener(v -> setBalance(50));
-        b100.setOnClickListener(v -> setBalance(100));
-        customBalanceButton.setOnClickListener(
-                v -> showCustomBalanceDialog()
-        );
-
-        TextView riskLabel = new TextView(this);
-        riskLabel.setText("Risk Percentage (0.01% - 10%)");
-        riskLabel.setTextColor(
-                android.graphics.Color.WHITE
-        );
-
-        riskInput = new EditText(this);
-        riskInput.setSingleLine(true);
-        riskInput.setInputType(8194);
-        riskInput.setText(
-                String.valueOf(riskManager.riskPercent)
-        );
-        riskInput.setHint("Example: 0.5");
-        riskInput.setTextColor(
-                android.graphics.Color.WHITE
-        );
-        riskInput.setHintTextColor(
-                android.graphics.Color.LTGRAY
-        );
-
-        applyRiskButton = new Button(this);
-        applyRiskButton.setText("APPLY RISK %");
-        applyRiskButton.setOnClickListener(
-                v -> applyRiskSettings()
-        );
-
-        riskWarning = new TextView(this);
-        riskWarning.setTextColor(
-                android.graphics.Color.RED
-        );
-        riskWarning.setTextSize(14);
-
-        refreshButton = new Button(this);
-        refreshButton.setText("REFRESH DATA");
-        refreshButton.setOnClickListener(v -> loadData());
-
-        connectButton = new Button(this);
-        connectButton.setText("CHECK MT5 STATUS");
-        connectButton.setOnClickListener(v -> {
-            new AlertDialog.Builder(this)
-                    .setTitle("MT5 Connection")
-                    .setMessage(
-                            mt5.getStatus()
-                            + "\n\nThis button does not connect to a real MT5 account."
-                    )
-                    .setPositiveButton("OK", null)
-                    .show();
-        });
-        serverInput = new EditText(this);
+    LinearLayout layout = new LinearLayout(this);
+    layout.setOrientation(LinearLayout.VERTICAL);
+    layout.setPadding(24,24,24,24);
+
+    scroll.addView(layout);
+
+    title = new TextView(this);
+    title.setText("XAU Buddy V7");
+    title.setTextColor(Color.WHITE);
+    title.setTextSize(28);
+    title.setGravity(Gravity.CENTER);
+
+    layout.addView(title);
+
+    marketView = new TextView(this);
+    marketView.setTextColor(Color.CYAN);
+    marketView.setTextSize(16);
+
+    analysisView = new TextView(this);
+    analysisView.setTextColor(Color.GREEN);
+    analysisView.setTextSize(16);
+
+    tradeView = new TextView(this);
+    tradeView.setTextColor(Color.YELLOW);
+    tradeView.setTextSize(16);
+
+    journalView = new TextView(this);
+    journalView.setTextColor(Color.WHITE);
+    journalView.setTextSize(16);
+
+    systemView = new TextView(this);
+    systemView.setTextColor(Color.LTGRAY);
+    systemView.setTextSize(14);
+
+    riskWarning = new TextView(this);
+    riskWarning.setTextColor(Color.RED);
+// ================= BALANCE =================
+
+TextView balanceTitle = new TextView(this);
+balanceTitle.setText("Select Demo Balance (USD)");
+balanceTitle.setTextColor(Color.WHITE);
+layout.addView(balanceTitle);
+
+LinearLayout balanceRow = new LinearLayout(this);
+balanceRow.setOrientation(LinearLayout.HORIZONTAL);
+
+balance10 = new Button(this);
+balance10.setText("$10");
+
+balance50 = new Button(this);
+balance50.setText("$50");
+
+balance100 = new Button(this);
+balance100.setText("$100");
+
+balanceRow.addView(balance10,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+balanceRow.addView(balance50,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+balanceRow.addView(balance100,
+        new LinearLayout.LayoutParams(0,-2,1));
+
+layout.addView(balanceRow);
+
+customBalance = new Button(this);
+customBalance.setText("CUSTOM");
+layout.addView(customBalance);
+
+// ================= RISK =================
+
+TextView riskTitle = new TextView(this);
+riskTitle.setText("Risk Percentage (0.01%-10%)");
+riskTitle.setTextColor(Color.WHITE);
+layout.addView(riskTitle);
+
+riskInput = new EditText(this);
+riskInput.setHint("0.50");
+riskInput.setText("0.50");
+riskInput.setTextColor(Color.WHITE);
+riskInput.setHintTextColor(Color.GRAY);
+layout.addView(riskInput);
+
+applyRiskButton = new Button(this);
+applyRiskButton.setText("APPLY RISK %");
+layout.addView(applyRiskButton);
+
+layout.addView(riskWarning);
+// ================= MT5 LOGIN =================
+
+TextView mt5Title = new TextView(this);
+mt5Title.setText("MT5 LOGIN");
+mt5Title.setTextColor(Color.YELLOW);
+mt5Title.setTextSize(18);
+layout.addView(mt5Title);
+
+serverInput = new EditText(this);
 serverInput.setHint("MT5 Server");
+layout.addView(serverInput);
 
 accountInput = new EditText(this);
 accountInput.setHint("MT5 Account");
+layout.addView(accountInput);
 
 passwordInput = new EditText(this);
 passwordInput.setHint("MT5 Password");
-passwordInput.setInputType(
-        android.text.InputType.TYPE_CLASS_TEXT
-        | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
-);
-serverInput.setTextColor(android.graphics.Color.WHITE);
-serverInput.setHintTextColor(android.graphics.Color.LTGRAY);
+layout.addView(passwordInput);
 
-accountInput.setTextColor(android.graphics.Color.WHITE);
-accountInput.setHintTextColor(android.graphics.Color.LTGRAY);
-
-passwordInput.setTextColor(android.graphics.Color.WHITE);
-passwordInput.setHintTextColor(android.graphics.Color.LTGRAY);
 loginButton = new Button(this);
 loginButton.setText("LOGIN MT5");
-uploadH1Button = new Button(this);
-uploadH1Button.setText("UPLOAD H1 SCREENSHOT");
+layout.addView(loginButton);
 
+// ================= SCREENSHOT =================
+
+TextView screenTitle = new TextView(this);
+screenTitle.setText("SCREENSHOT ANALYSIS");
+screenTitle.setTextColor(Color.YELLOW);
+screenTitle.setTextSize(18);
+layout.addView(screenTitle);
+
+uploadH1Button = new Button(this);
+uploadH1Button.setText("UPLOAD H1");
+layout.addView(uploadH1Button);
 
 uploadM5Button = new Button(this);
-uploadM5Button.setText("UPLOAD M5 SCREENSHOT");
-
+uploadM5Button.setText("UPLOAD M5");
+layout.addView(uploadM5Button);
 
 analyzeButton = new Button(this);
 analyzeButton.setText("ANALYZE");
-  analyzeButton.setOnClickListener(v -> {
+layout.addView(analyzeButton);
+// ================= DASHBOARD =================
 
-    String h1Status;
-    String m5Status;
+marketView.setText(
+        "===== MARKET DATA =====\n\n"
+      + "PRICE : WAITING...\n"
+      + "EMA20 : WAITING...\n"
+      + "EMA50 : WAITING...\n"
+      + "RSI14 : WAITING...\n"
+      + "H1 : WAITING...\n"
+      + "M5 : WAITING..."
+);
 
-    if(h1Image != null){
-        h1Status = "H1 SCREENSHOT READY";
-    }else{
-        h1Status = "H1 SCREENSHOT MISSING";
+analysisView.setText(
+        "===== AI ANALYSIS =====\n\n"
+      + "BOS : WAITING...\n"
+      + "CHoCH : WAITING...\n"
+      + "FVG : WAITING...\n"
+      + "Liquidity : WAITING...\n"
+      + "Signal : WAITING...\n"
+      + "Confidence : 0%"
+);
+
+tradeView.setText(
+        "===== TRADE =====\n\n"
+      + "Entry : -\n"
+      + "SL : -\n"
+      + "TP1 : -\n"
+      + "TP2 : -\n"
+      + "Lot : -"
+);
+
+journalView.setText(
+        "===== JOURNAL =====\n\n"
+      + "Trades : 0\n"
+      + "Wins : 0\n"
+      + "Losses : 0\n"
+      + "Profit : 0"
+);
+
+systemView.setText(
+        "===== SYSTEM =====\n\n"
+      + "Mode : DEMO\n"
+      + "MT5 : DISCONNECTED"
+);
+
+layout.addView(marketView);
+layout.addView(analysisView);
+layout.addView(tradeView);
+layout.addView(journalView);
+layout.addView(systemView);
+
+root.addView(scroll);
+setContentView(root);
+// ================= BUTTON EVENTS =================
+
+balance10.setOnClickListener(v -> {
+    riskManager.setBalance(10);
+    refreshDashboard();
+});
+
+balance50.setOnClickListener(v -> {
+    riskManager.setBalance(50);
+    refreshDashboard();
+});
+
+balance100.setOnClickListener(v -> {
+    riskManager.setBalance(100);
+    refreshDashboard();
+});
+
+customBalance.setOnClickListener(v -> {
+
+    EditText input = new EditText(this);
+    input.setHint("Balance");
+
+    new AlertDialog.Builder(this)
+            .setTitle("Custom Balance")
+            .setView(input)
+            .setPositiveButton("OK", (d, w) -> {
+
+                try {
+
+                    double b = Double.parseDouble(
+                            input.getText().toString()
+                    );
+
+                    riskManager.setBalance(b);
+                    refreshDashboard();
+
+                } catch (Exception e) {
+
+                    Toast.makeText(
+                            this,
+                            "Invalid Balance",
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                }
+
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
+
+});
+
+applyRiskButton.setOnClickListener(v -> {
+
+    try {
+
+        double r = Double.parseDouble(
+                riskInput.getText().toString()
+        );
+
+        riskManager.setRiskPercent(r);
+        refreshDashboard();
+
+    } catch (Exception e) {
+
+        Toast.makeText(
+                this,
+                "Invalid Risk",
+                Toast.LENGTH_SHORT
+        ).show();
+
     }
 
+});
 
-    if(m5Image != null){
-        m5Status = "M5 SCREENSHOT READY";
-    }else{
-        m5Status = "M5 SCREENSHOT MISSING";
-    }
+loginButton.setOnClickListener(v -> {
 
+    mt5.connect(
 
-    dashboard.setText(
-            "===== V7 SCREEN ANALYSIS =====\n\n"
-            + h1Status
-            + "\n"
-            + m5Status
-            + "\n\nWAITING AI ANALYSIS..."
+            serverInput.getText().toString(),
+            accountInput.getText().toString(),
+            passwordInput.getText().toString(),
+            false
+
     );
 
-});      
+    refreshDashboard();
+
+});
+
 uploadH1Button.setOnClickListener(v -> {
 
     Intent intent = new Intent(
@@ -610,8 +356,9 @@ uploadH1Button.setOnClickListener(v -> {
 
     startActivityForResult(intent, 100);
 
-}); 
-      uploadM5Button.setOnClickListener(v -> {
+});
+
+uploadM5Button.setOnClickListener(v -> {
 
     Intent intent = new Intent(
             Intent.ACTION_PICK,
@@ -620,86 +367,108 @@ uploadH1Button.setOnClickListener(v -> {
 
     startActivityForResult(intent, 200);
 
-});  
+});
 
-loginButton.setOnClickListener(v -> {
+analyzeButton.setOnClickListener(v -> {
 
-    mt5.connect(
-    serverInput.getText().toString(),
-    accountInput.getText().toString(),
-    passwordInput.getText().toString(),
-    false
-);
-    showDashboard();
+    refreshDashboard();
 
 });
 
-        dashboard = new TextView(this);
-        dashboard.setTextSize(14);
-        dashboard.setTextColor(
-                android.graphics.Color.WHITE
-        );
-        marketView = new TextView(this);
-marketView.setTextColor(android.graphics.Color.CYAN);
-marketView.setTextSize(16);
+}
 
-analysisView = new TextView(this);
-analysisView.setTextColor(android.graphics.Color.GREEN);
-analysisView.setTextSize(16);
+private void refreshDashboard() {
 
-tradeView = new TextView(this);
-tradeView.setTextColor(android.graphics.Color.YELLOW);
-tradeView.setTextSize(16);
-        dashboard.setGravity(Gravity.TOP);
-dashboard.setIncludeFontPadding(false);
+    marketData.updateLiveData();
 
-        ScrollView scroll = new ScrollView(this);
-        scroll.setVerticalScrollBarEnabled(true);
-scroll.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
-scroll.setFillViewport(true);
-scroll.setSmoothScrollingEnabled(true);
-scroll.addView(dashboard);
+    strategy.analyze(marketData);
 
-        layout.addView(title);
-        layout.addView(balanceLabel);
-        layout.addView(balanceRow);
-        layout.addView(customRow);
-        layout.addView(riskLabel);
-        layout.addView(riskInput);
-        layout.addView(applyRiskButton);
-        layout.addView(riskWarning);
-        layout.addView(refreshButton);
-        layout.addView(connectButton);
-        layout.addView(serverInput);
-layout.addView(accountInput);
-layout.addView(passwordInput);
-layout.addView(loginButton);
-layout.addView(uploadH1Button);
-layout.addView(uploadM5Button);
-layout.addView(analyzeButton); 
-layout.addView(marketView);
-layout.addView(analysisView);
-layout.addView(tradeView);       
+    riskManager.calculate(
+            marketData.price,
+            strategy.signal
+    );
 
-LinearLayout.LayoutParams dashboardParams =
-        new LinearLayout.LayoutParams(
-                -1,
-                0,
-                1
-        );
+    marketView.setText(
+            "===== MARKET DATA =====\n\n"
+            + "PRICE : " + marketData.price
+            + "\nEMA20 : " + marketData.ema20
+            + "\nEMA50 : " + marketData.ema50
+            + "\nRSI14 : " + marketData.rsi14
+            + "\nH1 : " + marketData.h1Bias
+            + "\nM5 : " + marketData.m5Signal
+    );
 
-layout.addView(
-        scroll,
-        dashboardParams
-);
-        setContentView(layout);
+    analysisView.setText(
+            "===== AI ANALYSIS =====\n\n"
+            + "BOS : " + strategy.bos
+            + "\nCHoCH : " + strategy.choch
+            + "\nFVG : " + strategy.fvg
+            + "\nLiquidity : " + strategy.liquidity
+            + "\nSignal : " + strategy.signal
+            + "\nConfidence : " + strategy.confidence + "%"
+    );
+    tradeView.setText(
+            "===== TRADE =====\n\n"
+            + "Entry : " + riskManager.entry
+            + "\nSL : " + riskManager.sl
+            + "\nTP1 : " + riskManager.tp1
+            + "\nTP2 : " + riskManager.tp2
+            + "\nLot : " + riskManager.lotSize
+            + "\nRR : " + riskManager.rr
+    );
 
-        handler.post(updateTask);
+    journalView.setText(
+            "===== JOURNAL =====\n\n"
+            + "Trades : " + tradeJournal.totalTrades
+            + "\nWins : " + tradeJournal.wins
+            + "\nLosses : " + tradeJournal.losses
+            + "\nProfit : " + tradeJournal.totalProfit
+    );
+
+    systemView.setText(
+            "===== SYSTEM =====\n\n"
+            + "MT5 : " + mt5.getStatus()
+            + "\nMode : DEMO"
+    );
+
+    if (riskManager.canTrade) {
+        riskWarning.setText("Risk Check : PASSED");
+        riskWarning.setTextColor(Color.GREEN);
+    } else {
+        riskWarning.setText(riskManager.warning);
+        riskWarning.setTextColor(Color.RED);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        handler.removeCallbacks(updateTask);
+}
+
+@Override
+protected void onActivityResult(
+        int requestCode,
+        int resultCode,
+        Intent data
+) {
+    super.onActivityResult(requestCode, resultCode, data);
+
+    if (resultCode == RESULT_OK && data != null) {
+
+        if (requestCode == 100) {
+            h1Image = data.getData();
+            Toast.makeText(
+                    this,
+                    "H1 Screenshot Selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+
+        if (requestCode == 200) {
+            m5Image = data.getData();
+            Toast.makeText(
+                    this,
+                    "M5 Screenshot Selected",
+                    Toast.LENGTH_SHORT
+            ).show();
+        }
+
     }
+}
 }
