@@ -427,7 +427,8 @@ Uri m5Image;
 
         LinearLayout layout = new LinearLayout(this);
         layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(30, 24, 30, 24);
+        layout.setWeightSum(100f);
+        layout.setPadding(20, 20, 20, 20);
         layout.setBackgroundColor(
                 android.graphics.Color.BLACK
         );
@@ -622,7 +623,8 @@ loginButton.setOnClickListener(v -> {
 });
 
         dashboard = new TextView(this);
-        dashboard.setTextSize(12);
+        dashboard.setTextSize(14);
+        dashboard.setPadding(10, 10, 10, 10);
         dashboard.setTextColor(
                 android.graphics.Color.WHITE
         );
@@ -630,6 +632,8 @@ loginButton.setOnClickListener(v -> {
 dashboard.setIncludeFontPadding(false);
 
         ScrollView scroll = new ScrollView(this);
+        scroll.setVerticalScrollBarEnabled(true);
+scroll.setOverScrollMode(View.OVER_SCROLL_ALWAYS);
 scroll.setFillViewport(true);
 scroll.setSmoothScrollingEnabled(true);
 scroll.addView(dashboard);
