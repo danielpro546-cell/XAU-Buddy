@@ -307,7 +307,22 @@ Uri m5Image;
         }
 
         dashboard.setText(
-                "===== XAU BUDDY V6.1 =====\n\n"
+                "===== AI MARKET ANALYSIS =====\n\n"
+
++ "Trend : WAITING...\n"
++ "Entry : WAITING...\n"
++ "SL : WAITING...\n"
++ "TP : WAITING...\n"
++ "BOS : " + strategy.bos + "\n"
++ "\nCHoCH : " + strategy.choch
++ "\nFVG : " + strategy.fvg
++ "\nLiquidity : " + strategy.liquidity
++ "\nSignal : " + strategy.signal
++ "\nConfidence : " + strategy.confidence
+
++ "\n\n===== MARKET DATA =====\n\n"
+
++ "PRICE: " + marketData.price
 
                 + "PRICE: " + marketData.price
                 + "\nEMA20: " + marketData.ema20
