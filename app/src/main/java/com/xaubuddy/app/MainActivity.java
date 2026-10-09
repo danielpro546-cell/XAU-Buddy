@@ -263,6 +263,7 @@ layout.addView(systemView);
 
 root.addView(scroll);
 setContentView(root);
+ refreshDashboard();   
 // ================= BUTTON EVENTS =================
 
 balance10.setOnClickListener(v -> {
