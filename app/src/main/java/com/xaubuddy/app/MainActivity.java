@@ -518,7 +518,14 @@ passwordInput.setInputType(
         android.text.InputType.TYPE_CLASS_TEXT
         | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
 );
+serverInput.setTextColor(android.graphics.Color.WHITE);
+serverInput.setHintTextColor(android.graphics.Color.LTGRAY);
 
+accountInput.setTextColor(android.graphics.Color.WHITE);
+accountInput.setHintTextColor(android.graphics.Color.LTGRAY);
+
+passwordInput.setTextColor(android.graphics.Color.WHITE);
+passwordInput.setHintTextColor(android.graphics.Color.LTGRAY);
 loginButton = new Button(this);
 loginButton.setText("LOGIN MT5");
 
