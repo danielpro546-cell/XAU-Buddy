@@ -17,6 +17,11 @@ public class MainActivity extends Activity {
 
     Button refreshButton;
     Button connectButton;
+    EditText serverInput;
+EditText accountInput;
+EditText passwordInput;
+
+Button loginButton;
     Button applyRiskButton;
     Button customBalanceButton;
 
