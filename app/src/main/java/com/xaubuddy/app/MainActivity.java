@@ -547,6 +547,34 @@ uploadM5Button.setText("UPLOAD M5 SCREENSHOT");
 
 analyzeButton = new Button(this);
 analyzeButton.setText("ANALYZE");
+  analyzeButton.setOnClickListener(v -> {
+
+    String h1Status;
+    String m5Status;
+
+    if(h1Image != null){
+        h1Status = "H1 SCREENSHOT READY";
+    }else{
+        h1Status = "H1 SCREENSHOT MISSING";
+    }
+
+
+    if(m5Image != null){
+        m5Status = "M5 SCREENSHOT READY";
+    }else{
+        m5Status = "M5 SCREENSHOT MISSING";
+    }
+
+
+    dashboard.setText(
+            "===== V7 SCREEN ANALYSIS =====\n\n"
+            + h1Status
+            + "\n"
+            + m5Status
+            + "\n\nWAITING AI ANALYSIS..."
+    );
+
+});      
 uploadH1Button.setOnClickListener(v -> {
 
     Intent intent = new Intent(
