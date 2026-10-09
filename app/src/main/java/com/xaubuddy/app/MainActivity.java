@@ -506,6 +506,33 @@ Button loginButton;
                     .setPositiveButton("OK", null)
                     .show();
         });
+        serverInput = new EditText(this);
+serverInput.setHint("MT5 Server");
+
+accountInput = new EditText(this);
+accountInput.setHint("MT5 Account");
+
+passwordInput = new EditText(this);
+passwordInput.setHint("MT5 Password");
+passwordInput.setInputType(
+        android.text.InputType.TYPE_CLASS_TEXT
+        | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+);
+
+loginButton = new Button(this);
+loginButton.setText("LOGIN MT5");
+
+loginButton.setOnClickListener(v -> {
+
+    mt5.connect(
+            serverInput.getText().toString(),
+            accountInput.getText().toString(),
+            passwordInput.getText().toString()
+    );
+
+    showDashboard();
+
+});
 
         dashboard = new TextView(this);
         dashboard.setTextSize(16);
@@ -526,6 +553,10 @@ Button loginButton;
         layout.addView(riskWarning);
         layout.addView(refreshButton);
         layout.addView(connectButton);
+        layout.addView(serverInput);
+layout.addView(accountInput);
+layout.addView(passwordInput);
+layout.addView(loginButton);
 
         layout.addView(scroll, new LinearLayout.LayoutParams(
                 -1, 0, 1
