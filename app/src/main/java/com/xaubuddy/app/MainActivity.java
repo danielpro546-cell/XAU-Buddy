@@ -583,6 +583,9 @@ loginButton.setOnClickListener(v -> {
 layout.addView(accountInput);
 layout.addView(passwordInput);
 layout.addView(loginButton);
+layout.addView(uploadH1Button);
+layout.addView(uploadM5Button);
+layout.addView(analyzeButton);      
 
         layout.addView(scroll, new LinearLayout.LayoutParams(
                 -1, 0, 1
