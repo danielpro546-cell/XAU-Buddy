@@ -7,6 +7,9 @@ import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.MediaStore;
 
 public class MainActivity extends Activity {
 
@@ -24,6 +27,12 @@ EditText passwordInput;
 Button loginButton;
     Button applyRiskButton;
     Button customBalanceButton;
+    Button uploadH1Button;
+Button uploadM5Button;
+Button analyzeButton;
+
+Uri h1Image;
+Uri m5Image;
 
     MarketData marketData = new MarketData();
     StrategyEngine strategy = new StrategyEngine();
