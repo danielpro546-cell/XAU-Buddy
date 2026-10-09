@@ -171,14 +171,20 @@ layout.addView(mt5Title);
 
 serverInput = new EditText(this);
 serverInput.setHint("MT5 Server");
+serverInput.setTextColor(Color.WHITE);
+serverInput.setHintTextColor(Color.LTGRAY);
 layout.addView(serverInput);
 
 accountInput = new EditText(this);
 accountInput.setHint("MT5 Account");
+accountInput.setTextColor(Color.WHITE);
+accountInput.setHintTextColor(Color.LTGRAY);
 layout.addView(accountInput);
 
 passwordInput = new EditText(this);
 passwordInput.setHint("MT5 Password");
+passwordInput.setTextColor(Color.WHITE);
+passwordInput.setHintTextColor(Color.LTGRAY);
 layout.addView(passwordInput);
 
 loginButton = new Button(this);
