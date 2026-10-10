@@ -91,14 +91,14 @@ public class DecisionEngine {
 
 
 
-        if(buyScore > sellScore && buyScore >=60){
+        if(buyScore > sellScore && buyScore >=70){
 
             signal = "BUY";
             confidence = buyScore;
             reason = "BUY Score Confirmed";
 
         }
-        else if(sellScore > buyScore && sellScore >=60){
+        else if(sellScore > buyScore && sellScore >=70){
 
             signal = "SELL";
             confidence = sellScore;
