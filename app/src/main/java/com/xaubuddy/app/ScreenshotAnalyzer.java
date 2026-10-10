@@ -57,6 +57,9 @@ bitmap = cropper.crop(bitmap);
             WickDetector wick = new WickDetector();
             wick.detect(bitmap);
 
+            green += wick.bullishWicks;
+red += wick.bearishWicks;
+
             int upper = wick.upperWicks;
             int lower = wick.lowerWicks;
 
