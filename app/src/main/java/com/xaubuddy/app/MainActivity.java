@@ -396,11 +396,25 @@ private void refreshDashboard() {
 
     strategy.analyze(marketData);
     decision.decide(
+
         h1Analyzer.trend,
+
         m5Analyzer.trend,
+
         marketData.ema20,
+
         marketData.ema50,
-        marketData.rsi14
+
+        marketData.rsi14,
+
+        m5Analyzer.bos,
+
+        m5Analyzer.choch,
+
+        m5Analyzer.fvg,
+
+        m5Analyzer.liquidity
+
 );
     riskManager.calculate(
             marketData.price,
@@ -434,10 +448,10 @@ private void refreshDashboard() {
 );
     tradeView.setText(
         "===== TRADE =====\n\n"
-        + "Entry : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.entry)
-        + "\nSL : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.sl)
-        + "\nTP1 : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.tp1)
-        + "\nTP2 : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.tp2)
+        + "Entry : " + (decision.signal.equals("WAIT") ? "-" : riskManager.entry)
++ "\nSL : " + (decision.signal.equals("WAIT") ? "-" : riskManager.sl)
++ "\nTP1 : " + (decision.signal.equals("WAIT") ? "-" : riskManager.tp1)
++ "\nTP2 : " + (decision.signal.equals("WAIT") ? "-" : riskManager.tp2)
         + "\nLot : " + riskManager.lotSize
         + "\nPlanned Risk : $" + riskManager.riskMoney
         + "\nActual Risk : $" + riskManager.actualRiskMoney
