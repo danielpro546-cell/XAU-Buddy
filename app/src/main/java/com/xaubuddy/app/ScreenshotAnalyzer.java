@@ -85,21 +85,17 @@ red += wick.bearishWicks;
             }
 
             // Wick Filter
-            if(lower > upper){
+            confidence = 60 + Math.abs(green - red) / 10;
 
-                confidence += 10;
+if(lower > upper){
+    confidence += 10;
+}else if(upper > lower){
+    confidence += 10;
+}
 
-            }else if(upper > lower){
-
-                confidence += 10;
-
-            }
-
-            bos = "DETECTED";
-            choch = "DETECTED";
-            fvg = "FOUND";
-
-            confidence += 60 + Math.abs(green - red) / 10;
+if(confidence > 100){
+    confidence = 100;
+}
 
             if(confidence > 100){
                 confidence = 100;
