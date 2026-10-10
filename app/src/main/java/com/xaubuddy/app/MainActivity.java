@@ -412,14 +412,16 @@ private void refreshDashboard() {
 );       
 
     analysisView.setText(
-            "===== AI ANALYSIS =====\n\n"
-            + "BOS : " + strategy.bos
-            + "\nCHoCH : " + strategy.choch
-            + "\nFVG : " + strategy.fvg
-            + "\nLiquidity : " + strategy.liquidity
-            + "\nSignal : " + strategy.signal
-            + "\nConfidence : " + strategy.confidence + "%"
-    );
+        "===== AI ANALYSIS =====\n\n"
+        + "Timeframe : " + screenshotAnalyzer.timeframe
+        + "\nTrend : " + screenshotAnalyzer.trend
+        + "\nBOS : " + screenshotAnalyzer.bos
+        + "\nCHoCH : " + screenshotAnalyzer.choch
+        + "\nFVG : " + screenshotAnalyzer.fvg
+        + "\nLiquidity : " + screenshotAnalyzer.liquidity
+        + "\nSignal : " + screenshotAnalyzer.signal
+        + "\nConfidence : " + screenshotAnalyzer.confidence + "%"
+);
     tradeView.setText(
         "===== TRADE =====\n\n"
         + "Entry : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.entry)
