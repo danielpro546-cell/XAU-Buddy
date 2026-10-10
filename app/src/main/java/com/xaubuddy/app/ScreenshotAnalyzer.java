@@ -50,8 +50,7 @@ public class ScreenshotAnalyzer {
             CandleDetector candle = new CandleDetector();
             candle.detect(bitmap);
 
-            int green = candle.greenCandles;
-            int red = candle.redCandles;
+            String structure = candle.marketStructure;
 
             // Wick Detection
             WickDetector wick = new WickDetector();
@@ -65,24 +64,25 @@ public class ScreenshotAnalyzer {
 
             // Trend
             if(green > red){
+if(structure.equals("BULLISH")){
 
-                trend = "BULLISH";
-                signal = "BUY";
-                liquidity = "BUY SIDE";
+    trend = "BULLISH";
+    signal = "BUY";
+    liquidity = "BUY SIDE";
 
-            }else if(red > green){
+}else if(structure.equals("BEARISH")){
 
-                trend = "BEARISH";
-                signal = "SELL";
-                liquidity = "SELL SIDE";
+    trend = "BEARISH";
+    signal = "SELL";
+    liquidity = "SELL SIDE";
 
-            }else{
+}else{
 
-                trend = "SIDEWAYS";
-                signal = "WAIT";
-                liquidity = "WAIT";
+    trend = "SIDEWAYS";
+    signal = "WAIT";
+    liquidity = "WAIT";
 
-            }
+}
 
             // Structure
             bos = "DETECTED";
@@ -90,17 +90,29 @@ public class ScreenshotAnalyzer {
             fvg = "FOUND";
 
             // Confidence
-            confidence = 60 + Math.abs(green - red) / 10;
+            confidence = 60;
 
-            if(lower > upper){
-                confidence += 10;
-            }else if(upper > lower){
-                confidence += 10;
-            }
+if(structure.equals("BULLISH") ||
+   structure.equals("BEARISH")){
 
-            if(confidence > 100){
-                confidence = 100;
-            }
+    confidence += 20;
+
+}
+
+if(lower > upper){
+
+    confidence += 10;
+
+}else if(upper > lower){
+
+    confidence += 10;
+
+}
+
+
+if(confidence > 100){
+    confidence = 100;
+}
 
         }catch(Exception e){
 
