@@ -418,10 +418,10 @@ private void refreshDashboard() {
     );
     tradeView.setText(
         "===== TRADE =====\n\n"
-        + "Entry : " + riskManager.entry
-        + "\nSL : " + riskManager.sl
-        + "\nTP1 : " + riskManager.tp1
-        + "\nTP2 : " + riskManager.tp2
+        + "Entry : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.entry)
+        + "\nSL : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.sl)
+        + "\nTP1 : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.tp1)
+        + "\nTP2 : " + (strategy.signal.equals("WAIT") ? "-" : riskManager.tp2)
         + "\nLot : " + riskManager.lotSize
         + "\nPlanned Risk : $" + riskManager.riskMoney
         + "\nActual Risk : $" + riskManager.actualRiskMoney
