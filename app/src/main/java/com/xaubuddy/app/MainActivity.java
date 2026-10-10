@@ -379,8 +379,8 @@ uploadM5Button.setOnClickListener(v -> {
 
 analyzeButton.setOnClickListener(v -> {
 
-    screenshotAnalyzer.analyze(h1Image, "H1");
-    screenshotAnalyzer.analyze(m5Image, "M5");
+    screenshotAnalyzer.analyze(this, h1Image, "H1");
+    screenshotAnalyzer.analyze(this, m5Image, "M5");
 
     refreshDashboard();
 
