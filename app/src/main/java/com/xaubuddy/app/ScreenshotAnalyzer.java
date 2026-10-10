@@ -42,9 +42,9 @@ public class ScreenshotAnalyzer {
                 return;
             }
 
+            // Crop chart area
             ChartCropper cropper = new ChartCropper();
-
-bitmap = cropper.crop(bitmap);
+            bitmap = cropper.crop(bitmap);
 
             // Candle Detection
             CandleDetector candle = new CandleDetector();
@@ -58,7 +58,7 @@ bitmap = cropper.crop(bitmap);
             wick.detect(bitmap);
 
             green += wick.bullishWicks;
-red += wick.bearishWicks;
+            red += wick.bearishWicks;
 
             int upper = wick.upperWicks;
             int lower = wick.lowerWicks;
@@ -84,18 +84,19 @@ red += wick.bearishWicks;
 
             }
 
-            // Wick Filter
+            // Structure
+            bos = "DETECTED";
+            choch = "DETECTED";
+            fvg = "FOUND";
+
+            // Confidence
             confidence = 60 + Math.abs(green - red) / 10;
 
-if(lower > upper){
-    confidence += 10;
-}else if(upper > lower){
-    confidence += 10;
-}
-
-if(confidence > 100){
-    confidence = 100;
-}
+            if(lower > upper){
+                confidence += 10;
+            }else if(upper > lower){
+                confidence += 10;
+            }
 
             if(confidence > 100){
                 confidence = 100;
