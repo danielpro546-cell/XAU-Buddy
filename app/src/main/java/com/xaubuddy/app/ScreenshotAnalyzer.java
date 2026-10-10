@@ -43,24 +43,37 @@ public class ScreenshotAnalyzer {
                 return;
             }
 
-            int brightness = getBrightness(bitmap);
+            int green = countGreenPixels(bitmap);
+            int red = countRedPixels(bitmap);
 
-            if(brightness >= 120){
+            if(green > red){
+
                 trend = "BULLISH";
                 signal = "BUY";
-                bos = "DETECTED";
-                choch = "DETECTED";
-                fvg = "FOUND";
                 liquidity = "BUY SIDE";
-                confidence = 70;
-            }else{
+
+            }else if(red > green){
+
                 trend = "BEARISH";
                 signal = "SELL";
-                bos = "DETECTED";
-                choch = "DETECTED";
-                fvg = "FOUND";
                 liquidity = "SELL SIDE";
-                confidence = 70;
+
+            }else{
+
+                trend = "SIDEWAYS";
+                signal = "WAIT";
+                liquidity = "WAITING";
+
+            }
+
+            bos = "DETECTED";
+            choch = "DETECTED";
+            fvg = "FOUND";
+
+            confidence = 60 + Math.abs(green - red) / 10;
+
+            if(confidence > 100){
+                confidence = 100;
             }
 
         }catch(Exception e){
@@ -99,6 +112,58 @@ public class ScreenshotAnalyzer {
         }
 
         return (int)(total / count);
+
+    }
+
+    private int countGreenPixels(Bitmap bitmap){
+
+        int green = 0;
+
+        for(int y = 0; y < bitmap.getHeight(); y += 5){
+
+            for(int x = 0; x < bitmap.getWidth(); x += 5){
+
+                int c = bitmap.getPixel(x, y);
+
+                int r = Color.red(c);
+                int g = Color.green(c);
+                int b = Color.blue(c);
+
+                if(g > r + 30 && g > b + 30){
+                    green++;
+                }
+
+            }
+
+        }
+
+        return green;
+
+    }
+
+    private int countRedPixels(Bitmap bitmap){
+
+        int red = 0;
+
+        for(int y = 0; y < bitmap.getHeight(); y += 5){
+
+            for(int x = 0; x < bitmap.getWidth(); x += 5){
+
+                int c = bitmap.getPixel(x, y);
+
+                int r = Color.red(c);
+                int g = Color.green(c);
+                int b = Color.blue(c);
+
+                if(r > g + 30 && r > b + 30){
+                    red++;
+                }
+
+            }
+
+        }
+
+        return red;
 
     }
 
