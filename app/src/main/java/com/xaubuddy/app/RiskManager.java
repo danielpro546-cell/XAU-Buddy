@@ -134,9 +134,9 @@ canTrade = true;
 
     private double round(double value){
 
-        return Math.round(value * 100.0)
-                /100.0;
+    return Math.round(value * 10000.0)
+            /10000.0;
 
-    }
+}
 
 }
