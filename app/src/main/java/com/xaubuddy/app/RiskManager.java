@@ -57,7 +57,7 @@ public class RiskManager {
                     contractSize
                     );
 
-            canTrade = true;
+            canTrade = actualRiskMoney <= riskMoney;
 
 warning =
 "⚠ Minimum lot 0.01 used (Actual risk is higher)";
@@ -79,7 +79,7 @@ warning =
 
 
             warning = "Risk check passed";
-canTrade = true;
+canTrade = actualRiskMoney <= riskMoney;
             
         }
 
