@@ -62,7 +62,7 @@ public class ScreenshotAnalyzer {
 
                 trend = "SIDEWAYS";
                 signal = "WAIT";
-                liquidity = "WAITING";
+                liquidity = "WAIT";
 
             }
 
@@ -86,42 +86,19 @@ public class ScreenshotAnalyzer {
 
     }
 
-    private int getBrightness(Bitmap bitmap){
-
-        long total = 0;
-        int count = 0;
-
-        for(int y = 0; y < bitmap.getHeight(); y += 10){
-
-            for(int x = 0; x < bitmap.getWidth(); x += 10){
-
-                int c = bitmap.getPixel(x, y);
-
-                total += (Color.red(c)
-                        + Color.green(c)
-                        + Color.blue(c)) / 3;
-
-                count++;
-
-            }
-
-        }
-
-        if(count == 0){
-            return 0;
-        }
-
-        return (int)(total / count);
-
-    }
-
     private int countGreenPixels(Bitmap bitmap){
 
         int green = 0;
 
-        for(int y = 0; y < bitmap.getHeight(); y += 5){
+        int startX = bitmap.getWidth() / 10;
+        int endX = bitmap.getWidth() * 9 / 10;
 
-            for(int x = 0; x < bitmap.getWidth(); x += 5){
+        int startY = bitmap.getHeight() / 5;
+        int endY = bitmap.getHeight() * 4 / 5;
+
+        for(int y = startY; y < endY; y += 5){
+
+            for(int x = startX; x < endX; x += 5){
 
                 int c = bitmap.getPixel(x, y);
 
@@ -145,9 +122,15 @@ public class ScreenshotAnalyzer {
 
         int red = 0;
 
-        for(int y = 0; y < bitmap.getHeight(); y += 5){
+        int startX = bitmap.getWidth() / 10;
+        int endX = bitmap.getWidth() * 9 / 10;
 
-            for(int x = 0; x < bitmap.getWidth(); x += 5){
+        int startY = bitmap.getHeight() / 5;
+        int endY = bitmap.getHeight() * 4 / 5;
+
+        for(int y = startY; y < endY; y += 5){
+
+            for(int x = startX; x < endX; x += 5){
 
                 int c = bitmap.getPixel(x, y);
 
