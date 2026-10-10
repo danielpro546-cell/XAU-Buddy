@@ -417,15 +417,16 @@ private void refreshDashboard() {
             + "\nConfidence : " + strategy.confidence + "%"
     );
     tradeView.setText(
-            "===== TRADE =====\n\n"
-            + "Entry : " + riskManager.entry
-            + "\nSL : " + riskManager.sl
-            + "\nTP1 : " + riskManager.tp1
-            + "\nTP2 : " + riskManager.tp2
-            + "\nLot : " + riskManager.lotSize
-            + "\nRR : " + riskManager.rr
-    );
-
+        "===== TRADE =====\n\n"
+        + "Entry : " + riskManager.entry
+        + "\nSL : " + riskManager.sl
+        + "\nTP1 : " + riskManager.tp1
+        + "\nTP2 : " + riskManager.tp2
+        + "\nLot : " + riskManager.lotSize
+        + "\nPlanned Risk : $" + riskManager.riskMoney
+        + "\nActual Risk : $" + riskManager.actualRiskMoney
+        + "\nRR : " + riskManager.rr
+);
     journalView.setText(
             "===== JOURNAL =====\n\n"
             + "Trades : " + tradeJournal.totalTrades
