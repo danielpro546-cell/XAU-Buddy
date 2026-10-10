@@ -417,9 +417,9 @@ private void refreshDashboard() {
 
 );
     riskManager.calculate(
-            marketData.price,
-            strategy.signal
-    );
+        marketData.price,
+        decision.signal
+);
 
     marketView.setText(
         "===== MARKET DATA =====\n\n"
