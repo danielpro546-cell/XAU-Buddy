@@ -42,6 +42,10 @@ public class ScreenshotAnalyzer {
                 return;
             }
 
+            ChartCropper cropper = new ChartCropper();
+
+bitmap = cropper.crop(bitmap);
+
             // Candle Detection
             CandleDetector candle = new CandleDetector();
             candle.detect(bitmap);
