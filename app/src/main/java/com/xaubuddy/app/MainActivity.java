@@ -396,13 +396,12 @@ private void refreshDashboard() {
 
     strategy.analyze(marketData);
     decision.decide(
-        marketData.h1Bias,
-        screenshotAnalyzer.trend,
+        h1Analyzer.trend,
+        m5Analyzer.trend,
         marketData.ema20,
         marketData.ema50,
         marketData.rsi14
 );
-
     riskManager.calculate(
             marketData.price,
             strategy.signal
@@ -422,14 +421,14 @@ private void refreshDashboard() {
 
     analysisView.setText(
         "===== AI ANALYSIS =====\n\n"
-        + "Timeframe : " + screenshotAnalyzer.timeframe
-        + "\nTrend : " + screenshotAnalyzer.trend
-        + "\nBOS : " + screenshotAnalyzer.bos
-        + "\nCHoCH : " + screenshotAnalyzer.choch
-        + "\nFVG : " + screenshotAnalyzer.fvg
-        + "\nLiquidity : " + screenshotAnalyzer.liquidity
-        + "\nSignal : " + screenshotAnalyzer.signal
-        + "\nConfidence : " + screenshotAnalyzer.confidence + "%"
+        + "\nH1 Trend : " + h1Analyzer.trend
++ "\nM5 Trend : " + m5Analyzer.trend
++ "\nBOS : " + m5Analyzer.bos
++ "\nCHoCH : " + m5Analyzer.choch
++ "\nFVG : " + m5Analyzer.fvg
++ "\nLiquidity : " + m5Analyzer.liquidity
++ "\nSignal : " + m5Analyzer.signal
++ "\nConfidence : " + m5Analyzer.confidence + "%"
         + "\nAI FINAL : " + decision.signal
 + "\nReason : " + decision.reason
 );
