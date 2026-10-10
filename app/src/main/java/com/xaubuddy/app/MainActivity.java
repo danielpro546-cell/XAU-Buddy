@@ -50,7 +50,8 @@ public class MainActivity extends Activity {
     StrategyEngine strategy = new StrategyEngine();
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
-    ScreenshotAnalyzer screenshotAnalyzer = new ScreenshotAnalyzer();
+    ScreenshotAnalyzer h1Analyzer = new ScreenshotAnalyzer();
+ScreenshotAnalyzer m5Analyzer = new ScreenshotAnalyzer();
     DecisionEngine decision = new DecisionEngine();
 
     TradeStorage tradeStorage;
@@ -380,8 +381,8 @@ uploadM5Button.setOnClickListener(v -> {
 
 analyzeButton.setOnClickListener(v -> {
 
-    screenshotAnalyzer.analyze(this, h1Image, "H1");
-    screenshotAnalyzer.analyze(this, m5Image, "M5");
+    h1Analyzer.analyze(this, h1Image, "H1");
+m5Analyzer.analyze(this, m5Image, "M5");
 
     refreshDashboard();
 
