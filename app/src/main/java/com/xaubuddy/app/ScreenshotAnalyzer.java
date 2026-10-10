@@ -1,8 +1,12 @@
 package com.xaubuddy.app;
 
-import android.net.Uri;
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.Uri;
+
+import java.io.InputStream;
 
 public class ScreenshotAnalyzer {
 
@@ -15,7 +19,7 @@ public class ScreenshotAnalyzer {
     public String liquidity = "WAIT";
     public int confidence = 0;
 
-    public void analyze(Uri image, String tf){
+    public void analyze(Context context, Uri image, String tf){
 
         timeframe = tf;
 
@@ -25,39 +29,77 @@ public class ScreenshotAnalyzer {
             return;
         }
 
-        trend = "BULLISH";
-        bos = "DETECTED";
-        choch = "DETECTED";
-        fvg = "FOUND";
-        liquidity = "BUY SIDE";
-        signal = "BUY";
-        confidence = 90;
-    }
+        try{
 
-    private int getBrightness(Bitmap bitmap){
+            InputStream input =
+                    context.getContentResolver().openInputStream(image);
 
-    long total = 0;
-    int count = 0;
+            Bitmap bitmap =
+                    BitmapFactory.decodeStream(input);
 
-    for(int y = 0; y < bitmap.getHeight(); y += 10){
+            if(bitmap == null){
+                signal = "IMAGE ERROR";
+                confidence = 0;
+                return;
+            }
 
-        for(int x = 0; x < bitmap.getWidth(); x += 10){
+            int brightness = getBrightness(bitmap);
 
-            int c = bitmap.getPixel(x, y);
+            if(brightness >= 120){
+                trend = "BULLISH";
+                signal = "BUY";
+                bos = "DETECTED";
+                choch = "DETECTED";
+                fvg = "FOUND";
+                liquidity = "BUY SIDE";
+                confidence = 70;
+            }else{
+                trend = "BEARISH";
+                signal = "SELL";
+                bos = "DETECTED";
+                choch = "DETECTED";
+                fvg = "FOUND";
+                liquidity = "SELL SIDE";
+                confidence = 70;
+            }
 
-            total +=
-                    (Color.red(c)
-                    + Color.green(c)
-                    + Color.blue(c)) / 3;
+        }catch(Exception e){
 
-            count++;
+            trend = "ERROR";
+            signal = "ERROR";
+            confidence = 0;
 
         }
 
     }
 
-    return (int)(total / count);
+    private int getBrightness(Bitmap bitmap){
 
-}
+        long total = 0;
+        int count = 0;
+
+        for(int y = 0; y < bitmap.getHeight(); y += 10){
+
+            for(int x = 0; x < bitmap.getWidth(); x += 10){
+
+                int c = bitmap.getPixel(x, y);
+
+                total += (Color.red(c)
+                        + Color.green(c)
+                        + Color.blue(c)) / 3;
+
+                count++;
+
+            }
+
+        }
+
+        if(count == 0){
+            return 0;
+        }
+
+        return (int)(total / count);
+
+    }
 
 }
