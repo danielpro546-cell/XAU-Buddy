@@ -51,6 +51,7 @@ public class MainActivity extends Activity {
     RiskManager riskManager = new RiskManager();
     MT5Connector mt5 = new MT5Connector();
     ScreenshotAnalyzer screenshotAnalyzer = new ScreenshotAnalyzer();
+    DecisionEngine decision = new DecisionEngine();
 
     TradeStorage tradeStorage;
     TradeJournal tradeJournal;
@@ -393,6 +394,13 @@ private void refreshDashboard() {
     marketData.updateLiveData();
 
     strategy.analyze(marketData);
+    decision.decide(
+        marketData.h1Bias,
+        screenshotAnalyzer.trend,
+        marketData.ema20,
+        marketData.ema50,
+        marketData.rsi14
+);
 
     riskManager.calculate(
             marketData.price,
@@ -421,6 +429,8 @@ private void refreshDashboard() {
         + "\nLiquidity : " + screenshotAnalyzer.liquidity
         + "\nSignal : " + screenshotAnalyzer.signal
         + "\nConfidence : " + screenshotAnalyzer.confidence + "%"
+        + "\nAI FINAL : " + decision.signal
++ "\nReason : " + decision.reason
 );
     tradeView.setText(
         "===== TRADE =====\n\n"
