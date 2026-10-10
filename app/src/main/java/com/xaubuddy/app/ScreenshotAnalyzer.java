@@ -3,7 +3,6 @@ package com.xaubuddy.app;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 
 import java.io.InputStream;
@@ -43,13 +42,21 @@ public class ScreenshotAnalyzer {
                 return;
             }
 
-            CandleDetector detector = new CandleDetector();
+            // Candle Detection
+            CandleDetector candle = new CandleDetector();
+            candle.detect(bitmap);
 
-detector.detect(bitmap);
+            int green = candle.greenCandles;
+            int red = candle.redCandles;
 
-int green = detector.greenCandles;
-int red = detector.redCandles;
+            // Wick Detection
+            WickDetector wick = new WickDetector();
+            wick.detect(bitmap);
 
+            int upper = wick.upperWicks;
+            int lower = wick.lowerWicks;
+
+            // Trend
             if(green > red){
 
                 trend = "BULLISH";
@@ -70,11 +77,22 @@ int red = detector.redCandles;
 
             }
 
+            // Wick Filter
+            if(lower > upper){
+
+                confidence += 10;
+
+            }else if(upper > lower){
+
+                confidence += 10;
+
+            }
+
             bos = "DETECTED";
             choch = "DETECTED";
             fvg = "FOUND";
 
-            confidence = 60 + Math.abs(green - red) / 10;
+            confidence += 60 + Math.abs(green - red) / 10;
 
             if(confidence > 100){
                 confidence = 100;
@@ -90,6 +108,4 @@ int red = detector.redCandles;
 
     }
 
-    }
-
-    
+}
