@@ -130,6 +130,25 @@ canTrade = actualRiskMoney <= riskMoney;
 
     }
 
+        public void stopTrade(){
+
+    entry = 0;
+    sl = 0;
+    tp1 = 0;
+    tp2 = 0;
+
+    lotSize = 0;
+
+    riskMoney = 0;
+    actualRiskMoney = 0;
+
+    canTrade = false;
+
+    warning = "Trade Blocked (Confidence < 70)";
+
+
+}
+
 
 
     private double round(double value){
