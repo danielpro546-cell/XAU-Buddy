@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,6 +18,7 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import java.io.InputStream;
 
 public class MainActivity extends Activity {
 
@@ -53,6 +56,7 @@ public class MainActivity extends Activity {
     ScreenshotAnalyzer h1Analyzer = new ScreenshotAnalyzer();
 ScreenshotAnalyzer m5Analyzer = new ScreenshotAnalyzer();
     DecisionEngine decision = new DecisionEngine();
+    PriceDetector priceDetector = new PriceDetector();
 
     TradeStorage tradeStorage;
     TradeJournal tradeJournal;
@@ -501,28 +505,71 @@ protected void onActivityResult(
         int resultCode,
         Intent data
 ) {
+
     super.onActivityResult(requestCode, resultCode, data);
+
 
     if (resultCode == RESULT_OK && data != null) {
 
+
         if (requestCode == 100) {
+
             h1Image = data.getData();
+
             Toast.makeText(
                     this,
                     "H1 Screenshot Selected",
                     Toast.LENGTH_SHORT
             ).show();
+
         }
 
+
         if (requestCode == 200) {
+
             m5Image = data.getData();
+
+
             Toast.makeText(
                     this,
                     "M5 Screenshot Selected",
                     Toast.LENGTH_SHORT
             ).show();
+
+
+
+            try {
+
+                InputStream input =
+                        getContentResolver()
+                        .openInputStream(m5Image);
+
+
+                Bitmap bitmap =
+                        BitmapFactory.decodeStream(input);
+
+
+                priceDetector.detect(bitmap);
+
+
+
+                Toast.makeText(
+                        this,
+                        priceDetector.priceText,
+                        Toast.LENGTH_SHORT
+                ).show();
+
+
+
+            }catch(Exception e){
+
+                e.printStackTrace();
+
+            }
+
         }
 
+
     }
-}
+
 }
