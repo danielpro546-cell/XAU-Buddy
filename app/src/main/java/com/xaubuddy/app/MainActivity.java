@@ -416,11 +416,18 @@ private void refreshDashboard() {
         m5Analyzer.liquidity
 
 );
-    riskManager.calculate(
-        marketData.price,
-        decision.signal
-);
+    if(decision.confidence >= 70){
 
+    riskManager.calculate(
+            marketData.price,
+            decision.signal
+    );
+
+}else{
+
+    riskManager.stopTrade();
+
+}
     marketView.setText(
         "===== MARKET DATA =====\n\n"
         + "PRICE : " + marketData.price
