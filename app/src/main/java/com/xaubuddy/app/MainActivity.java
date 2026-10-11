@@ -428,6 +428,12 @@ private void refreshDashboard() {
     riskManager.stopTrade();
 
 }
+    if(!decision.signal.equals("BUY") &&
+   !decision.signal.equals("SELL")){
+
+    riskManager.stopTrade();
+
+}
     marketView.setText(
         "===== MARKET DATA =====\n\n"
         + "PRICE : " + marketData.price
