@@ -442,6 +442,7 @@ private void refreshDashboard() {
         + "\nRSI14 : " + marketData.rsi14
         + "\nH1 : " + marketData.h1Bias
         + "\nM5 : " + marketData.m5Signal
+        + "\nScreenshot Price : " + m5Analyzer.detectedPrice
         + "\nBalance : $" + riskManager.balance
         + "\nRisk % : " + riskManager.riskPercent
 );       
