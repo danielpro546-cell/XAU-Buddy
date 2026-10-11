@@ -144,7 +144,7 @@ canTrade = actualRiskMoney <= riskMoney;
 
     canTrade = false;
 
-    warning = "Trade Blocked (Confidence < 70)";
+warning = "Trade Blocked (AI FINAL = WAIT)";
 
 
 }
