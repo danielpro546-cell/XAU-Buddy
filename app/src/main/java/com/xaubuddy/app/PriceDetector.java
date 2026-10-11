@@ -6,6 +6,7 @@ import android.graphics.Color;
 public class PriceDetector {
 
     public double detectedPrice = 0;
+    public String priceText = "";
     public boolean found = false;
 
     public int left;
@@ -47,6 +48,16 @@ public class PriceDetector {
             }
 
         }
+
+        if(found){
+
+    priceText = "OCR READY";
+
+}else{
+
+    priceText = "NOT FOUND";
+
+       } 
 
     }
 
