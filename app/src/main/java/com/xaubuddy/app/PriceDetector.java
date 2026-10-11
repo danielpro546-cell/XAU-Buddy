@@ -9,6 +9,9 @@ public class PriceDetector {
     public String priceText = "";
     public boolean found = false;
 
+    public String detectedText = "";
+    public int digitCount = 0;
+
     public int left;
     public int top;
     public int right;
@@ -18,6 +21,9 @@ public class PriceDetector {
 
         found = false;
         detectedPrice = 0;
+        priceText = "";
+        detectedText = "";
+        digitCount = 0;
 
         left = bitmap.getWidth();
         top = bitmap.getHeight();
@@ -51,13 +57,16 @@ public class PriceDetector {
 
         if(found){
 
-    priceText = "OCR READY";
+            priceText = "OCR READY";
+            detectedText = "PRICE AREA FOUND";
+            digitCount = (right - left) / 12;
 
-}else{
+        }else{
 
-    priceText = "NOT FOUND";
+            priceText = "NOT FOUND";
+            detectedText = "PRICE AREA NOT FOUND";
 
-       } 
+        }
 
     }
 
