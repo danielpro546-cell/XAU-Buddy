@@ -17,6 +17,7 @@ public class ScreenshotAnalyzer {
     public String fvg = "WAIT";
     public String liquidity = "WAIT";
     public int confidence = 0;
+    public double detectedPrice = 0;
 
 
     public void analyze(Context context, Uri image, String tf){
@@ -53,6 +54,8 @@ public class ScreenshotAnalyzer {
             // Crop Chart Area
             ChartCropper cropper = new ChartCropper();
             bitmap = cropper.crop(bitmap);
+            PriceDetector priceDetector = new PriceDetector();
+priceDetector.detect(bitmap);
 
 
 
