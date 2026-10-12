@@ -547,22 +547,34 @@ protected void onActivityResult(
             try {
 
                 InputStream input =
-                        getContentResolver()
-                        .openInputStream(m5Image);
+        getContentResolver()
+        .openInputStream(m5Image);
 
-
-                Bitmap bitmap =
+Bitmap bitmap =
         BitmapFactory.decodeStream(input);
 
-priceDetector.detect(bitmap, (price, status) -> {
+CurrentPriceCropper cropper =
+        new CurrentPriceCropper();
 
-    refreshDashboard();
+Bitmap priceBitmap =
+        cropper.crop(bitmap);
 
-    Toast.makeText(
-            this,
-            status,
-            Toast.LENGTH_SHORT
-    ).show();
+priceDetector.detect(priceBitmap, (price, status) -> {
+
+    h1Analyzer.detectedPrice = price;
+    m5Analyzer.detectedPrice = price;
+
+    runOnUiThread(() -> {
+
+        refreshDashboard();
+
+        Toast.makeText(
+                MainActivity.this,
+                status + " : " + price,
+                Toast.LENGTH_SHORT
+        ).show();
+
+    });
 
 });
 
