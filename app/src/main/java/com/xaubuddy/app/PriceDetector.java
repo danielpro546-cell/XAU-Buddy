@@ -77,44 +77,113 @@ public class PriceDetector {
 
     private void recognize(Bitmap bitmap){
 
-        InputImage image = InputImage.fromBitmap(bitmap,0);
+    try{
 
-        TextRecognition.getClient(
-                TextRecognizerOptions.DEFAULT_OPTIONS
-        ).process(image)
+        int cropLeft = left;
+        int cropTop = top;
+        int cropWidth = right - left;
+        int cropHeight = bottom - top;
 
-        .addOnSuccessListener(result -> {
 
-            detectedText = result.getText();
-
-            try{
-
-                String number =
-                        detectedText.replaceAll("[^0-9.]","");
-
-                if(!number.isEmpty()){
-
-                    detectedPrice =
-                            Double.parseDouble(number);
-
-                    priceText = "OCR SUCCESS";
-
-                }
-
-            }catch(Exception e){
-
-                detectedPrice = 0;
-
-            }
-
-        })
-
-        .addOnFailureListener(e -> {
+        if(cropWidth <= 0 || cropHeight <= 0){
 
             detectedPrice = 0;
-            priceText = "OCR FAILED";
+            priceText = "NO PRICE AREA";
+            return;
 
-        });
+        }
+
+
+        Bitmap priceBitmap = Bitmap.createBitmap(
+                bitmap,
+                cropLeft,
+                cropTop,
+                cropWidth,
+                cropHeight
+        );
+
+
+        InputImage image =
+                InputImage.fromBitmap(priceBitmap,0);
+
+
+        TextRecognition
+                .getClient(
+                        TextRecognizerOptions.DEFAULT_OPTIONS
+                )
+                .process(image)
+
+
+                .addOnSuccessListener(result -> {
+
+
+                    String text = result.getText();
+
+
+                    detectedText = text;
+
+
+                    try{
+
+
+                        String number =
+                                text.replaceAll("[^0-9.]","");
+
+
+                        if(number.length() >= 3){
+
+
+                            detectedPrice =
+                                    Double.parseDouble(number);
+
+
+                            priceText =
+                                    "OCR SUCCESS";
+
+
+                        }else{
+
+
+                            detectedPrice = 0;
+                            priceText =
+                                    "PRICE NOT FOUND";
+
+                        }
+
+
+
+                    }catch(Exception e){
+
+
+                        detectedPrice = 0;
+                        priceText =
+                                "OCR ERROR";
+
+                    }
+
+
+                })
+
+
+                .addOnFailureListener(e -> {
+
+
+                    detectedPrice = 0;
+                    priceText = "OCR FAILED";
+
+
+                });
+
+
+    }catch(Exception e){
+
+
+        detectedPrice = 0;
+        priceText = "CROP ERROR";
+
+
+    }
+
 
     }
 
