@@ -43,25 +43,25 @@ public class PriceDetector {
 
                         try{
 
-                            String[] lines = text.split("\\n");
+                            java.util.regex.Matcher matcher =
+                                    java.util.regex.Pattern
+                                            .compile("\\d{4}\\.\\d{2}")
+                                            .matcher(text);
 
                             detectedPrice = 0;
 
-                            for(String line : lines){
+                            while(matcher.find()){
 
-                                java.util.regex.Matcher m =
-                                        java.util.regex.Pattern
-                                                .compile("(\\d{4}\\.\\d{2})")
-                                                .matcher(line);
+                                double price =
+                                        Double.parseDouble(
+                                                matcher.group()
+                                        );
 
-                                if(m.find()){
+                                if(price >= 4150 && price <= 4200){
 
-                                    detectedPrice =
-                                            Double.parseDouble(
-                                                    m.group(1)
-                                            );
+                                    // နောက်ဆုံးတွေ့တဲ့ Live Price ကိုယူ
+                                    detectedPrice = price;
 
-                                    break;
                                 }
 
                             }
