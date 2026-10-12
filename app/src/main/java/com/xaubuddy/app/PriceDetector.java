@@ -126,41 +126,40 @@ public class PriceDetector {
 
                     try{
 
+    String[] lines = text.split("\\n");
 
-                        String number =
-                                text.replaceAll("[^0-9.]","");
+    detectedPrice = 0;
 
+    for(String line : lines){
 
-                        if(number.length() >= 3){
+        line = line.trim();
 
+        if(line.matches("\\d{4}\\.\\d{2}")){
 
-                            detectedPrice =
-                                    Double.parseDouble(number);
+            detectedPrice = Double.parseDouble(line);
 
+            break;
 
-                            priceText =
-                                    "OCR SUCCESS";
+        }
 
+    }
 
-                        }else{
+    if(detectedPrice > 0){
 
+        priceText = "OCR SUCCESS";
 
-                            detectedPrice = 0;
-                            priceText =
-                                    "PRICE NOT FOUND";
+    }else{
 
-                        }
+        priceText = "PRICE NOT FOUND";
 
+    }
 
+}catch(Exception e){
 
-                    }catch(Exception e){
+    detectedPrice = 0;
+    priceText = "OCR ERROR";
 
-
-                        detectedPrice = 0;
-                        priceText =
-                                "OCR ERROR";
-
-                    }
+}
 
 
                 })
