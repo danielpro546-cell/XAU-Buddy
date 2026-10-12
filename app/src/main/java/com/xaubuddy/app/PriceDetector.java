@@ -3,6 +3,10 @@ package com.xaubuddy.app;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 
+import com.google.mlkit.vision.common.InputImage;
+import com.google.mlkit.vision.text.TextRecognition;
+import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
+
 public class PriceDetector {
 
     public double detectedPrice = 0;
@@ -30,9 +34,9 @@ public class PriceDetector {
         right = 0;
         bottom = 0;
 
-        for(int y = 0; y < bitmap.getHeight()/3; y++){
+        for(int y=0; y<bitmap.getHeight()/3; y++){
 
-            for(int x = bitmap.getWidth()/2; x < bitmap.getWidth(); x++){
+            for(int x=bitmap.getWidth()/2; x<bitmap.getWidth(); x++){
 
                 int c = bitmap.getPixel(x,y);
 
@@ -40,15 +44,14 @@ public class PriceDetector {
                 int g = Color.green(c);
                 int b = Color.blue(c);
 
-                if(r > 220 && g > 220 && b > 220){
+                if(r>220 && g>220 && b>220){
 
-                    if(x < left) left = x;
-                    if(x > right) right = x;
-                    if(y < top) top = y;
-                    if(y > bottom) bottom = y;
+                    if(x<left) left=x;
+                    if(x>right) right=x;
+                    if(y<top) top=y;
+                    if(y>bottom) bottom=y;
 
-                    found = true;
-
+                    found=true;
                 }
 
             }
@@ -57,16 +60,61 @@ public class PriceDetector {
 
         if(found){
 
-            priceText = "OCR READY";
-            detectedText = "PRICE AREA FOUND";
-            digitCount = (right - left) / 12;
+            priceText="OCR READY";
+            detectedText="PRICE AREA FOUND";
+            digitCount=(right-left)/12;
+
+            recognize(bitmap);
 
         }else{
 
-            priceText = "NOT FOUND";
-            detectedText = "PRICE AREA NOT FOUND";
+            priceText="NOT FOUND";
+            detectedText="PRICE AREA NOT FOUND";
 
         }
+
+    }
+
+    private void recognize(Bitmap bitmap){
+
+        InputImage image = InputImage.fromBitmap(bitmap,0);
+
+        TextRecognition.getClient(
+                TextRecognizerOptions.DEFAULT_OPTIONS
+        ).process(image)
+
+        .addOnSuccessListener(result -> {
+
+            detectedText = result.getText();
+
+            try{
+
+                String number =
+                        detectedText.replaceAll("[^0-9.]","");
+
+                if(!number.isEmpty()){
+
+                    detectedPrice =
+                            Double.parseDouble(number);
+
+                    priceText = "OCR SUCCESS";
+
+                }
+
+            }catch(Exception e){
+
+                detectedPrice = 0;
+
+            }
+
+        })
+
+        .addOnFailureListener(e -> {
+
+            detectedPrice = 0;
+            priceText = "OCR FAILED";
+
+        });
 
     }
 
