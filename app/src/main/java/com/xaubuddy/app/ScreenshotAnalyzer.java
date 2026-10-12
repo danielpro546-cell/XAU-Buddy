@@ -115,9 +115,16 @@ priceDetector.detect(bitmap);
 
             // Structure
 
-            bos = "DETECTED";
-            choch = "DETECTED";
-            fvg = "FOUND";
+            bos = trend;
+choch = trend;
+
+if(trend.equals("BULLISH")){
+    fvg = "BUY";
+}else if(trend.equals("BEARISH")){
+    fvg = "SELL";
+}else{
+    fvg = "WAIT";
+}
 
 
 
