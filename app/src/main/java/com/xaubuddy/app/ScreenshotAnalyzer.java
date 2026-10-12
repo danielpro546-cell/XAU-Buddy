@@ -56,15 +56,13 @@ public class ScreenshotAnalyzer {
             bitmap = cropper.crop(bitmap);
             PriceDetector priceDetector = new PriceDetector();
 priceDetector.detect(bitmap);
-            if(priceDetector.found){
 
-    detectedPrice = priceDetector.detectedPrice;
-
-}else{
-
-    detectedPrice = 0;
-
+try{
+    Thread.sleep(800);
+}catch(Exception e){
 }
+
+detectedPrice = priceDetector.detectedPrice;
 
 
 
