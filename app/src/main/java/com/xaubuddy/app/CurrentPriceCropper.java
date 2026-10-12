@@ -11,11 +11,10 @@ public class CurrentPriceCropper {
 
         // Live price area (MT5 Android)
         int left = (int)(width * 0.80);
-        int top = (int)(height * 0.45);
+int top = (int)(height * 0.33);
 
-        int cropWidth = (int)(width * 0.20);
-        int cropHeight = (int)(height * 0.18);
-
+int cropWidth = (int)(width * 0.20);
+int cropHeight = (int)(height * 0.12);
         if(left < 0) left = 0;
         if(top < 0) top = 0;
 
