@@ -130,19 +130,21 @@ public class PriceDetector {
 
     detectedPrice = 0;
 
-    for(String line : lines){
+    for (String line : lines) {
 
-        line = line.trim();
+    java.util.regex.Matcher m =
+            java.util.regex.Pattern
+                    .compile("(\\d{4}\\.\\d{2})")
+                    .matcher(line);
 
-        if(line.matches("\\d{4}\\.\\d{2}")){
+    if (m.find()) {
 
-            detectedPrice = Double.parseDouble(line);
-
-            break;
-
-        }
+        detectedPrice = Double.parseDouble(m.group(1));
+        break;
 
     }
+
+}
 
     if(detectedPrice > 0){
 
