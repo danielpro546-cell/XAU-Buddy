@@ -52,10 +52,16 @@ public class ScreenshotAnalyzer {
 
 
             // Crop Chart Area
-            ChartCropper cropper = new ChartCropper();
-            bitmap = cropper.crop(bitmap);
-            PriceDetector priceDetector = new PriceDetector();
-priceDetector.detect(bitmap);
+ChartCropper cropper = new ChartCropper();
+bitmap = cropper.crop(bitmap);
+
+// Crop Current Price Area
+CurrentPriceCropper priceCropper = new CurrentPriceCropper();
+Bitmap priceBitmap = priceCropper.crop(bitmap);
+
+// OCR
+PriceDetector priceDetector = new PriceDetector();
+priceDetector.detect(priceBitmap);
 
 try{
     Thread.sleep(800);
