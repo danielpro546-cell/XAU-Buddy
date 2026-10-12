@@ -19,123 +19,108 @@ public class ScreenshotAnalyzer {
     public int confidence = 0;
     public double detectedPrice = 0;
 
-
     public void analyze(Context context, Uri image, String tf){
 
         timeframe = tf;
 
         if(image == null){
-
             signal = "NO IMAGE";
             confidence = 0;
             return;
         }
 
-
         try{
 
             InputStream input =
-                    context.getContentResolver()
-                    .openInputStream(image);
-
+                    context.getContentResolver().openInputStream(image);
 
             Bitmap bitmap =
                     BitmapFactory.decodeStream(input);
 
-
             if(bitmap == null){
-
                 signal = "IMAGE ERROR";
                 confidence = 0;
                 return;
             }
 
+            // Crop Chart
+            ChartCropper cropper = new ChartCropper();
+            bitmap = cropper.crop(bitmap);
 
-            // Crop Chart Area
-ChartCropper cropper = new ChartCropper();
-bitmap = cropper.crop(bitmap);
+            // Crop Price
+            CurrentPriceCropper priceCropper =
+                    new CurrentPriceCropper();
 
-// Crop Current Price Area
-CurrentPriceCropper priceCropper = new CurrentPriceCropper();
-Bitmap priceBitmap = priceCropper.crop(bitmap);
+            Bitmap priceBitmap =
+                    priceCropper.crop(bitmap);
 
-// OCR
-PriceDetector priceDetector = new PriceDetector();
-priceDetector.detect(priceBitmap);
+            // OCR
+            PriceDetector detector =
+                    new PriceDetector();
 
-try{
-    Thread.sleep(800);
-}catch(Exception e){
-}
+            detector.detect(priceBitmap,
+                    (price,status)->{
 
-detectedPrice = priceDetector.detectedPrice;
+                        detectedPrice = price;
 
+                    });
 
+            // Candle
+            CandleDetector candle =
+                    new CandleDetector();
 
-            // Candle Structure Detection
-            CandleDetector candle = new CandleDetector();
             candle.detect(bitmap);
 
+            String structure =
+                    candle.marketStructure;
 
-            String structure = candle.marketStructure;
+            // Wick
+            WickDetector wick =
+                    new WickDetector();
 
-
-
-            // Wick Detection
-            WickDetector wick = new WickDetector();
             wick.detect(bitmap);
-
 
             int upper = wick.upperWicks;
             int lower = wick.lowerWicks;
 
-
-
-            // Trend Decision
-
             if(structure.equals("BULLISH")){
 
-                trend = "BULLISH";
-                signal = "BUY";
-                liquidity = "BUY SIDE";
-
+                trend="BULLISH";
+                signal="BUY";
+                liquidity="BUY SIDE";
 
             }else if(structure.equals("BEARISH")){
 
-                trend = "BEARISH";
-                signal = "SELL";
-                liquidity = "SELL SIDE";
-
+                trend="BEARISH";
+                signal="SELL";
+                liquidity="SELL SIDE";
 
             }else{
 
-                trend = "SIDEWAYS";
-                signal = "WAIT";
-                liquidity = "WAIT";
+                trend="SIDEWAYS";
+                signal="WAIT";
+                liquidity="WAIT";
 
             }
 
-
-
-            // Structure
-
             bos = trend;
-choch = trend;
+            choch = trend;
 
-if(trend.equals("BULLISH")){
-    fvg = "BUY";
-}else if(trend.equals("BEARISH")){
-    fvg = "SELL";
-}else{
-    fvg = "WAIT";
-}
+            if(trend.equals("BULLISH")){
 
+                fvg="BUY";
 
+            }else if(trend.equals("BEARISH")){
 
-            // Confidence
+                fvg="SELL";
+
+            }else{
+
+                fvg="WAIT";
+
+            }
 
             confidence = 60;
-
 
             if(structure.equals("BULLISH")
                     || structure.equals("BEARISH")){
@@ -144,34 +129,27 @@ if(trend.equals("BULLISH")){
 
             }
 
+            if(lower>upper){
 
-            if(lower > upper){
+                confidence +=10;
 
-                confidence += 10;
+            }else if(upper>lower){
 
-            }else if(upper > lower){
-
-                confidence += 10;
-
-            }
-
-
-
-            if(confidence > 100){
-
-                confidence = 100;
+                confidence +=10;
 
             }
 
+            if(confidence>100){
 
+                confidence=100;
+
+            }
 
         }catch(Exception e){
 
-
-            trend = "ERROR";
-            signal = "ERROR";
-            confidence = 0;
-
+            trend="ERROR";
+            signal="ERROR";
+            confidence=0;
 
         }
 
