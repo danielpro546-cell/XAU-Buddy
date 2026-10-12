@@ -554,15 +554,17 @@ protected void onActivityResult(
                 Bitmap bitmap =
         BitmapFactory.decodeStream(input);
 
-priceDetector.detect(bitmap);
+priceDetector.detect(bitmap, (price, status) -> {
 
-refreshDashboard();
+    refreshDashboard();
 
-Toast.makeText(
-        this,
-        priceDetector.priceText,
-        Toast.LENGTH_SHORT
-).show();
+    Toast.makeText(
+            this,
+            status,
+            Toast.LENGTH_SHORT
+    ).show();
+
+});
 
 
 
