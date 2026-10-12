@@ -18,6 +18,8 @@ public class ScreenshotAnalyzer {
     public String liquidity = "WAIT";
     public int confidence = 0;
     public double detectedPrice = 0;
+    public String ocrStatus = "";
+public String ocrText = "";
 
     public void analyze(Context context, Uri image, String tf){
 
@@ -63,12 +65,13 @@ bitmap = cropper.crop(originalBitmap);
             PriceDetector detector =
                     new PriceDetector();
 
-            detector.detect(priceBitmap,
-                    (price,status)->{
+            detector.detect(priceBitmap, (price, status) -> {
 
-                        detectedPrice = price;
+    detectedPrice = price;
+    ocrStatus = status;
+    ocrText = detector.detectedText;
 
-                    });
+});
 
             // Candle
             CandleDetector candle =
