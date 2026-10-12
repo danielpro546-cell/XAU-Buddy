@@ -9,7 +9,7 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 public class PriceDetector {
 
     public interface PriceListener{
-        void onPriceDetected(double price,String status);
+        void onPriceDetected(double price, String status);
     }
 
     public double detectedPrice = 0;
@@ -22,21 +22,12 @@ public class PriceDetector {
         priceText = "";
         detectedText = "";
 
-        recognize(bitmap, listener);
-
-    }
-
-    private void recognize(Bitmap bitmap, PriceListener listener){
-
         try{
 
-            InputImage image =
-                    InputImage.fromBitmap(bitmap,0);
+            InputImage image = InputImage.fromBitmap(bitmap,0);
 
             TextRecognition
-                    .getClient(
-                            TextRecognizerOptions.DEFAULT_OPTIONS
-                    )
+                    .getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
                     .process(image)
 
                     .addOnSuccessListener(result -> {
@@ -50,7 +41,7 @@ public class PriceDetector {
                                             .compile("\\d{4}\\.\\d{2}")
                                             .matcher(detectedText);
 
-                            detectedPrice = 0;
+                            double bestPrice = 0;
 
                             while(matcher.find()){
 
@@ -61,11 +52,26 @@ public class PriceDetector {
 
                                 if(price >= 4150 && price <= 4200){
 
-                                    detectedPrice = price;
+                                    if(bestPrice == 0){
+
+                                        bestPrice = price;
+
+                                    }else{
+
+                                        if(Math.abs(price - 4172.0)
+                                                < Math.abs(bestPrice - 4172.0)){
+
+                                            bestPrice = price;
+
+                                        }
+
+                                    }
 
                                 }
 
                             }
+
+                            detectedPrice = bestPrice;
 
                             if(detectedPrice > 0){
 
