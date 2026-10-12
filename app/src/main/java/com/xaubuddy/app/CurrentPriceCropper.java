@@ -9,12 +9,12 @@ public class CurrentPriceCropper {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        // Right side live price box
-        int left = (int)(width * 0.86);
-        int top = (int)(height * 0.39);
+        // Live price area (MT5 Android)
+        int left = (int)(width * 0.80);
+        int top = (int)(height * 0.45);
 
-        int cropWidth = (int)(width * 0.14);
-        int cropHeight = (int)(height * 0.05);
+        int cropWidth = (int)(width * 0.20);
+        int cropHeight = (int)(height * 0.18);
 
         if(left < 0) left = 0;
         if(top < 0) top = 0;
@@ -34,7 +34,5 @@ public class CurrentPriceCropper {
                 cropWidth,
                 cropHeight
         );
-
     }
-
 }
