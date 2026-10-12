@@ -447,6 +447,7 @@ private void refreshDashboard() {
         + "\nH1 : " + marketData.h1Bias
         + "\nM5 : " + marketData.m5Signal
         + "\nScreenshot Status : " + priceDetector.priceText
++ "\nOCR Text : " + priceDetector.detectedText
 + "\nDetected Price : " + m5Analyzer.detectedPrice
         + "\nBalance : $" + riskManager.balance
         + "\nRisk % : " + riskManager.riskPercent
@@ -547,18 +548,17 @@ protected void onActivityResult(
 
 
                 Bitmap bitmap =
-                        BitmapFactory.decodeStream(input);
+        BitmapFactory.decodeStream(input);
 
+priceDetector.detect(bitmap);
 
-                priceDetector.detect(bitmap);
+refreshDashboard();
 
-
-
-                Toast.makeText(
-                        this,
-                        priceDetector.priceText,
-                        Toast.LENGTH_SHORT
-                ).show();
+Toast.makeText(
+        this,
+        priceDetector.priceText,
+        Toast.LENGTH_SHORT
+).show();
 
 
 
