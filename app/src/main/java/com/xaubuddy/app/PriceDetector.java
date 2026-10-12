@@ -8,21 +8,25 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
 public class PriceDetector {
 
+    public interface PriceListener{
+        void onPriceDetected(double price,String status);
+    }
+
     public double detectedPrice = 0;
     public String priceText = "";
     public String detectedText = "";
 
-    public void detect(Bitmap bitmap){
+    public void detect(Bitmap bitmap, PriceListener listener){
 
         detectedPrice = 0;
         priceText = "";
         detectedText = "";
 
-        recognize(bitmap);
+        recognize(bitmap, listener);
 
     }
 
-    private void recognize(Bitmap bitmap){
+    private void recognize(Bitmap bitmap, PriceListener listener){
 
         try{
 
@@ -37,16 +41,14 @@ public class PriceDetector {
 
                     .addOnSuccessListener(result -> {
 
-                        String text = result.getText();
-
-                        detectedText = text;
+                        detectedText = result.getText();
 
                         try{
 
                             java.util.regex.Matcher matcher =
                                     java.util.regex.Pattern
                                             .compile("\\d{4}\\.\\d{2}")
-                                            .matcher(text);
+                                            .matcher(detectedText);
 
                             detectedPrice = 0;
 
@@ -59,7 +61,6 @@ public class PriceDetector {
 
                                 if(price >= 4150 && price <= 4200){
 
-                                    // နောက်ဆုံးတွေ့တဲ့ Live Price ကိုယူ
                                     detectedPrice = price;
 
                                 }
@@ -83,6 +84,11 @@ public class PriceDetector {
 
                         }
 
+                        listener.onPriceDetected(
+                                detectedPrice,
+                                priceText
+                        );
+
                     })
 
                     .addOnFailureListener(e -> {
@@ -90,12 +96,22 @@ public class PriceDetector {
                         detectedPrice = 0;
                         priceText = "OCR FAILED";
 
+                        listener.onPriceDetected(
+                                0,
+                                priceText
+                        );
+
                     });
 
         }catch(Exception e){
 
             detectedPrice = 0;
             priceText = "OCR ERROR";
+
+            listener.onPriceDetected(
+                    0,
+                    priceText
+            );
 
         }
 
