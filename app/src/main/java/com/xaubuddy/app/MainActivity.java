@@ -386,9 +386,13 @@ uploadM5Button.setOnClickListener(v -> {
 analyzeButton.setOnClickListener(v -> {
 
     h1Analyzer.analyze(this, h1Image, "H1");
-m5Analyzer.analyze(this, m5Image, "M5");
+    m5Analyzer.analyze(this, m5Image, "M5");
 
-    refreshDashboard();
+    handler.postDelayed(() -> {
+
+        refreshDashboard();
+
+    }, 1500);
 
 });
 
@@ -448,7 +452,7 @@ private void refreshDashboard() {
         + "\nM5 : " + marketData.m5Signal
         + "\nScreenshot Status : " + priceDetector.priceText
 + "\nOCR Text : " + priceDetector.detectedText
-+ "\nDetected Price : " + m5Analyzer.detectedPrice
++ "\nDetected Price : " + h1Analyzer.detectedPrice
         + "\nBalance : $" + riskManager.balance
         + "\nRisk % : " + riskManager.riskPercent
 );       
