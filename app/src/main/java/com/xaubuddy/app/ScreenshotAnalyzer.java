@@ -43,16 +43,21 @@ public class ScreenshotAnalyzer {
                 return;
             }
 
-            // Crop Chart
-            ChartCropper cropper = new ChartCropper();
-            bitmap = cropper.crop(bitmap);
+            // Original Screenshot
+Bitmap originalBitmap = bitmap;
 
-            // Crop Price
-            CurrentPriceCropper priceCropper =
-                    new CurrentPriceCropper();
+// Crop only Price Area from original screenshot
+CurrentPriceCropper priceCropper =
+        new CurrentPriceCropper();
 
-            Bitmap priceBitmap =
-                    priceCropper.crop(bitmap);
+Bitmap priceBitmap =
+        priceCropper.crop(originalBitmap);
+
+// Crop Chart only for analysis
+ChartCropper cropper =
+        new ChartCropper();
+
+bitmap = cropper.crop(originalBitmap);
 
             // OCR
             PriceDetector detector =
