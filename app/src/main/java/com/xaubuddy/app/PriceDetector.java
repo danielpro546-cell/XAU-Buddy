@@ -121,6 +121,7 @@ public class PriceDetector {
 
 
                     detectedText = text;
+                    priceText = "OCR TEXT: " + text;
 
 
                     try{
