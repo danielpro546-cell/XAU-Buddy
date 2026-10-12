@@ -9,12 +9,11 @@ public class CurrentPriceCropper {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        int left = (int)(width * 0.78);
-        int top = (int)(height * 0.18);
+        int left = (int)(width * 0.84);
+int top = (int)(height * 0.32);
 
-        int cropWidth = (int)(width * 0.20);
-        int cropHeight = (int)(height * 0.55);
-
+int cropWidth = (int)(width * 0.13);
+int cropHeight = (int)(height * 0.18);
         if(left + cropWidth > width){
             cropWidth = width - left;
         }
