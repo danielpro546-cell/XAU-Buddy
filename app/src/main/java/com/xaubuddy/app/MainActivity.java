@@ -393,11 +393,12 @@ analyzeButton.setOnClickListener(v -> {
         marketData.updateFromAnalysis(
         h1Analyzer.detectedPrice,
         h1Analyzer.trend,
-        m5Analyzer.signal,
-        h1Analyzer.ema20,
-        h1Analyzer.ema50,
-        h1Analyzer.rsi14
+        m5Analyzer.signal
 );
+
+marketData.ema20 = h1Analyzer.ema20;
+marketData.ema50 = h1Analyzer.ema50;
+marketData.rsi14 = h1Analyzer.rsi14;
         refreshDashboard();
 
     }, 1500);
