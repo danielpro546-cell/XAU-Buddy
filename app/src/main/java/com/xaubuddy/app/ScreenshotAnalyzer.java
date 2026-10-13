@@ -16,13 +16,16 @@ public class ScreenshotAnalyzer {
     public String choch = "WAIT";
     public String fvg = "WAIT";
     public String liquidity = "WAIT";
+
     public int confidence = 0;
+
     public double detectedPrice = 0;
     public double ema20 = 0;
-public double ema50 = 0;
-public double rsi14 = 0;
+    public double ema50 = 0;
+    public double rsi14 = 0;
+
     public String ocrStatus = "";
-public String ocrText = "";
+    public String ocrText = "";
 
     public void analyze(Context context, Uri image, String tf){
 
@@ -48,42 +51,42 @@ public String ocrText = "";
                 return;
             }
 
-            // Original Screenshot
-Bitmap originalBitmap = bitmap;
+            Bitmap originalBitmap = bitmap;
 
-// Crop only Price Area from original screenshot
-CurrentPriceCropper priceCropper =
-        new CurrentPriceCropper();
+            CurrentPriceCropper priceCropper =
+                    new CurrentPriceCropper();
 
-Bitmap priceBitmap =
-        priceCropper.crop(originalBitmap);
+            Bitmap priceBitmap =
+                    priceCropper.crop(originalBitmap);
 
-// Crop Chart only for analysis
-ChartCropper cropper =
-        new ChartCropper();
+            ChartCropper cropper =
+                    new ChartCropper();
 
-bitmap = cropper.crop(originalBitmap);
+            bitmap = cropper.crop(originalBitmap);
 
             // OCR
             PriceDetector detector =
                     new PriceDetector();
+
+            detector.detect(priceBitmap,(price,status)->{
+
+                detectedPrice = price;
+                ocrStatus = status;
+                ocrText = detector.detectedText;
+
+            });
+
+            // Indicator OCR
             IndicatorDetector indicator =
-        new IndicatorDetector();
+                    new IndicatorDetector();
 
-            detector.detect(priceBitmap, (price, status) -> {
-            indicator.detect(bitmap, () -> {
+            indicator.detect(bitmap,()->{
 
-    ema20 = indicator.ema20;
-    ema50 = indicator.ema50;
-    rsi14 = indicator.rsi14;
+                ema20 = indicator.ema20;
+                ema50 = indicator.ema50;
+                rsi14 = indicator.rsi14;
 
-});  
-
-    detectedPrice = price;
-    ocrStatus = status;
-    ocrText = detector.detectedText;
-
-});
+            });
 
             // Candle
             CandleDetector candle =
@@ -101,103 +104,89 @@ bitmap = cropper.crop(originalBitmap);
             wick.detect(bitmap);
 
             int bullish = wick.bullishWicks;
-int bearish = wick.bearishWicks;
+            int bearish = wick.bearishWicks;
 
             if(structure.equals("BULLISH")){
 
-                trend="BULLISH";
-                signal="BUY";
-                liquidity="BUY SIDE";
+                trend = "BULLISH";
+                signal = "BUY";
+                liquidity = "BUY SIDE";
 
             }else if(structure.equals("BEARISH")){
 
-                trend="BEARISH";
-                signal="SELL";
-                liquidity="SELL SIDE";
+                trend = "BEARISH";
+                signal = "SELL";
+                liquidity = "SELL SIDE";
 
             }else{
 
-                trend="SIDEWAYS";
-                signal="WAIT";
-                liquidity="WAIT";
+                trend = "SIDEWAYS";
+                signal = "WAIT";
+                liquidity = "WAIT";
 
-            }   
-                
-// Wick confirmation
-if(bullish > bearish && trend.equals("BEARISH")){
-    trend = "BULLISH";
-    signal = "BUY";
-    liquidity = "BUY SIDE";
-}
+            }
 
-if(bearish > bullish && trend.equals("BULLISH")){
-    trend = "BEARISH";
-    signal = "SELL";
-    liquidity = "SELL SIDE";
-}
+            // Wick confirmation
+            if(bullish > bearish && trend.equals("BEARISH")){
+
+                trend = "BULLISH";
+                signal = "BUY";
+                liquidity = "BUY SIDE";
+
+            }
+
+            if(bearish > bullish && trend.equals("BULLISH")){
+
+                trend = "BEARISH";
+                signal = "SELL";
+                liquidity = "SELL SIDE";
+
+            }
 
             bos = trend;
             choch = trend;
 
             if(trend.equals("BULLISH")){
 
-                fvg="BUY";
+                fvg = "BUY";
 
             }else if(trend.equals("BEARISH")){
 
-                fvg="SELL";
+                fvg = "SELL";
 
             }else{
 
-                fvg="WAIT";
+                fvg = "WAIT";
 
             }
 
             confidence = 60;
 
-            if(structure.equals("BULLISH")
-                    || structure.equals("BEARISH")){
+            if(structure.equals("BULLISH") ||
+               structure.equals("BEARISH")){
 
                 confidence += 20;
 
             }
 
-            if(bullish > bearish){
-    confidence += 10;
-}else if(bearish > bullish){
-    confidence += 10;
-}
+            if(bullish > bearish ||
+               bearish > bullish){
 
-            if(confidence>100){
+                confidence += 10;
 
-                confidence=100;
-                }
-            // Temporary indicator values based on trend
-if(trend.equals("BULLISH")){
+            }
 
-    ema20 = detectedPrice + 5;
-    ema50 = detectedPrice - 5;
-    rsi14 = 60;
+            if(confidence > 100){
 
-}else if(trend.equals("BEARISH")){
+                confidence = 100;
 
-    ema20 = detectedPrice - 5;
-    ema50 = detectedPrice + 5;
-    rsi14 = 40;
-
-}else{
-
-    ema20 = detectedPrice;
-    ema50 = detectedPrice;
-    rsi14 = 50;
-
-}
+            }
 
         }catch(Exception e){
 
-            trend="ERROR";
-            signal="ERROR";
-            confidence=0;
+            trend = "ERROR";
+            signal = "ERROR";
+            confidence = 0;
 
         }
 
