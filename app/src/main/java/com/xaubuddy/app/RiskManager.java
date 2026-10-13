@@ -14,7 +14,7 @@ public class RiskManager {
     public double lotSize = 0.01;
     public double actualRiskMoney = 0;
 
-    public double contractSize = 100;
+    public double contractSize = 1;
 
     public double minLot = 0.01;
     public double lotStep = 0.01;
@@ -51,12 +51,7 @@ public class RiskManager {
 
             lotSize = minLot;
 
-            actualRiskMoney =
-                    round(
-                    lotSize *
-                    riskDistance *
-                    contractSize
-                    );
+            actualRiskMoney = riskMoney;
 
             canTrade = actualRiskMoney <= riskMoney;
 
@@ -71,12 +66,7 @@ warning =
             ) * lotStep;
 
 
-            actualRiskMoney =
-            round(
-            lotSize *
-            riskDistance *
-            contractSize
-            );
+            actualRiskMoney = riskMoney;
 
 
             warning = "Risk check passed";
