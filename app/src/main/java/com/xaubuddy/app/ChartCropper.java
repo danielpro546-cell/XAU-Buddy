@@ -9,12 +9,12 @@ public class ChartCropper {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        // MT5 chart candles only
-        int left = (int)(width * 0.08);
-        int top = (int)(height * 0.10);
+        // MT5 chart area
+        int left = (int)(width * 0.05);
+        int top = (int)(height * 0.08);
 
-        int cropWidth = (int)(width * 0.72);
-        int cropHeight = (int)(height * 0.52);
+        int cropWidth = (int)(width * 0.85);
+        int cropHeight = (int)(height * 0.65);
 
         if(left + cropWidth > width){
             cropWidth = width - left;
