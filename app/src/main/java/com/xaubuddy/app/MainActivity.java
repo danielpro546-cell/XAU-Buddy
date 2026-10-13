@@ -429,9 +429,9 @@ private void refreshDashboard() {
         m5Analyzer.liquidity
 
 );
+   double tradePrice = marketData.price;
+    
     if(decision.confidence >= 70){
-
-    double tradePrice;
 
 if (m5Analyzer.detectedPrice > 0) {
 
