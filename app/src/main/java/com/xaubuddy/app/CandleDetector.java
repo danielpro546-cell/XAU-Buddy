@@ -18,53 +18,96 @@ public class CandleDetector {
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        int startX = width / 8;
-        int endX = width * 7 / 8;
+        // Only chart area
+        int startX = width / 10;
+        int endX = width * 9 / 10;
 
-        int startY = height / 10;
-        int endY = height * 7 / 10;
+        int startY = height / 8;
+        int endY = height * 3 / 5;
 
-        for(int x = startX; x < endX; x += 6){
+        int previousCenter = -1;
 
-            int green = 0;
-            int red = 0;
+        int bullish = 0;
+        int bearish = 0;
+
+        for(int x = startX; x < endX; x += 8){
+
+            int top = height;
+            int bottom = 0;
+
+            boolean candleFound = false;
 
             for(int y = startY; y < endY; y++){
 
-                int c = bitmap.getPixel(x, y);
+                int pixel = bitmap.getPixel(x, y);
 
-                int r = Color.red(c);
-                int g = Color.green(c);
-                int b = Color.blue(c);
+                int r = Color.red(pixel);
+                int g = Color.green(pixel);
+                int b = Color.blue(pixel);
 
-                if(g > r + 35 && g > b + 20){
-                    green++;
-                }
+                if((g > r + 25 && g > b + 25) ||
+                   (r > g + 25 && r > b + 25)){
 
-                if(r > g + 35 && r > b + 20){
-                    red++;
+                    candleFound = true;
+
+                    if(g > r + 25){
+                        greenCandles++;
+                    }
+
+                    if(r > g + 25){
+                        redCandles++;
+                    }
+
+                    if(y < top){
+                        top = y;
+                    }
+
+                    if(y > bottom){
+                        bottom = y;
+                    }
+
                 }
 
             }
 
-            if(green > red && green > 8){
-                greenCandles++;
-            }
+            if(candleFound){
 
-            if(red > green && red > 8){
-                redCandles++;
+                int center = (top + bottom) / 2;
+
+                if(previousCenter != -1){
+
+                    if(center < previousCenter){
+                        bullish++;
+                    }else if(center > previousCenter){
+                        bearish++;
+                    }
+
+                }
+
+                previousCenter = center;
+
             }
 
         }
 
-        if(greenCandles >= redCandles + 2){
+        if(bullish > bearish + 2){
+
             marketStructure = "BULLISH";
-        }
-        else if(redCandles >= greenCandles + 2){
+
+        }else if(bearish > bullish + 2){
+
             marketStructure = "BEARISH";
-        }
-        else{
-            marketStructure = "SIDEWAYS";
+
+        }else{
+
+            if(greenCandles > redCandles){
+                marketStructure = "BULLISH";
+            }else if(redCandles > greenCandles){
+                marketStructure = "BEARISH";
+            }else{
+                marketStructure = "SIDEWAYS";
+            }
+
         }
 
     }
