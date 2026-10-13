@@ -390,6 +390,12 @@ analyzeButton.setOnClickListener(v -> {
 
     handler.postDelayed(() -> {
 
+        marketData.updateFromAnalysis(
+                h1Analyzer.detectedPrice,
+                h1Analyzer.trend,
+                m5Analyzer.signal
+        );
+
         refreshDashboard();
 
     }, 1500);
@@ -400,7 +406,6 @@ analyzeButton.setOnClickListener(v -> {
 
 private void refreshDashboard() {
 
-    marketData.updateLiveData();
 
     strategy.analyze(marketData);
     decision.decide(
