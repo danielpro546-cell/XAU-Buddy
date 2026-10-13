@@ -5,39 +5,47 @@ import android.graphics.Color;
 
 public class CandleDetector {
 
-    public int greenCandles = 0;
-    public int redCandles = 0;
+    public int bullishCandles = 0;
+    public int bearishCandles = 0;
+
+    public int bullishStrength = 0;
+    public int bearishStrength = 0;
+
+    public double lastHigh = 0;
+    public double lastLow = 0;
 
     public String marketStructure = "WAIT";
 
     public void detect(Bitmap bitmap){
 
-        greenCandles = 0;
-        redCandles = 0;
+        bullishCandles = 0;
+        bearishCandles = 0;
+
+        bullishStrength = 0;
+        bearishStrength = 0;
+
+        lastHigh = 0;
+        lastLow = 999999;
 
         int width = bitmap.getWidth();
         int height = bitmap.getHeight();
 
-        // Only chart area
-        int startX = width / 10;
-        int endX = width * 9 / 10;
+        int startX = (int)(width * 0.60);
+        int endX = (int)(width * 0.96);
 
-        int startY = height / 8;
-        int endY = height * 3 / 5;
+        int startY = (int)(height * 0.08);
+        int endY = (int)(height * 0.78);
 
-        int previousCenter = -1;
-
-        int bullish = 0;
-        int bearish = 0;
-
-        for(int x = startX; x < endX; x += 8){
+        for(int x = startX; x < endX; x += 4){
 
             int top = height;
             int bottom = 0;
 
-            boolean candleFound = false;
+            boolean found = false;
 
-            for(int y = startY; y < endY; y++){
+            int greenPixels = 0;
+            int redPixels = 0;
+                        for(int y = startY; y < endY; y++){
 
                 int pixel = bitmap.getPixel(x, y);
 
@@ -45,18 +53,25 @@ public class CandleDetector {
                 int g = Color.green(pixel);
                 int b = Color.blue(pixel);
 
-                if((g > r + 25 && g > b + 25) ||
-                   (r > g + 25 && r > b + 25)){
+                if(g > r + 25 && g > b + 25){
 
-                    candleFound = true;
+                    greenPixels++;
+                    found = true;
 
-                    if(g > r + 25){
-                        greenCandles++;
+                    if(y < top){
+                        top = y;
                     }
 
-                    if(r > g + 25){
-                        redCandles++;
+                    if(y > bottom){
+                        bottom = y;
                     }
+
+                }
+
+                if(r > g + 25 && r > b + 25){
+
+                    redPixels++;
+                    found = true;
 
                     if(y < top){
                         top = y;
@@ -70,43 +85,47 @@ public class CandleDetector {
 
             }
 
-            if(candleFound){
+            if(found){
 
-                int center = (top + bottom) / 2;
-
-                if(previousCenter != -1){
-
-                    if(center < previousCenter){
-    bearish++;
-}else if(center > previousCenter){
-    bullish++;
-}
-
+                if(top > lastHigh){
+                    lastHigh = top;
                 }
 
-                previousCenter = center;
+                if(bottom < lastLow){
+                    lastLow = bottom;
+                }
+
+                if(greenPixels > redPixels){
+
+                    bullishCandles++;
+                    bullishStrength += greenPixels;
+
+                }else if(redPixels > greenPixels){
+
+                    bearishCandles++;
+                    bearishStrength += redPixels;
+
+                }
 
             }
 
         }
 
-        if(bullish > bearish + 2){
+            if(bullishCandles > bearishCandles &&
+                bullishStrength > bearishStrength){
 
             marketStructure = "BULLISH";
 
-        }else if(bearish > bullish + 2){
+        }
+        else if(bearishCandles > bullishCandles &&
+                bearishStrength > bullishStrength){
 
             marketStructure = "BEARISH";
 
-        }else{
+        }
+        else{
 
-            if(greenCandles > redCandles){
-                marketStructure = "BULLISH";
-            }else if(redCandles > greenCandles){
-                marketStructure = "BEARISH";
-            }else{
-                marketStructure = "SIDEWAYS";
-            }
+            marketStructure = "SIDEWAYS";
 
         }
 
