@@ -77,10 +77,10 @@ public class CandleDetector {
                 if(previousCenter != -1){
 
                     if(center < previousCenter){
-                        bullish++;
-                    }else if(center > previousCenter){
-                        bearish++;
-                    }
+    bearish++;
+}else if(center > previousCenter){
+    bullish++;
+}
 
                 }
 
