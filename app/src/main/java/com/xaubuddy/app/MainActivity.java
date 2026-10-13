@@ -427,9 +427,10 @@ private void refreshDashboard() {
     if(decision.confidence >= 70){
 
     riskManager.calculate(
-            marketData.price,
-            decision.signal
-    );
+        marketData.price,
+        h1Analyzer.detectedPrice,
+        decision.signal
+);
 
 }else{
 
