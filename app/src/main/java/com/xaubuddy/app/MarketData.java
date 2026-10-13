@@ -2,68 +2,55 @@ package com.xaubuddy.app;
 
 public class MarketData {
 
-    public double price = 4167.00;
+    public double price = 0;
 
-    public double h1Open = 4167;
-    public double h1High = 4167;
-    public double h1Low = 4167;
-    public double h1Close = 4167;
+    public double h1Open = 0;
+    public double h1High = 0;
+    public double h1Low = 0;
+    public double h1Close = 0;
 
-    public double m5Open = 4167;
-    public double m5High = 4167;
-    public double m5Low = 4167;
-    public double m5Close = 4167;
+    public double m5Open = 0;
+    public double m5High = 0;
+    public double m5Low = 0;
+    public double m5Close = 0;
 
-    public double ema20 = 4165;
-    public double ema50 = 4160;
-    public double rsi14 = 55;
+    public double ema20 = 0;
+    public double ema50 = 0;
+    public double rsi14 = 0;
 
-    public String h1Bias = "BULLISH";
+    public String h1Bias = "WAIT";
     public String m5Signal = "WAIT";
 
     public boolean dataReady = false;
 
-    private String status = "WAITING";
+    private String status = "WAIT";
 
-    public void updateLiveData() {
+    public void updateFromAnalysis(
+            double detectedPrice,
+            String trend,
+            String signal
+    ){
 
-        // Smooth demo movement (-2.5 to +2.5)
-        double move = (Math.random() * 5.0) - 2.5;
-        price += move;
+        price = detectedPrice;
 
-        h1Close = price;
-        m5Close = price;
+        h1Close = detectedPrice;
+        m5Close = detectedPrice;
 
-        if (price > h1High) h1High = price;
-        if (price < h1Low) h1Low = price;
+        h1Bias = trend;
 
-        ema20 += (price - ema20) * 0.15;
-        ema50 += (price - ema50) * 0.06;
-
-        rsi14 = 50 + ((ema20 - ema50) * 4);
-
-        if (rsi14 > 70) rsi14 = 70;
-        if (rsi14 < 30) rsi14 = 30;
-
-        if (ema20 >= ema50) {
-            h1Bias = "BULLISH";
-        } else {
-            h1Bias = "BEARISH";
-        }
-
-        if (h1Bias.equals("BULLISH") && rsi14 >= 55) {
+        if(signal.equals("BUY")){
             m5Signal = "BUY SETUP";
-        } else if (h1Bias.equals("BEARISH") && rsi14 <= 45) {
+        }else if(signal.equals("SELL")){
             m5Signal = "SELL SETUP";
-        } else {
+        }else{
             m5Signal = "WAIT";
         }
 
         dataReady = true;
-        status = "DEMO LIVE DATA";
+        status = "SCREENSHOT ANALYSIS";
     }
 
-    public String getStatus() {
+    public String getStatus(){
         return status;
     }
 }
