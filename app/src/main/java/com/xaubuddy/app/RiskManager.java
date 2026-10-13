@@ -30,9 +30,10 @@ public class RiskManager {
 
 
     public void calculate(
-            double price,
-            String signal
-    ){
+        double livePrice,
+        double detectedPrice,
+        String signal
+){
 
         riskMoney =
                 round(balance * riskPercent / 100);
@@ -85,7 +86,11 @@ canTrade = actualRiskMoney <= riskMoney;
 
         if(signal.equals("BUY")){
 
-            entry = round(price);
+            if(detectedPrice > 0){
+    entry = round(detectedPrice);
+}else{
+    entry = round(livePrice);
+}
             sl = round(entry - riskDistance);
 
             tp1 = round(entry + riskDistance);
@@ -96,7 +101,11 @@ canTrade = actualRiskMoney <= riskMoney;
 
         else if(signal.equals("SELL")){
 
-            entry = round(price);
+            if(detectedPrice > 0){
+    entry = round(detectedPrice);
+}else{
+    entry = round(livePrice);
+}
             sl = round(entry + riskDistance);
 
             tp1 = round(entry - riskDistance);
