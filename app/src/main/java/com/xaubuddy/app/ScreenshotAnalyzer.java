@@ -67,8 +67,17 @@ bitmap = cropper.crop(originalBitmap);
             // OCR
             PriceDetector detector =
                     new PriceDetector();
+            IndicatorDetector indicator =
+        new IndicatorDetector();
 
             detector.detect(priceBitmap, (price, status) -> {
+            indicator.detect(bitmap, () -> {
+
+    ema20 = indicator.ema20;
+    ema50 = indicator.ema50;
+    rsi14 = indicator.rsi14;
+
+});  
 
     detectedPrice = price;
     ocrStatus = status;
