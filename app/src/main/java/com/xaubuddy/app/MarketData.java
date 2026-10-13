@@ -36,14 +36,65 @@ public class MarketData {
         h1Close = detectedPrice;
         m5Close = detectedPrice;
 
-        h1Bias = trend;
+        h1High = detectedPrice;
+        h1Low = detectedPrice;
+
+        m5High = detectedPrice;
+        m5Low = detectedPrice;
+
+        // -------- EMA --------
+
+        if(trend.equals("BULLISH")){
+
+            ema50 = detectedPrice - 15;
+            ema20 = detectedPrice - 5;
+
+        }else if(trend.equals("BEARISH")){
+
+            ema20 = detectedPrice + 5;
+            ema50 = detectedPrice + 15;
+
+        }else{
+
+            ema20 = detectedPrice;
+            ema50 = detectedPrice;
+
+        }
+
+        // -------- RSI --------
 
         if(signal.equals("BUY")){
-            m5Signal = "BUY SETUP";
+
+            rsi14 = 60;
+
         }else if(signal.equals("SELL")){
-            m5Signal = "SELL SETUP";
+
+            rsi14 = 40;
+
         }else{
+
+            rsi14 = 50;
+
+        }
+
+        // -------- H1 --------
+
+        h1Bias = trend;
+
+        // -------- M5 --------
+
+        if(signal.equals("BUY")){
+
+            m5Signal = "BUY SETUP";
+
+        }else if(signal.equals("SELL")){
+
+            m5Signal = "SELL SETUP";
+
+        }else{
+
             m5Signal = "WAIT";
+
         }
 
         dataReady = true;
@@ -51,6 +102,9 @@ public class MarketData {
     }
 
     public String getStatus(){
+
         return status;
+
     }
+
 }
