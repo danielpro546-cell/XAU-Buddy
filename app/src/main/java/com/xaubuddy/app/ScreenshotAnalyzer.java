@@ -121,7 +121,6 @@ if(bearish > bullish && trend.equals("BULLISH")){
     signal = "SELL";
     liquidity = "SELL SIDE";
 }
-            }
 
             bos = trend;
             choch = trend;
