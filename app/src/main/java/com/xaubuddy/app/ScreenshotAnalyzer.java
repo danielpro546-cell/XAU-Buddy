@@ -88,8 +88,8 @@ bitmap = cropper.crop(originalBitmap);
 
             wick.detect(bitmap);
 
-            int upper = wick.upperWicks;
-            int lower = wick.lowerWicks;
+            int bullish = wick.bullishWicks;
+int bearish = wick.bearishWicks;
 
             if(structure.equals("BULLISH")){
 
@@ -108,7 +108,19 @@ bitmap = cropper.crop(originalBitmap);
                 trend="SIDEWAYS";
                 signal="WAIT";
                 liquidity="WAIT";
+                
+// Wick confirmation
+if(bullish > bearish && trend.equals("BEARISH")){
+    trend = "BULLISH";
+    signal = "BUY";
+    liquidity = "BUY SIDE";
+}
 
+if(bearish > bullish && trend.equals("BULLISH")){
+    trend = "BEARISH";
+    signal = "SELL";
+    liquidity = "SELL SIDE";
+}
             }
 
             bos = trend;
@@ -137,15 +149,11 @@ bitmap = cropper.crop(originalBitmap);
 
             }
 
-            if(lower>upper){
-
-                confidence +=10;
-
-            }else if(upper>lower){
-
-                confidence +=10;
-
-            }
+            if(bullish > bearish){
+    confidence += 10;
+}else if(bearish > bullish){
+    confidence += 10;
+}
 
             if(confidence>100){
 
