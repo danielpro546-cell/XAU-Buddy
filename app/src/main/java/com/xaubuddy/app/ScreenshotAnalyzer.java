@@ -108,6 +108,8 @@ int bearish = wick.bearishWicks;
                 trend="SIDEWAYS";
                 signal="WAIT";
                 liquidity="WAIT";
+
+            }   
                 
 // Wick confirmation
 if(bullish > bearish && trend.equals("BEARISH")){
