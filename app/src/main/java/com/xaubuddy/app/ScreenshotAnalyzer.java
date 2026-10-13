@@ -18,6 +18,9 @@ public class ScreenshotAnalyzer {
     public String liquidity = "WAIT";
     public int confidence = 0;
     public double detectedPrice = 0;
+    public double ema20 = 0;
+public double ema50 = 0;
+public double rsi14 = 0;
     public String ocrStatus = "";
 public String ocrText = "";
 
@@ -159,8 +162,27 @@ if(bearish > bullish && trend.equals("BULLISH")){
             if(confidence>100){
 
                 confidence=100;
+                }
+            // Temporary indicator values based on trend
+if(trend.equals("BULLISH")){
 
-            }
+    ema20 = detectedPrice + 5;
+    ema50 = detectedPrice - 5;
+    rsi14 = 60;
+
+}else if(trend.equals("BEARISH")){
+
+    ema20 = detectedPrice - 5;
+    ema50 = detectedPrice + 5;
+    rsi14 = 40;
+
+}else{
+
+    ema20 = detectedPrice;
+    ema50 = detectedPrice;
+    rsi14 = 50;
+
+}
 
         }catch(Exception e){
 
