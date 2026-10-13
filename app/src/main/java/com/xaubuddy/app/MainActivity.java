@@ -431,9 +431,25 @@ private void refreshDashboard() {
 );
     if(decision.confidence >= 70){
 
-    riskManager.calculate(
-        marketData.price,
-        h1Analyzer.detectedPrice,
+    double tradePrice;
+
+if (m5Analyzer.detectedPrice > 0) {
+
+    tradePrice = m5Analyzer.detectedPrice;
+
+} else if (h1Analyzer.detectedPrice > 0) {
+
+    tradePrice = h1Analyzer.detectedPrice;
+
+} else {
+
+    tradePrice = marketData.price;
+
+}
+
+riskManager.calculate(
+        tradePrice,
+        tradePrice,
         decision.signal
 );
 
@@ -450,7 +466,7 @@ private void refreshDashboard() {
 }
     marketView.setText(
         "===== MARKET DATA =====\n\n"
-        + "PRICE : " + marketData.price
+        + "PRICE : " + tradePrice
         + "\nEMA20 : " + marketData.ema20
         + "\nEMA50 : " + marketData.ema50
         + "\nRSI14 : " + marketData.rsi14
