@@ -107,11 +107,11 @@ public class DecisionEngine {
         }
         else{
 
-            signal = "WAIT";
-            confidence = Math.max(buyScore,sellScore);
-            reason = "Not Enough Confirmation";
+    signal = "WAIT";
+    confidence = Math.max(buyScore, sellScore);
+    reason = "BUY=" + buyScore + " SELL=" + sellScore;
 
-        }
+}
 
     }
 
