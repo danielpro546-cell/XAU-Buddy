@@ -6,6 +6,9 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class IndicatorDetector {
 
     public interface IndicatorListener{
@@ -20,9 +23,15 @@ public class IndicatorDetector {
 
     public void detect(Bitmap bitmap, IndicatorListener listener){
 
+        ema20 = 0;
+        ema50 = 0;
+        rsi14 = 0;
+        rawText = "";
+
         try{
 
-            InputImage image = InputImage.fromBitmap(bitmap,0);
+            InputImage image =
+                    InputImage.fromBitmap(bitmap,0);
 
             TextRecognition
                     .getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -32,58 +41,88 @@ public class IndicatorDetector {
 
                         rawText = result.getText();
 
-                        java.util.regex.Matcher matcher =
-                                java.util.regex.Pattern
-                                        .compile("\\d{2,4}\\.\\d{2}")
-                                        .matcher(rawText);
-
-                        java.util.ArrayList<Double> values =
-                                new java.util.ArrayList<>();
-
-                        while(matcher.find()){
-
-                            try{
-                                values.add(
-                                        Double.parseDouble(matcher.group())
-                                );
-                            }catch(Exception ignored){}
-                        }
-
-                        ema20 = 0;
-                        ema50 = 0;
-                        rsi14 = 0;
-
-                        for(double v : values){
-
-                            if(v > 4000){
-
-                                if(ema20 == 0){
-
-                                    ema20 = v;
-
-                                }else if(ema50 == 0){
-
-                                    ema50 = v;
-
-                                }
-
-                            }else if(v >= 0 && v <= 100){
-
-                                rsi14 = v;
-
-                            }
-
-                        }
+                        parseIndicators(rawText);
 
                         listener.onFinish();
 
                     })
 
-                    .addOnFailureListener(e -> listener.onFinish());
+                    .addOnFailureListener(e -> {
+
+                        listener.onFinish();
+
+                    });
 
         }catch(Exception e){
 
             listener.onFinish();
+
+        }
+
+    }
+
+    private void parseIndicators(String text){
+
+        if(text == null)
+            return;
+
+        String upper = text.toUpperCase();
+                Matcher matcher =
+                Pattern.compile("\\d+\\.\\d+")
+                .matcher(text);
+
+        java.util.ArrayList<Double> prices =
+                new java.util.ArrayList<>();
+
+        while(matcher.find()){
+
+            try{
+
+                double v =
+                        Double.parseDouble(matcher.group());
+
+                if(v > 4000){
+
+                    prices.add(v);
+
+                }else if(v >= 10 && v <= 90){
+
+                    rsi14 = v;
+
+                }
+
+            }catch(Exception ignored){}
+
+        }
+
+        if(prices.size() >= 3){
+
+            // Price, EMA20, EMA50
+            double price = prices.get(0);
+            double p2 = prices.get(1);
+            double p3 = prices.get(2);
+
+            if(Math.abs(p2 - price) <
+               Math.abs(p3 - price)){
+
+                ema20 = p2;
+                ema50 = p3;
+
+            }else{
+
+                ema20 = p3;
+                ema50 = p2;
+
+            }
+
+        }else if(prices.size() == 2){
+
+            ema20 = prices.get(0);
+            ema50 = prices.get(1);
+
+        }else if(prices.size() == 1){
+
+            ema20 = prices.get(0);
 
         }
 
