@@ -66,7 +66,6 @@ public class IndicatorDetector {
         if(text == null)
             return;
 
-        String upper = text.toUpperCase();
                 Matcher matcher =
                 Pattern.compile("\\d+\\.\\d+")
                 .matcher(text);
