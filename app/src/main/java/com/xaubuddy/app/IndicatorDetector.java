@@ -43,6 +43,8 @@ public class IndicatorDetector {
 
                         parseIndicators(rawText);
 
+                        android.util.Log.d("OCR_INDICATOR", rawText);
+
                         listener.onFinish();
 
                     })
