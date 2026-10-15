@@ -63,6 +63,11 @@ public class ScreenshotAnalyzer {
                     new ChartCropper();
 
             bitmap = cropper.crop(originalBitmap);
+            EMACropper emaCropper =
+        new EMACropper();
+
+Bitmap emaBitmap =
+        emaCropper.crop(originalBitmap);
 
             // OCR
             PriceDetector detector =
@@ -80,7 +85,7 @@ public class ScreenshotAnalyzer {
             IndicatorDetector indicator =
                     new IndicatorDetector();
 
-            indicator.detect(bitmap,()->{
+            indicator.detect(emaBitmap,()->{
 
                 ema20 = indicator.ema20;
                 ema50 = indicator.ema50;
