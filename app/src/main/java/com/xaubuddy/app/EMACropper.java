@@ -9,20 +9,28 @@ public class EMACropper {
         int w = source.getWidth();
         int h = source.getHeight();
 
-        // Indicator Area (EMA + RSI)
-        int left = (int)(w * 0.58);
-        int top = (int)(h * 0.62);
 
-        int width = (int)(w * 0.40);
-        int height = (int)(h * 0.34);
+        // MT5 Indicator panel area
+        // EMA20 EMA50 + RSI14
+
+        int left = (int)(w * 0.35);
+        int top = (int)(h * 0.72);
+
+        int width = (int)(w * 0.60);
+        int height = (int)(h * 0.22);
+
+
 
         if(left + width > w){
             width = w - left;
         }
 
+
         if(top + height > h){
             height = h - top;
         }
+
+
 
         return Bitmap.createBitmap(
                 source,
@@ -31,6 +39,7 @@ public class EMACropper {
                 width,
                 height
         );
+
     }
 
 }
