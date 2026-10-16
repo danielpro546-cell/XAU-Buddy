@@ -125,21 +125,6 @@ public class IndicatorDetector {
     ema20 = prices.get(prices.size() - 2);
     ema50 = prices.get(prices.size() - 1);
 
-}
-
-            if(Math.abs(p2 - price)
-                    < Math.abs(p3 - price)){
-
-                ema20 = p2;
-                ema50 = p3;
-
-            }else{
-
-                ema20 = p3;
-                ema50 = p2;
-
-            }
-
         }else if(prices.size() == 2){
 
             ema20 = prices.get(0);
