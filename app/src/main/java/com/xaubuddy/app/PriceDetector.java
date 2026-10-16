@@ -27,15 +27,19 @@ public class PriceDetector {
 
         try{
 
-            InputImage image = InputImage.fromBitmap(bitmap,0);
+            InputImage image =
+                    InputImage.fromBitmap(bitmap,0);
 
             TextRecognition
-                    .getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                    .getClient(
+                            TextRecognizerOptions.DEFAULT_OPTIONS
+                    )
                     .process(image)
 
                     .addOnSuccessListener(result -> {
 
-                        detectedText = result.getText();
+                        detectedText =
+                                result.getText();
 
                         parsePrice();
 
@@ -48,11 +52,10 @@ public class PriceDetector {
 
                     .addOnFailureListener(e -> {
 
-                        detectedPrice = 0;
                         priceText = "OCR FAILED";
 
                         listener.onPriceDetected(
-                                detectedPrice,
+                                0,
                                 priceText
                         );
 
@@ -60,11 +63,10 @@ public class PriceDetector {
 
         }catch(Exception e){
 
-            detectedPrice = 0;
             priceText = "OCR ERROR";
 
             listener.onPriceDetected(
-                    detectedPrice,
+                    0,
                     priceText
             );
 
@@ -72,40 +74,52 @@ public class PriceDetector {
 
     }
 
+
     private void parsePrice(){
 
-        detectedPrice = 0;
-
         Matcher matcher =
-                Pattern.compile("\\d{4}\\.\\d{2}")
-                        .matcher(detectedText);
+                Pattern.compile(
+                        "\\d{4}[\\.,]\\d{2}"
+                )
+                .matcher(detectedText);
+
 
         while(matcher.find()){
 
             try{
 
-                double value =
-                        Double.parseDouble(matcher.group());
+                String clean =
+                        matcher.group()
+                                .replace(",",".");
 
-                // XAUUSD price only
-                if(value >= 4100 && value <= 4300){
+                double value =
+                        Double.parseDouble(clean);
+
+
+                // XAUUSD Range Filter
+                if(value >= 4000 &&
+                   value <= 4500){
 
                     detectedPrice = value;
-                    break;
 
+                    break;
                 }
+
 
             }catch(Exception ignored){}
 
         }
 
+
         if(detectedPrice > 0){
 
-            priceText = "OCR SUCCESS";
+            priceText =
+                    "OCR SUCCESS";
 
         }else{
 
-            priceText = "PRICE NOT FOUND";
+            priceText =
+                    "PRICE NOT FOUND";
 
         }
 
