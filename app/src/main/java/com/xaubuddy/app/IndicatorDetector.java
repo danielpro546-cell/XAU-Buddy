@@ -6,6 +6,7 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +44,10 @@ public class IndicatorDetector {
 
                         parseIndicators(rawText);
 
-                        android.util.Log.d("OCR_INDICATOR", rawText);
+                        android.util.Log.d(
+                                "OCR_INDICATOR",
+                                rawText
+                        );
 
                         listener.onFinish();
 
@@ -70,49 +74,61 @@ public class IndicatorDetector {
 
         String[] lines = text.split("\\n");
 
-java.util.ArrayList<Double> prices =
-        new java.util.ArrayList<>();
+        ArrayList<Double> prices =
+                new ArrayList<>();
 
-for (String line : lines) {
+        ema20 = 0;
+        ema50 = 0;
+        rsi14 = 0;
 
-    line = line.trim();
+        for(String line : lines){
 
-    Matcher m = Pattern
-            .compile("\\d+\\.\\d+")
-            .matcher(line);
+            String upper =
+                    line.toUpperCase().trim();
 
-    while (m.find()) {
+            Matcher m =
+                    Pattern.compile("\\d+\\.\\d+")
+                    .matcher(line);
 
-        try {
+            while(m.find()){
 
-            double value =
-                    Double.parseDouble(m.group());
+                try{
 
-            if (value >= 4000) {
+                    double value =
+                            Double.parseDouble(
+                                    m.group()
+                            );
 
-                prices.add(value);
+                    if(upper.contains("RSI")
+                            && value >= 5
+                            && value <= 95){
 
-            } else if (value >= 10 && value <= 90) {
+                        rsi14 = value;
+                        continue;
 
-                rsi14 = value;
+                    }
+
+                    if(value >= 1000
+                            && value <= 10000){
+
+                        prices.add(value);
+
+                    }
+
+                }catch(Exception ignored){}
 
             }
 
-        } catch (Exception ignored) {
         }
 
-    }
-}
+            if(prices.size() >= 3){
 
-        if(prices.size() >= 3){
-
-            // Price, EMA20, EMA50
             double price = prices.get(0);
             double p2 = prices.get(1);
             double p3 = prices.get(2);
 
-            if(Math.abs(p2 - price) <
-               Math.abs(p3 - price)){
+            if(Math.abs(p2 - price)
+                    < Math.abs(p3 - price)){
 
                 ema20 = p2;
                 ema50 = p3;
@@ -133,6 +149,15 @@ for (String line : lines) {
 
             ema20 = prices.get(0);
 
+        }
+
+        // EMA မတွေ့ရင် fallback
+        if(ema20 == 0 && prices.size() >= 1){
+            ema20 = prices.get(0);
+        }
+
+        if(ema50 == 0 && prices.size() >= 2){
+            ema50 = prices.get(1);
         }
 
     }
