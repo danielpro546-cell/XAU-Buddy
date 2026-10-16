@@ -9,12 +9,11 @@ public class EMACropper {
         int w = source.getWidth();
         int h = source.getHeight();
 
-        // EMA / RSI indicator area (TradingView)
-        int left = 0;
-        int top = (int)(h * 0.08);
+        int left = (int)(w * 0.48);
+        int top = (int)(h * 0.05);
 
-        int width = (int)(w * 0.70);
-        int height = (int)(h * 0.22);
+        int width = (int)(w * 0.50);
+        int height = (int)(h * 0.58);
 
         if(left + width > w){
             width = w - left;
@@ -31,7 +30,5 @@ public class EMACropper {
                 width,
                 height
         );
-
     }
-
 }
