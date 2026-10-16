@@ -4,34 +4,32 @@ import android.graphics.Bitmap;
 
 public class CurrentPriceCropper {
 
-    public Bitmap crop(Bitmap bitmap){
+    public Bitmap crop(Bitmap source){
 
-        int width = bitmap.getWidth();
-        int height = bitmap.getHeight();
+        int w = source.getWidth();
+        int h = source.getHeight();
 
-        // Live price area (MT5 Android)
-        int left = (int)(width * 0.80);
-int top = (int)(height * 0.33);
+        // MT5 Right Price Box
+        int left = (int)(w * 0.74);
+        int top = (int)(h * 0.18);
 
-int cropWidth = (int)(width * 0.20);
-int cropHeight = (int)(height * 0.12);
-        if(left < 0) left = 0;
-        if(top < 0) top = 0;
+        int width = (int)(w * 0.24);
+        int height = (int)(h * 0.16);
 
-        if(left + cropWidth > width){
-            cropWidth = width - left;
+        if(left + width > w){
+            width = w - left;
         }
 
-        if(top + cropHeight > height){
-            cropHeight = height - top;
+        if(top + height > h){
+            height = h - top;
         }
 
         return Bitmap.createBitmap(
-                bitmap,
+                source,
                 left,
                 top,
-                cropWidth,
-                cropHeight
+                width,
+                height
         );
     }
 }
