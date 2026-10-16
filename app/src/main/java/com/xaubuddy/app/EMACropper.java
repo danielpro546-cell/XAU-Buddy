@@ -9,12 +9,12 @@ public class EMACropper {
         int w = source.getWidth();
         int h = source.getHeight();
 
-        // EMA + RSI Area
-        int left = (int)(w * 0.60);
-        int top = (int)(h * 0.55);
+        // Indicator Area (EMA + RSI)
+        int left = (int)(w * 0.58);
+        int top = (int)(h * 0.62);
 
-        int width = (int)(w * 0.38);
-        int height = (int)(h * 0.42);
+        int width = (int)(w * 0.40);
+        int height = (int)(h * 0.34);
 
         if(left + width > w){
             width = w - left;
