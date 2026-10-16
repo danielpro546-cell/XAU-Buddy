@@ -108,12 +108,11 @@ public class IndicatorDetector {
 
                     }
 
-                    if(value >= 1000
-                            && value <= 10000){
+                    if(value >= 4100 && value <= 4300){
 
-                        prices.add(value);
+    prices.add(value);
 
-                    }
+}
 
                 }catch(Exception ignored){}
 
@@ -123,9 +122,10 @@ public class IndicatorDetector {
 
             if(prices.size() >= 3){
 
-            double price = prices.get(0);
-            double p2 = prices.get(1);
-            double p3 = prices.get(2);
+    ema20 = prices.get(prices.size() - 2);
+    ema50 = prices.get(prices.size() - 1);
+
+}
 
             if(Math.abs(p2 - price)
                     < Math.abs(p3 - price)){
