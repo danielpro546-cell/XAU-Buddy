@@ -6,7 +6,6 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -22,42 +21,59 @@ public class IndicatorDetector {
 
     public String rawText = "";
 
-    public void detect(Bitmap bitmap, IndicatorListener listener){
+
+    public void detect(
+            Bitmap bitmap,
+            IndicatorListener listener
+    ){
 
         ema20 = 0;
         ema50 = 0;
         rsi14 = 0;
         rawText = "";
 
+
         try{
 
             InputImage image =
                     InputImage.fromBitmap(bitmap,0);
 
+
             TextRecognition
-                    .getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                    .getClient(
+                            TextRecognizerOptions.DEFAULT_OPTIONS
+                    )
                     .process(image)
+
 
                     .addOnSuccessListener(result -> {
 
-                        rawText = result.getText();
 
-                        parseIndicators(rawText);
+                        rawText =
+                                result.getText();
+
+
+                        parseIndicators();
+
 
                         android.util.Log.d(
-                                "OCR_INDICATOR",
+                                "INDICATOR_OCR",
                                 rawText
                         );
 
+
                         listener.onFinish();
 
+
                     })
+
 
                     .addOnFailureListener(e -> {
 
                         listener.onFinish();
 
                     });
+
 
         }catch(Exception e){
 
@@ -67,83 +83,120 @@ public class IndicatorDetector {
 
     }
 
-    private void parseIndicators(String text){
 
-        if(text == null)
+
+    private void parseIndicators(){
+
+
+        if(rawText == null)
             return;
 
-        String[] lines = text.split("\\n");
 
-        ArrayList<Double> prices =
-                new ArrayList<>();
+        String text =
+                rawText.toUpperCase();
 
-        ema20 = 0;
-        ema50 = 0;
-        rsi14 = 0;
 
-        for(String line : lines){
+        // ================= RSI =================
 
-            String upper =
-                    line.toUpperCase().trim();
+        Matcher rsiMatcher =
+                Pattern.compile(
+                "RSI\\s*\\(?14\\)?\\s*[^0-9]*(\\d+\\.\\d+)"
+                )
+                .matcher(text);
 
-            Matcher m =
-                    Pattern.compile("\\d+\\.\\d+")
-                    .matcher(line);
 
-            while(m.find()){
+        if(rsiMatcher.find()){
+
+            try{
+
+                rsi14 =
+                    Double.parseDouble(
+                        rsiMatcher.group(1)
+                    );
+
+            }catch(Exception ignored){}
+
+        }
+
+
+
+        // ================= EMA =================
+
+        Matcher emaMatcher =
+                Pattern.compile(
+                "(EMA|MA).*?(\\d{4}\\.\\d{2})"
+                )
+                .matcher(text);
+
+
+        java.util.ArrayList<Double> emaValues =
+                new java.util.ArrayList<>();
+
+
+        while(emaMatcher.find()){
+
+            try{
+
+                emaValues.add(
+                    Double.parseDouble(
+                        emaMatcher.group(2)
+                    )
+                );
+
+
+            }catch(Exception ignored){}
+
+        }
+
+
+
+        if(emaValues.size() >= 2){
+
+            ema20 = emaValues.get(0);
+            ema50 = emaValues.get(1);
+
+        }
+
+
+
+        // fallback
+        // EMA label မဖတ်နိုင်တဲ့အခါ
+        if(ema20 == 0 || ema50 == 0){
+
+            Matcher priceMatcher =
+                    Pattern.compile(
+                    "\\d{4}\\.\\d{2}"
+                    )
+                    .matcher(text);
+
+
+            java.util.ArrayList<Double> list =
+                    new java.util.ArrayList<>();
+
+
+            while(priceMatcher.find()){
 
                 try{
 
-                    double value =
-                            Double.parseDouble(
-                                    m.group()
-                            );
-
-                    if(upper.contains("RSI")
-                            && value >= 5
-                            && value <= 95){
-
-                        rsi14 = value;
-                        continue;
-
-                    }
-
-                    if(value >= 4100 && value <= 4300){
-
-    prices.add(value);
-
-}
+                    list.add(
+                    Double.parseDouble(
+                    priceMatcher.group()
+                    ));
 
                 }catch(Exception ignored){}
 
             }
 
-        }
 
-            if(prices.size() >= 3){
+            if(list.size() >= 2){
 
-    ema20 = prices.get(prices.size() - 2);
-    ema50 = prices.get(prices.size() - 1);
+                ema20 = list.get(0);
+                ema50 = list.get(1);
 
-        }else if(prices.size() == 2){
-
-            ema20 = prices.get(0);
-            ema50 = prices.get(1);
-
-        }else if(prices.size() == 1){
-
-            ema20 = prices.get(0);
+            }
 
         }
 
-        // EMA မတွေ့ရင် fallback
-        if(ema20 == 0 && prices.size() >= 1){
-            ema20 = prices.get(0);
-        }
-
-        if(ema50 == 0 && prices.size() >= 2){
-            ema50 = prices.get(1);
-        }
 
     }
 
