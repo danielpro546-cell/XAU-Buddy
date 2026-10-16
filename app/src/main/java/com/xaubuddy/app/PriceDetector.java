@@ -16,14 +16,14 @@ public class PriceDetector {
     }
 
     public double detectedPrice = 0;
-    public String priceText = "";
     public String detectedText = "";
+    public String priceText = "";
 
     public void detect(Bitmap bitmap, PriceListener listener){
 
         detectedPrice = 0;
-        priceText = "";
         detectedText = "";
+        priceText = "";
 
         try{
 
@@ -74,53 +74,38 @@ public class PriceDetector {
 
     private void parsePrice(){
 
-        try{
+        detectedPrice = 0;
 
-            Matcher matcher =
-                    Pattern.compile("\\d+\\.\\d+")
-                            .matcher(detectedText);
+        Matcher matcher =
+                Pattern.compile("\\d{4}\\.\\d{2}")
+                        .matcher(detectedText);
 
-            double bestPrice = 0;
+        while(matcher.find()){
 
-            while(matcher.find()){
+            try{
 
-                try{
+                double value =
+                        Double.parseDouble(matcher.group());
 
-                    double value =
-                            Double.parseDouble(
-                                    matcher.group()
-                            );
+                // XAUUSD price only
+                if(value >= 4100 && value <= 4300){
 
-                    if(value >= 1000 && value <= 10000){
+                    detectedPrice = value;
+                    break;
 
-                        if(value > bestPrice){
+                }
 
-                            bestPrice = value;
+            }catch(Exception ignored){}
 
-                        }
+        }
 
-                    }
+        if(detectedPrice > 0){
 
-                }catch(Exception ignored){}
+            priceText = "OCR SUCCESS";
 
-            }
+        }else{
 
-            detectedPrice = bestPrice;
-
-            if(bestPrice > 0){
-
-                priceText = "OCR SUCCESS";
-
-            }else{
-
-                priceText = "PRICE NOT FOUND";
-
-            }
-
-        }catch(Exception e){
-
-            detectedPrice = 0;
-            priceText = "OCR ERROR";
+            priceText = "PRICE NOT FOUND";
 
         }
 
