@@ -9,11 +9,12 @@ public class EMACropper {
         int w = source.getWidth();
         int h = source.getHeight();
 
-        int left = (int)(w * 0.45);
-        int top = (int)(h * 0.18);
+        // EMA / RSI indicator area (TradingView)
+        int left = 0;
+        int top = (int)(h * 0.08);
 
-        int width = (int)(w * 0.55);
-        int height = (int)(h * 0.28);
+        int width = (int)(w * 0.70);
+        int height = (int)(h * 0.22);
 
         if(left + width > w){
             width = w - left;
@@ -22,7 +23,8 @@ public class EMACropper {
         if(top + height > h){
             height = h - top;
         }
-              return Bitmap.createBitmap(
+
+        return Bitmap.createBitmap(
                 source,
                 left,
                 top,
