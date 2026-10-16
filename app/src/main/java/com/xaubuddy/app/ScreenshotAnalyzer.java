@@ -85,13 +85,13 @@ Bitmap emaBitmap =
             IndicatorDetector indicator =
                     new IndicatorDetector();
 
-            indicator.detect(emaBitmap,()->{
+            indicator.detect(emaBitmap, () -> {
 
-                ema20 = indicator.ema20;
-                ema50 = indicator.ema50;
-                rsi14 = indicator.rsi14;
+    this.ema20 = indicator.ema20;
+    this.ema50 = indicator.ema50;
+    this.rsi14 = indicator.rsi14;
 
-            });
+});
 
             // Candle
             CandleDetector candle =
