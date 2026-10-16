@@ -6,6 +6,9 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class PriceDetector {
 
     public interface PriceListener{
@@ -34,61 +37,7 @@ public class PriceDetector {
 
                         detectedText = result.getText();
 
-                        try{
-
-                            java.util.regex.Matcher matcher =
-                                    java.util.regex.Pattern
-                                            .compile("\\d{4}\\.\\d{2}")
-                                            .matcher(detectedText);
-
-                            double bestPrice = 0;
-
-                            while(matcher.find()){
-
-                                double price =
-                                        Double.parseDouble(
-                                                matcher.group()
-                                        );
-
-                                if(price >= 4150 && price <= 4200){
-
-                                    if(bestPrice == 0){
-
-                                        bestPrice = price;
-
-                                    }else{
-
-                                        if(Math.abs(price - 4172.0)
-                                                < Math.abs(bestPrice - 4172.0)){
-
-                                            bestPrice = price;
-
-                                        }
-
-                                    }
-
-                                }
-
-                            }
-
-                            detectedPrice = bestPrice;
-
-                            if(detectedPrice > 0){
-
-                                priceText = "OCR SUCCESS";
-
-                            }else{
-
-                                priceText = "PRICE NOT FOUND";
-
-                            }
-
-                        }catch(Exception e){
-
-                            detectedPrice = 0;
-                            priceText = "OCR ERROR";
-
-                        }
+                        parsePrice();
 
                         listener.onPriceDetected(
                                 detectedPrice,
@@ -103,7 +52,7 @@ public class PriceDetector {
                         priceText = "OCR FAILED";
 
                         listener.onPriceDetected(
-                                0,
+                                detectedPrice,
                                 priceText
                         );
 
@@ -115,9 +64,63 @@ public class PriceDetector {
             priceText = "OCR ERROR";
 
             listener.onPriceDetected(
-                    0,
+                    detectedPrice,
                     priceText
             );
+
+        }
+
+    }
+
+    private void parsePrice(){
+
+        try{
+
+            Matcher matcher =
+                    Pattern.compile("\\d+\\.\\d+")
+                            .matcher(detectedText);
+
+            double bestPrice = 0;
+
+            while(matcher.find()){
+
+                try{
+
+                    double value =
+                            Double.parseDouble(
+                                    matcher.group()
+                            );
+
+                    if(value >= 1000 && value <= 10000){
+
+                        if(value > bestPrice){
+
+                            bestPrice = value;
+
+                        }
+
+                    }
+
+                }catch(Exception ignored){}
+
+            }
+
+            detectedPrice = bestPrice;
+
+            if(bestPrice > 0){
+
+                priceText = "OCR SUCCESS";
+
+            }else{
+
+                priceText = "PRICE NOT FOUND";
+
+            }
+
+        }catch(Exception e){
+
+            detectedPrice = 0;
+            priceText = "OCR ERROR";
 
         }
 
