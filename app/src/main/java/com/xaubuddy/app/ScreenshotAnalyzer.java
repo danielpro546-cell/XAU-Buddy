@@ -7,179 +7,338 @@ import android.net.Uri;
 
 import java.io.InputStream;
 
+
 public class ScreenshotAnalyzer {
 
+
     public String timeframe = "";
+
     public String trend = "WAIT";
     public String signal = "WAIT";
+
     public String bos = "WAIT";
     public String choch = "WAIT";
     public String fvg = "WAIT";
     public String liquidity = "WAIT";
 
+
     public int confidence = 0;
 
+
     public double detectedPrice = 0;
+
     public double ema20 = 0;
     public double ema50 = 0;
     public double rsi14 = 0;
 
+
     public String ocrStatus = "";
     public String ocrText = "";
 
-    public void analyze(Context context, Uri image, String tf){
+
+
+    public void analyze(
+            Context context,
+            Uri image,
+            String tf
+    ){
 
         timeframe = tf;
 
+
+        // reset data
+        trend = "WAIT";
+        signal = "WAIT";
+
+        detectedPrice = 0;
+        ema20 = 0;
+        ema50 = 0;
+        rsi14 = 0;
+
+        confidence = 0;
+
+
+
         if(image == null){
+
             signal = "NO IMAGE";
-            confidence = 0;
             return;
+
         }
+
+
 
         try{
 
-            InputStream input =
-                    context.getContentResolver().openInputStream(image);
 
-            Bitmap bitmap =
+            InputStream input =
+                    context
+                    .getContentResolver()
+                    .openInputStream(image);
+
+
+
+            Bitmap original =
                     BitmapFactory.decodeStream(input);
 
-            if(bitmap == null){
-                signal = "IMAGE ERROR";
-                confidence = 0;
+
+
+            if(original == null){
+
+                signal="IMAGE ERROR";
                 return;
+
             }
 
-            Bitmap originalBitmap = bitmap;
+
+
+            // ========= PRICE OCR =========
+
 
             CurrentPriceCropper priceCropper =
                     new CurrentPriceCropper();
 
+
             Bitmap priceBitmap =
-                    priceCropper.crop(originalBitmap);
+                    priceCropper.crop(original);
 
-            ChartCropper cropper =
-                    new ChartCropper();
 
-            bitmap = cropper.crop(originalBitmap);
-            EMACropper emaCropper =
-        new EMACropper();
 
-Bitmap emaBitmap =
-        emaCropper.crop(originalBitmap);
-
-            // OCR
-            PriceDetector detector =
+            PriceDetector priceDetector =
                     new PriceDetector();
 
-            detector.detect(priceBitmap,(price,status)->{
 
-                detectedPrice = price;
-                ocrStatus = status;
-                ocrText = detector.detectedText;
 
-            });
+            priceDetector.detect(
+                    priceBitmap,
+                    (price,status)->{
 
-            // Indicator OCR
+
+                        detectedPrice = price;
+
+                        ocrStatus = status;
+
+                        ocrText =
+                        priceDetector.detectedText;
+
+
+                    });
+
+
+
+            // ========= EMA / RSI OCR =========
+
+
+            EMACropper emaCropper =
+                    new EMACropper();
+
+
+            Bitmap emaBitmap =
+                    emaCropper.crop(original);
+
+
+
             IndicatorDetector indicator =
                     new IndicatorDetector();
 
-            indicator.detect(emaBitmap, () -> {
 
-    this.ema20 = indicator.ema20;
-    this.ema50 = indicator.ema50;
-    this.rsi14 = indicator.rsi14;
 
-});
+            indicator.detect(
+                    emaBitmap,
+                    ()->{
 
-            // Candle
+
+                        ema20 =
+                        indicator.ema20;
+
+
+                        ema50 =
+                        indicator.ema50;
+
+
+                        rsi14 =
+                        indicator.rsi14;
+
+
+                    });
+                        // ========= CHART ANALYSIS =========
+
+
+            ChartCropper chartCropper =
+                    new ChartCropper();
+
+
+            Bitmap chartBitmap =
+                    chartCropper.crop(original);
+
+
+
             CandleDetector candle =
                     new CandleDetector();
 
-            candle.detect(bitmap);
+
+            candle.detect(chartBitmap);
+
+
 
             String structure =
                     candle.marketStructure;
 
-            // Wick
+
+
             WickDetector wick =
                     new WickDetector();
 
-            wick.detect(bitmap);
 
-            int bullish = wick.bullishWicks;
-            int bearish = wick.bearishWicks;
+            wick.detect(chartBitmap);
+
+
+
+            int bullish =
+                    wick.bullishWicks;
+
+
+            int bearish =
+                    wick.bearishWicks;
+
+
+
+            // ========= TREND =========
+
 
             if(structure.equals("BULLISH")){
 
+
                 trend = "BULLISH";
+
+
                 signal = "BUY";
+
+
                 liquidity = "BUY SIDE";
 
-            }else if(structure.equals("BEARISH")){
+
+            }
+            else if(structure.equals("BEARISH")){
+
 
                 trend = "BEARISH";
+
+
                 signal = "SELL";
+
+
                 liquidity = "SELL SIDE";
 
-            }else{
+
+            }
+            else{
+
 
                 trend = "SIDEWAYS";
+
+
                 signal = "WAIT";
+
+
                 liquidity = "WAIT";
 
-            }
-
-            // Wick confirmation
-            if(bullish > bearish && trend.equals("BEARISH")){
-
-                trend = "BULLISH";
-                signal = "BUY";
-                liquidity = "BUY SIDE";
 
             }
 
-            if(bearish > bullish && trend.equals("BULLISH")){
 
-                trend = "BEARISH";
-                signal = "SELL";
-                liquidity = "SELL SIDE";
+
+            // ========= WICK CONFIRMATION =========
+
+
+            if(
+                bullish > bearish &&
+                trend.equals("BEARISH")
+            ){
+
+                trend="BULLISH";
+                signal="BUY";
 
             }
+
+
+
+            if(
+                bearish > bullish &&
+                trend.equals("BULLISH")
+            ){
+
+                trend="BEARISH";
+                signal="SELL";
+
+            }
+
+
+
+            // ========= STRUCTURE =========
+
 
             bos = trend;
+
             choch = trend;
+
+
 
             if(trend.equals("BULLISH")){
 
-                fvg = "BUY";
+                fvg="BUY";
 
-            }else if(trend.equals("BEARISH")){
+            }
+            else if(trend.equals("BEARISH")){
 
-                fvg = "SELL";
+                fvg="SELL";
 
-            }else{
+            }
+            else{
 
-                fvg = "WAIT";
+                fvg="WAIT";
 
             }
 
-            confidence = 60;
 
-            if(structure.equals("BULLISH") ||
-               structure.equals("BEARISH")){
+
+            // ========= CONFIDENCE =========
+
+
+            confidence = 50;
+
+
+
+            if(!trend.equals("SIDEWAYS")){
 
                 confidence += 20;
 
             }
 
+
             if(bullish > bearish ||
                bearish > bullish){
+
+                confidence += 15;
+
+            }
+
+
+            if(detectedPrice > 0){
 
                 confidence += 10;
 
             }
+
+
+
+            if(ema20 > 0 && ema50 > 0){
+
+                confidence += 5;
+
+            }
+
+
 
             if(confidence > 100){
 
@@ -187,14 +346,23 @@ Bitmap emaBitmap =
 
             }
 
-        }catch(Exception e){
 
-            trend = "ERROR";
-            signal = "ERROR";
-            confidence = 0;
+
+        }
+        catch(Exception e){
+
+
+            trend="ERROR";
+
+            signal="ERROR";
+
+            confidence=0;
+
 
         }
 
+
     }
+
 
 }
