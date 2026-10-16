@@ -9,12 +9,12 @@ public class CurrentPriceCropper {
         int w = source.getWidth();
         int h = source.getHeight();
 
-        // MT5 Right Price Box
-        int left = (int)(w * 0.74);
-        int top = (int)(h * 0.18);
+        // MT5 Android Current Price Box
+        int left = (int)(w * 0.76);
+        int top = (int)(h * 0.06);
 
-        int width = (int)(w * 0.24);
-        int height = (int)(h * 0.16);
+        int width = (int)(w * 0.22);
+        int height = (int)(h * 0.28);
 
         if(left + width > w){
             width = w - left;
