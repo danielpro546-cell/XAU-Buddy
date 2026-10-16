@@ -68,9 +68,6 @@ public class IndicatorDetector {
         if(text == null)
             return;
 
-                Matcher matcher =
-                Pattern.compile("\\d+\\.\\d+")
-                .matcher(text);
         String[] lines = text.split("\\n");
 
 java.util.ArrayList<Double> prices =
@@ -106,30 +103,6 @@ for (String line : lines) {
 
     }
 }
-
-        java.util.ArrayList<Double> prices =
-                new java.util.ArrayList<>();
-
-        while(matcher.find()){
-
-            try{
-
-                double v =
-                        Double.parseDouble(matcher.group());
-
-                if(v > 4000){
-
-                    prices.add(v);
-
-                }else if(v >= 10 && v <= 90){
-
-                    rsi14 = v;
-
-                }
-
-            }catch(Exception ignored){}
-
-        }
 
         if(prices.size() >= 3){
 
