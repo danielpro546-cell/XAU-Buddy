@@ -27,61 +27,31 @@ public class MarketData {
 
     public void updateFromAnalysis(
             double detectedPrice,
+            double detectedEma20,
+            double detectedEma50,
+            double detectedRsi,
             String trend,
             String signal
     ){
 
         price = detectedPrice;
 
-        h1Close = detectedPrice;
-        m5Close = detectedPrice;
-
+        h1Open = detectedPrice;
         h1High = detectedPrice;
         h1Low = detectedPrice;
+        h1Close = detectedPrice;
 
+        m5Open = detectedPrice;
         m5High = detectedPrice;
         m5Low = detectedPrice;
+        m5Close = detectedPrice;
 
-        // -------- EMA --------
-
-        if(trend.equals("BULLISH")){
-
-            ema50 = detectedPrice - 15;
-            ema20 = detectedPrice - 5;
-
-        }else if(trend.equals("BEARISH")){
-
-            ema20 = detectedPrice + 5;
-            ema50 = detectedPrice + 15;
-
-        }else{
-
-            ema20 = detectedPrice;
-            ema50 = detectedPrice;
-
-        }
-
-        // -------- RSI --------
-
-        if(signal.equals("BUY")){
-
-            rsi14 = 60;
-
-        }else if(signal.equals("SELL")){
-
-            rsi14 = 40;
-
-        }else{
-
-            rsi14 = 50;
-
-        }
-
-        // -------- H1 --------
+        // OCR ကဖတ်ထားတဲ့ Indicator ကို တိုက်ရိုက်သုံးမယ်
+        ema20 = detectedEma20;
+        ema50 = detectedEma50;
+        rsi14 = detectedRsi;
 
         h1Bias = trend;
-
-        // -------- M5 --------
 
         if(signal.equals("BUY")){
 
