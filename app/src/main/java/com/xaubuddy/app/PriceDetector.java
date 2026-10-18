@@ -6,7 +6,6 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
-import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,149 +15,84 @@ public class PriceDetector {
         void onPriceDetected(double price, String status);
     }
 
-
     public double detectedPrice = 0;
     public String detectedText = "";
     public String priceText = "";
 
-
-    public void detect(
-            Bitmap bitmap,
-            PriceListener listener
-    ){
+    public void detect(Bitmap bitmap, PriceListener listener){
 
         detectedPrice = 0;
         detectedText = "";
         priceText = "";
 
+        InputImage image = InputImage.fromBitmap(bitmap,0);
 
-        try{
+        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                .process(image)
 
-            InputImage image =
-                    InputImage.fromBitmap(bitmap,0);
+                .addOnSuccessListener(result -> {
 
+                    detectedText = result.getText();
 
-            TextRecognition
-                    .getClient(
-                            TextRecognizerOptions.DEFAULT_OPTIONS
-                    )
-                    .process(image)
+                    parsePrice();
 
-                    .addOnSuccessListener(result -> {
+                    listener.onPriceDetected(
+                            detectedPrice,
+                            priceText
+                    );
 
+                })
 
-                        detectedText =
-                                result.getText();
+                .addOnFailureListener(e -> {
 
+                    detectedPrice = 0;
+                    priceText = "OCR FAILED";
 
-                        parsePrice();
+                    listener.onPriceDetected(
+                            detectedPrice,
+                            priceText
+                    );
 
-
-                        listener.onPriceDetected(
-                                detectedPrice,
-                                priceText
-                        );
-
-
-                    })
-
-                    .addOnFailureListener(e -> {
-
-
-                        listener.onPriceDetected(
-                                0,
-                                "OCR FAILED"
-                        );
-
-
-                    });
-
-
-        }catch(Exception e){
-
-
-            listener.onPriceDetected(
-                    0,
-                    "OCR ERROR"
-            );
-
-        }
+                });
 
     }
 
-
-
     private void parsePrice(){
 
-
-        ArrayList<Double> prices =
-                new ArrayList<>();
-
-
         Matcher matcher =
-                Pattern.compile(
-                        "\\d{4}[\\.,]\\d{2}"
-                )
-                .matcher(detectedText);
-
-
+                Pattern.compile("\\d{4}[\\.,]\\d{2}")
+                        .matcher(detectedText);
 
         while(matcher.find()){
 
-
             try{
 
+                String value =
+                        matcher.group().replace(",", ".");
 
-                String clean =
-                        matcher.group()
-                        .replace(",",".");
+                double price =
+                        Double.parseDouble(value);
 
+                if(price >= 4100 && price <= 4300){
 
-                double value =
-                        Double.parseDouble(clean);
-
-
-
-                if(value >= 4000 &&
-                   value <= 4500){
-
-
-                    prices.add(value);
-
+                    detectedPrice = price;
+                    break;
 
                 }
-
 
             }catch(Exception ignored){}
 
         }
 
+        if(detectedPrice > 0){
 
-
-        if(prices.size() > 0){
-
-
-            // current price က ပုံမှန်အားဖြင့်
-            // OCR list ထဲမှာ အောက်ပိုင်း/နောက်ဆုံးနားမှာရှိတတ်
-
-            detectedPrice =
-                    prices.get(prices.size()-1);
-
-
-
-            priceText =
-                    "OCR SUCCESS";
-
+            priceText = "OCR SUCCESS";
 
         }else{
 
-
-            priceText =
-                    "PRICE NOT FOUND";
-
+            priceText = "PRICE NOT FOUND";
 
         }
-
 
     }
 
