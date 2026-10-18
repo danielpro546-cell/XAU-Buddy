@@ -6,6 +6,7 @@ import com.google.mlkit.vision.common.InputImage;
 import com.google.mlkit.vision.text.TextRecognition;
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,182 +22,74 @@ public class IndicatorDetector {
 
     public String rawText = "";
 
-
-    public void detect(
-            Bitmap bitmap,
-            IndicatorListener listener
-    ){
+    public void detect(Bitmap bitmap, IndicatorListener listener){
 
         ema20 = 0;
         ema50 = 0;
         rsi14 = 0;
         rawText = "";
 
+        InputImage image = InputImage.fromBitmap(bitmap,0);
 
-        try{
+        TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+                .process(image)
 
-            InputImage image =
-                    InputImage.fromBitmap(bitmap,0);
+                .addOnSuccessListener(result -> {
 
+                    rawText = result.getText();
 
-            TextRecognition
-                    .getClient(
-                            TextRecognizerOptions.DEFAULT_OPTIONS
-                    )
-                    .process(image)
+                    parse(rawText);
 
+                    android.util.Log.d("OCR", rawText);
 
-                    .addOnSuccessListener(result -> {
+                    listener.onFinish();
 
+                })
 
-                        rawText =
-                                result.getText();
-
-
-                        parseIndicators();
-
-
-                        android.util.Log.d(
-                                "INDICATOR_OCR",
-                                rawText
-                        );
-
-
-                        listener.onFinish();
-
-
-                    })
-
-
-                    .addOnFailureListener(e -> {
-
-                        listener.onFinish();
-
-                    });
-
-
-        }catch(Exception e){
-
-            listener.onFinish();
-
-        }
+                .addOnFailureListener(e -> listener.onFinish());
 
     }
 
+    private void parse(String text){
 
+        ArrayList<Double> values = new ArrayList<>();
 
-    private void parseIndicators(){
+        String[] lines = text.split("\\n");
 
+        for(String line : lines){
 
-        if(rawText == null)
-            return;
+            String upper = line.toUpperCase();
 
+            Matcher m = Pattern.compile("\\d+\\.\\d+").matcher(line);
 
-        String text =
-                rawText.toUpperCase();
+            while(m.find()){
 
+                double v = Double.parseDouble(m.group());
 
-        // ================= RSI =================
+                if(upper.contains("RSI")){
 
-        Matcher rsiMatcher =
-                Pattern.compile(
-                "RSI\\s*\\(?14\\)?\\s*[^0-9]*(\\d+\\.\\d+)"
-                )
-                .matcher(text);
+                    if(v>=5 && v<=95){
+                        rsi14 = v;
+                    }
 
+                }else{
 
-        if(rsiMatcher.find()){
+                    if(v>=4100 && v<=4300){
+                        values.add(v);
+                    }
 
-            try{
-
-                rsi14 =
-                    Double.parseDouble(
-                        rsiMatcher.group(1)
-                    );
-
-            }catch(Exception ignored){}
-
-        }
-
-
-
-        // ================= EMA =================
-
-        Matcher emaMatcher =
-                Pattern.compile(
-                "(EMA|MA).*?(\\d{4}\\.\\d{2})"
-                )
-                .matcher(text);
-
-
-        java.util.ArrayList<Double> emaValues =
-                new java.util.ArrayList<>();
-
-
-        while(emaMatcher.find()){
-
-            try{
-
-                emaValues.add(
-                    Double.parseDouble(
-                        emaMatcher.group(2)
-                    )
-                );
-
-
-            }catch(Exception ignored){}
-
-        }
-
-
-
-        if(emaValues.size() >= 2){
-
-            ema20 = emaValues.get(0);
-            ema50 = emaValues.get(1);
-
-        }
-
-
-
-        // fallback
-        // EMA label မဖတ်နိုင်တဲ့အခါ
-        if(ema20 == 0 || ema50 == 0){
-
-            Matcher priceMatcher =
-                    Pattern.compile(
-                    "\\d{4}\\.\\d{2}"
-                    )
-                    .matcher(text);
-
-
-            java.util.ArrayList<Double> list =
-                    new java.util.ArrayList<>();
-
-
-            while(priceMatcher.find()){
-
-                try{
-
-                    list.add(
-                    Double.parseDouble(
-                    priceMatcher.group()
-                    ));
-
-                }catch(Exception ignored){}
-
-            }
-
-
-            if(list.size() >= 2){
-
-                ema20 = list.get(0);
-                ema50 = list.get(1);
+                }
 
             }
 
         }
 
+        if(values.size()>=2){
+
+            ema20 = values.get(0);
+            ema50 = values.get(1);
+
+        }
 
     }
 
