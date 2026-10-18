@@ -23,7 +23,7 @@ public class ScreenshotAnalyzer {
 
 
     public int confidence = 0;
-
+    
 
     public double detectedPrice = 0;
 
